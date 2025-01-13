@@ -408,7 +408,10 @@ export const useCheckPlantV1PlantsPlantIdCheckPost = (
 };
 
 export type GetOutstandingRemindersV1RemindersOutstandingGetError =
-  Fetcher.ErrorWrapper<undefined>;
+  Fetcher.ErrorWrapper<{
+    status: 422;
+    payload: Schemas.HTTPValidationError;
+  }>;
 
 export type GetOutstandingRemindersV1RemindersOutstandingGetVariables =
   PlantsContext["fetcherOptions"];
@@ -946,8 +949,10 @@ export const useDeletePhotoV1PhotosPhotoIdDelete = (
   });
 };
 
-export type ListAllLocationsV1LocationsGetError =
-  Fetcher.ErrorWrapper<undefined>;
+export type ListAllLocationsV1LocationsGetError = Fetcher.ErrorWrapper<{
+  status: 422;
+  payload: Schemas.HTTPValidationError;
+}>;
 
 export type ListAllLocationsV1LocationsGetResponse = Schemas.Location[];
 
@@ -1143,12 +1148,20 @@ export const useLambdaHealthGet = <TData = void,>(
   });
 };
 
-export type LoginAuthTokenPostError = Fetcher.ErrorWrapper<{
-  status: 422;
-  payload: Schemas.HTTPValidationError;
-}>;
+export type LoginAuthTokenPostError = Fetcher.ErrorWrapper<
+  | {
+      status: 401;
+      payload: Schemas.UnauthorizedResponse;
+    }
+  | {
+      status: 422;
+      payload: Schemas.HTTPValidationError;
+    }
+>;
 
-export type LoginAuthTokenPostVariables = PlantsContext["fetcherOptions"];
+export type LoginAuthTokenPostVariables = {
+  body: Schemas.LoginRequest;
+} & PlantsContext["fetcherOptions"];
 
 export const fetchLoginAuthTokenPost = (
   variables: LoginAuthTokenPostVariables,
@@ -1157,7 +1170,7 @@ export const fetchLoginAuthTokenPost = (
   plantsFetch<
     Schemas.TokenResponse,
     LoginAuthTokenPostError,
-    undefined,
+    Schemas.LoginRequest,
     {},
     {},
     {}
@@ -1185,7 +1198,58 @@ export const useLoginAuthTokenPost = (
   });
 };
 
-export type ReadUsersMeAuthMeGetError = Fetcher.ErrorWrapper<undefined>;
+export type LogoutAuthLogoutPostError = Fetcher.ErrorWrapper<{
+  status: 401;
+  payload: Schemas.UnauthorizedResponse;
+}>;
+
+export type LogoutAuthLogoutPostVariables = PlantsContext["fetcherOptions"];
+
+export const fetchLogoutAuthLogoutPost = (
+  variables: LogoutAuthLogoutPostVariables,
+  signal?: AbortSignal,
+) =>
+  plantsFetch<
+    Schemas.LogoutResponse,
+    LogoutAuthLogoutPostError,
+    undefined,
+    {},
+    {},
+    {}
+  >({ url: "/auth/logout", method: "post", ...variables, signal });
+
+export const useLogoutAuthLogoutPost = (
+  options?: Omit<
+    reactQuery.UseMutationOptions<
+      Schemas.LogoutResponse,
+      LogoutAuthLogoutPostError,
+      LogoutAuthLogoutPostVariables
+    >,
+    "mutationFn"
+  >,
+) => {
+  const { fetcherOptions } = usePlantsContext();
+  return reactQuery.useMutation<
+    Schemas.LogoutResponse,
+    LogoutAuthLogoutPostError,
+    LogoutAuthLogoutPostVariables
+  >({
+    mutationFn: (variables: LogoutAuthLogoutPostVariables) =>
+      fetchLogoutAuthLogoutPost({ ...fetcherOptions, ...variables }),
+    ...options,
+  });
+};
+
+export type ReadUsersMeAuthMeGetError = Fetcher.ErrorWrapper<
+  | {
+      status: 401;
+      payload: Schemas.UnauthorizedResponse;
+    }
+  | {
+      status: 422;
+      payload: Schemas.HTTPValidationError;
+    }
+>;
 
 export type ReadUsersMeAuthMeGetVariables = PlantsContext["fetcherOptions"];
 

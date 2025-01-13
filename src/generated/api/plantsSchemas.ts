@@ -13,18 +13,6 @@ export type BasicPlantInfoResponseModel = {
   cover_photo_url: string | null;
 };
 
-export type BodyLoginAuthTokenPost = {
-  grant_type?: string | null;
-  username: string;
-  password: string;
-  /**
-   * @default
-   */
-  scope?: string;
-  client_id?: string | null;
-  client_secret?: string | null;
-};
-
 export type Check = {
   id?: string;
   /**
@@ -146,6 +134,15 @@ export type Location = {
   description?: string | null;
 };
 
+export type LoginRequest = {
+  username: string;
+  password: string;
+};
+
+export type LogoutResponse = {
+  detail: string;
+};
+
 export type OutstandingRemindersResponseModel = {
   reminders: ReminderWithPlantInfo[];
   total: number;
@@ -250,6 +247,10 @@ export type ReminderWithPlantInfo = {
 export type TokenResponse = {
   access_token: string;
   token_type: string;
+};
+
+export type UnauthorizedResponse = {
+  detail: string;
 };
 
 export type UpdatePlantRequest = {
