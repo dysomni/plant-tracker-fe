@@ -16,10 +16,16 @@ export type ListAllPlantsV1PlantsGetQueryParams = {
   include_archived?: boolean;
 };
 
-export type ListAllPlantsV1PlantsGetError = Fetcher.ErrorWrapper<{
-  status: 422;
-  payload: Schemas.HTTPValidationError;
-}>;
+export type ListAllPlantsV1PlantsGetError = Fetcher.ErrorWrapper<
+  | {
+      status: 401;
+      payload: Schemas.UnauthorizedResponse;
+    }
+  | {
+      status: 422;
+      payload: Schemas.HTTPValidationError;
+    }
+>;
 
 export type ListAllPlantsV1PlantsGetVariables = {
   queryParams?: ListAllPlantsV1PlantsGetQueryParams;
@@ -73,10 +79,16 @@ export const useListAllPlantsV1PlantsGet = <
   });
 };
 
-export type CreatePlantV1PlantsPostError = Fetcher.ErrorWrapper<{
-  status: 422;
-  payload: Schemas.HTTPValidationError;
-}>;
+export type CreatePlantV1PlantsPostError = Fetcher.ErrorWrapper<
+  | {
+      status: 401;
+      payload: Schemas.UnauthorizedResponse;
+    }
+  | {
+      status: 422;
+      payload: Schemas.HTTPValidationError;
+    }
+>;
 
 export type CreatePlantV1PlantsPostVariables = {
   body: Schemas.CreatePlantRequest;
@@ -121,10 +133,16 @@ export type GetPlantV1PlantsPlantIdGetPathParams = {
   plantId: string;
 };
 
-export type GetPlantV1PlantsPlantIdGetError = Fetcher.ErrorWrapper<{
-  status: 422;
-  payload: Schemas.HTTPValidationError;
-}>;
+export type GetPlantV1PlantsPlantIdGetError = Fetcher.ErrorWrapper<
+  | {
+      status: 401;
+      payload: Schemas.UnauthorizedResponse;
+    }
+  | {
+      status: 422;
+      payload: Schemas.HTTPValidationError;
+    }
+>;
 
 export type GetPlantV1PlantsPlantIdGetVariables = {
   pathParams: GetPlantV1PlantsPlantIdGetPathParams;
@@ -182,10 +200,16 @@ export type UpdatePlantV1PlantsPlantIdPatchPathParams = {
   plantId: string;
 };
 
-export type UpdatePlantV1PlantsPlantIdPatchError = Fetcher.ErrorWrapper<{
-  status: 422;
-  payload: Schemas.HTTPValidationError;
-}>;
+export type UpdatePlantV1PlantsPlantIdPatchError = Fetcher.ErrorWrapper<
+  | {
+      status: 401;
+      payload: Schemas.UnauthorizedResponse;
+    }
+  | {
+      status: 422;
+      payload: Schemas.HTTPValidationError;
+    }
+>;
 
 export type UpdatePlantV1PlantsPlantIdPatchVariables = {
   body?: Schemas.UpdatePlantRequest;
@@ -231,10 +255,16 @@ export type GetPlantPhotosV1PlantsPlantIdPhotosGetPathParams = {
   plantId: string;
 };
 
-export type GetPlantPhotosV1PlantsPlantIdPhotosGetError = Fetcher.ErrorWrapper<{
-  status: 422;
-  payload: Schemas.HTTPValidationError;
-}>;
+export type GetPlantPhotosV1PlantsPlantIdPhotosGetError = Fetcher.ErrorWrapper<
+  | {
+      status: 401;
+      payload: Schemas.UnauthorizedResponse;
+    }
+  | {
+      status: 422;
+      payload: Schemas.HTTPValidationError;
+    }
+>;
 
 export type GetPlantPhotosV1PlantsPlantIdPhotosGetVariables = {
   pathParams: GetPlantPhotosV1PlantsPlantIdPhotosGetPathParams;
@@ -297,10 +327,16 @@ export type WaterPlantV1PlantsPlantIdWaterPostPathParams = {
   plantId: string;
 };
 
-export type WaterPlantV1PlantsPlantIdWaterPostError = Fetcher.ErrorWrapper<{
-  status: 422;
-  payload: Schemas.HTTPValidationError;
-}>;
+export type WaterPlantV1PlantsPlantIdWaterPostError = Fetcher.ErrorWrapper<
+  | {
+      status: 401;
+      payload: Schemas.UnauthorizedResponse;
+    }
+  | {
+      status: 422;
+      payload: Schemas.HTTPValidationError;
+    }
+>;
 
 export type WaterPlantV1PlantsPlantIdWaterPostVariables = {
   body: Schemas.CreateWateringRequest;
@@ -354,10 +390,16 @@ export type CheckPlantV1PlantsPlantIdCheckPostPathParams = {
   plantId: string;
 };
 
-export type CheckPlantV1PlantsPlantIdCheckPostError = Fetcher.ErrorWrapper<{
-  status: 422;
-  payload: Schemas.HTTPValidationError;
-}>;
+export type CheckPlantV1PlantsPlantIdCheckPostError = Fetcher.ErrorWrapper<
+  | {
+      status: 401;
+      payload: Schemas.UnauthorizedResponse;
+    }
+  | {
+      status: 422;
+      payload: Schemas.HTTPValidationError;
+    }
+>;
 
 export type CheckPlantV1PlantsPlantIdCheckPostVariables = {
   body: Schemas.CreateCheckRequest;
@@ -408,10 +450,16 @@ export const useCheckPlantV1PlantsPlantIdCheckPost = (
 };
 
 export type GetOutstandingRemindersV1RemindersOutstandingGetError =
-  Fetcher.ErrorWrapper<{
-    status: 422;
-    payload: Schemas.HTTPValidationError;
-  }>;
+  Fetcher.ErrorWrapper<
+    | {
+        status: 401;
+        payload: Schemas.UnauthorizedResponse;
+      }
+    | {
+        status: 422;
+        payload: Schemas.HTTPValidationError;
+      }
+  >;
 
 export type GetOutstandingRemindersV1RemindersOutstandingGetVariables =
   PlantsContext["fetcherOptions"];
@@ -464,10 +512,16 @@ export const useGetOutstandingRemindersV1RemindersOutstandingGet = <
   });
 };
 
-export type CreateReminderV1RemindersPostError = Fetcher.ErrorWrapper<{
-  status: 422;
-  payload: Schemas.HTTPValidationError;
-}>;
+export type CreateReminderV1RemindersPostError = Fetcher.ErrorWrapper<
+  | {
+      status: 401;
+      payload: Schemas.UnauthorizedResponse;
+    }
+  | {
+      status: 422;
+      payload: Schemas.HTTPValidationError;
+    }
+>;
 
 export type CreateReminderV1RemindersPostVariables = {
   body: Schemas.CreateReminderRequest;
@@ -513,10 +567,16 @@ export type DeleteReminderV1RemindersReminderIdDeletePathParams = {
 };
 
 export type DeleteReminderV1RemindersReminderIdDeleteError =
-  Fetcher.ErrorWrapper<{
-    status: 422;
-    payload: Schemas.HTTPValidationError;
-  }>;
+  Fetcher.ErrorWrapper<
+    | {
+        status: 401;
+        payload: Schemas.UnauthorizedResponse;
+      }
+    | {
+        status: 422;
+        payload: Schemas.HTTPValidationError;
+      }
+  >;
 
 export type DeleteReminderV1RemindersReminderIdDeleteVariables = {
   pathParams: DeleteReminderV1RemindersReminderIdDeletePathParams;
@@ -572,10 +632,16 @@ export type CompleteReminderV1RemindersReminderIdCompletePostPathParams = {
 };
 
 export type CompleteReminderV1RemindersReminderIdCompletePostError =
-  Fetcher.ErrorWrapper<{
-    status: 422;
-    payload: Schemas.HTTPValidationError;
-  }>;
+  Fetcher.ErrorWrapper<
+    | {
+        status: 401;
+        payload: Schemas.UnauthorizedResponse;
+      }
+    | {
+        status: 422;
+        payload: Schemas.HTTPValidationError;
+      }
+  >;
 
 export type CompleteReminderV1RemindersReminderIdCompletePostVariables = {
   pathParams: CompleteReminderV1RemindersReminderIdCompletePostPathParams;
@@ -630,10 +696,16 @@ export type DeleteCheckV1ChecksCheckIdDeletePathParams = {
   checkId: string;
 };
 
-export type DeleteCheckV1ChecksCheckIdDeleteError = Fetcher.ErrorWrapper<{
-  status: 422;
-  payload: Schemas.HTTPValidationError;
-}>;
+export type DeleteCheckV1ChecksCheckIdDeleteError = Fetcher.ErrorWrapper<
+  | {
+      status: 401;
+      payload: Schemas.UnauthorizedResponse;
+    }
+  | {
+      status: 422;
+      payload: Schemas.HTTPValidationError;
+    }
+>;
 
 export type DeleteCheckV1ChecksCheckIdDeleteVariables = {
   pathParams: DeleteCheckV1ChecksCheckIdDeletePathParams;
@@ -682,10 +754,16 @@ export type DeleteWateringV1WateringsWateringIdDeletePathParams = {
 };
 
 export type DeleteWateringV1WateringsWateringIdDeleteError =
-  Fetcher.ErrorWrapper<{
-    status: 422;
-    payload: Schemas.HTTPValidationError;
-  }>;
+  Fetcher.ErrorWrapper<
+    | {
+        status: 401;
+        payload: Schemas.UnauthorizedResponse;
+      }
+    | {
+        status: 422;
+        payload: Schemas.HTTPValidationError;
+      }
+  >;
 
 export type DeleteWateringV1WateringsWateringIdDeleteVariables = {
   pathParams: DeleteWateringV1WateringsWateringIdDeletePathParams;
@@ -736,10 +814,16 @@ export const useDeleteWateringV1WateringsWateringIdDelete = (
   });
 };
 
-export type CreatePhotoV1PhotosPostError = Fetcher.ErrorWrapper<{
-  status: 422;
-  payload: Schemas.HTTPValidationError;
-}>;
+export type CreatePhotoV1PhotosPostError = Fetcher.ErrorWrapper<
+  | {
+      status: 401;
+      payload: Schemas.UnauthorizedResponse;
+    }
+  | {
+      status: 422;
+      payload: Schemas.HTTPValidationError;
+    }
+>;
 
 export type CreatePhotoV1PhotosPostVariables = {
   body: Schemas.CreatePhotoRequest;
@@ -785,10 +869,16 @@ export type MarkPhotoUploadedV1PhotosPhotoIdMarkUploadedPostPathParams = {
 };
 
 export type MarkPhotoUploadedV1PhotosPhotoIdMarkUploadedPostError =
-  Fetcher.ErrorWrapper<{
-    status: 422;
-    payload: Schemas.HTTPValidationError;
-  }>;
+  Fetcher.ErrorWrapper<
+    | {
+        status: 401;
+        payload: Schemas.UnauthorizedResponse;
+      }
+    | {
+        status: 422;
+        payload: Schemas.HTTPValidationError;
+      }
+  >;
 
 export type MarkPhotoUploadedV1PhotosPhotoIdMarkUploadedPostVariables = {
   pathParams: MarkPhotoUploadedV1PhotosPhotoIdMarkUploadedPostPathParams;
@@ -844,10 +934,16 @@ export type MarkPhotoAsCoverPhotoV1PhotosPhotoIdMarkCoverPhotoPostPathParams = {
 };
 
 export type MarkPhotoAsCoverPhotoV1PhotosPhotoIdMarkCoverPhotoPostError =
-  Fetcher.ErrorWrapper<{
-    status: 422;
-    payload: Schemas.HTTPValidationError;
-  }>;
+  Fetcher.ErrorWrapper<
+    | {
+        status: 401;
+        payload: Schemas.UnauthorizedResponse;
+      }
+    | {
+        status: 422;
+        payload: Schemas.HTTPValidationError;
+      }
+  >;
 
 export type MarkPhotoAsCoverPhotoV1PhotosPhotoIdMarkCoverPhotoPostVariables = {
   pathParams: MarkPhotoAsCoverPhotoV1PhotosPhotoIdMarkCoverPhotoPostPathParams;
@@ -902,10 +998,16 @@ export type DeletePhotoV1PhotosPhotoIdDeletePathParams = {
   photoId: string;
 };
 
-export type DeletePhotoV1PhotosPhotoIdDeleteError = Fetcher.ErrorWrapper<{
-  status: 422;
-  payload: Schemas.HTTPValidationError;
-}>;
+export type DeletePhotoV1PhotosPhotoIdDeleteError = Fetcher.ErrorWrapper<
+  | {
+      status: 401;
+      payload: Schemas.UnauthorizedResponse;
+    }
+  | {
+      status: 422;
+      payload: Schemas.HTTPValidationError;
+    }
+>;
 
 export type DeletePhotoV1PhotosPhotoIdDeleteVariables = {
   pathParams: DeletePhotoV1PhotosPhotoIdDeletePathParams;
@@ -949,10 +1051,16 @@ export const useDeletePhotoV1PhotosPhotoIdDelete = (
   });
 };
 
-export type ListAllLocationsV1LocationsGetError = Fetcher.ErrorWrapper<{
-  status: 422;
-  payload: Schemas.HTTPValidationError;
-}>;
+export type ListAllLocationsV1LocationsGetError = Fetcher.ErrorWrapper<
+  | {
+      status: 401;
+      payload: Schemas.UnauthorizedResponse;
+    }
+  | {
+      status: 422;
+      payload: Schemas.HTTPValidationError;
+    }
+>;
 
 export type ListAllLocationsV1LocationsGetResponse = Schemas.Location[];
 
@@ -1007,10 +1115,16 @@ export const useListAllLocationsV1LocationsGet = <
   });
 };
 
-export type CreateLocationV1LocationsPostError = Fetcher.ErrorWrapper<{
-  status: 422;
-  payload: Schemas.HTTPValidationError;
-}>;
+export type CreateLocationV1LocationsPostError = Fetcher.ErrorWrapper<
+  | {
+      status: 401;
+      payload: Schemas.UnauthorizedResponse;
+    }
+  | {
+      status: 422;
+      payload: Schemas.HTTPValidationError;
+    }
+>;
 
 export type CreateLocationV1LocationsPostVariables = {
   body: Schemas.CreateLocationRequest;
@@ -1056,10 +1170,16 @@ export type UpdateLocationV1LocationsLocationIdPatchPathParams = {
 };
 
 export type UpdateLocationV1LocationsLocationIdPatchError =
-  Fetcher.ErrorWrapper<{
-    status: 422;
-    payload: Schemas.HTTPValidationError;
-  }>;
+  Fetcher.ErrorWrapper<
+    | {
+        status: 401;
+        payload: Schemas.UnauthorizedResponse;
+      }
+    | {
+        status: 422;
+        payload: Schemas.HTTPValidationError;
+      }
+  >;
 
 export type UpdateLocationV1LocationsLocationIdPatchVariables = {
   body: Schemas.CreateLocationRequest;

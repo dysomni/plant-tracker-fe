@@ -4,9 +4,10 @@ import {
   fetchLogoutAuthLogoutPost,
   fetchReadUsersMeAuthMeGet,
   ReadUsersMeAuthMeGetError,
-  useReadUsersMeAuthMeGet,
 } from "./generated/api/plantsComponents";
 import { useNavigate } from "react-router-dom";
+import { ErrorWrapper } from "./generated/api/plantsFetcher";
+import { useToast } from "./toast";
 
 export interface AuthContextType {
   user: User | null;
@@ -24,6 +25,7 @@ export const AuthContext = React.createContext<AuthContextType>({
 
 export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const navigate = useNavigate();
+  const toast = useToast();
   const [reloadCounter, setReloadCounter] = React.useState(0);
   const [fetchedUser, setFetchedUser] = React.useState<User | null>(null);
   const [userLoading, setUserLoading] = React.useState(true);
@@ -45,12 +47,17 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   }, [reloadCounter]);
 
   useEffect(() => {
-    console.log("error", error);
-    if (error && error.status === 401) {
+    const isLoginPath = window.location.pathname === "/login";
+    if (error && error.status === 401 && !isLoginPath) {
       localStorage.setItem("currentPath", window.location.pathname);
+      toast({
+        message: "You have been logged out. Please log in again.",
+        type: "warning",
+        duration: 5000,
+      });
       navigate("/login");
     }
-  }, [error, navigate]);
+  }, [error]);
 
   const reload = () => {
     setReloadCounter((prev) => prev + 1);
@@ -58,7 +65,11 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
 
   const logout = async () => {
     // clear the cookie
-    await fetchLogoutAuthLogoutPost({});
+    try {
+      await fetchLogoutAuthLogoutPost({});
+    } catch (error) {
+      console.error("Error logging out", error);
+    }
     setFetchedUser(null);
     setUserLoading(false);
     navigate("/login");
@@ -76,4 +87,32 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
       {children}
     </AuthContext.Provider>
   );
+};
+
+export const useAuthErrorRedirect = (
+  error: ErrorWrapper<{
+    status: number;
+    payload: unknown;
+  }> | null
+) => {
+  const authContext = React.useContext(AuthContext);
+  const toast = useToast();
+
+  useEffect(() => {
+    if (error && error.status === 401) {
+      localStorage.setItem("currentPath", window.location.pathname);
+      toast({
+        message: "You have been logged out. Please log in again.",
+        type: "warning",
+        duration: 5000,
+      });
+      authContext.logout();
+    } else if (error) {
+      toast({
+        message: "An error occurred. Please try again later.",
+        type: "danger",
+        duration: 5000,
+      });
+    }
+  }, [error, authContext]);
 };

@@ -1,29 +1,31 @@
 import { Snippet } from "@nextui-org/snippet";
 import { Code } from "@nextui-org/code";
 
-import { title, subtitle } from "@/components/primitives";
 import DefaultLayout from "@/layouts/default";
-import { useListAllPlantsV1PlantsGet } from "../generated/api/plantsComponents";
+import {
+  useGetOutstandingRemindersV1RemindersOutstandingGet,
+  useListAllPlantsV1PlantsGet,
+} from "../generated/api/plantsComponents";
+import { AuthContext, useAuthErrorRedirect } from "../auth";
+import { useToast } from "../toast";
+import { useContext } from "react";
 
 export default function IndexPage() {
-  const { data, isLoading, error } = useListAllPlantsV1PlantsGet({
-    queryParams: { include_archived: false },
-  });
+  const authContext = useContext(AuthContext);
+  const { data, isLoading, error } =
+    useGetOutstandingRemindersV1RemindersOutstandingGet({});
+  useAuthErrorRedirect(error);
+  const toast = useToast();
+
   return (
     <DefaultLayout>
-      <section className="flex flex-col items-center justify-center gap-4 py-8 md:py-10">
-        <div className="inline-block max-w-lg text-center justify-center">
-          <span className={title()}>Make&nbsp;</span>
-          <span className={title({ color: "violet" })}>beautiful&nbsp;</span>
-          <br />
-          <span className={title()}>
-            websites regardless of your design experience.
+      <section className="flex flex-col items-start justify-center gap-4 pb-8 md:pb-10 w-full">
+        <div className="inline-block max-w-lg text-right justify-center">
+          <span className="text-2xl">welcome&nbsp;</span>
+          <span className="text-3xl text-lime-600 dark:text-green-500 font-bold">
+            {authContext.user?.name}
           </span>
-          <div className={subtitle({ class: "mt-4" })}>
-            Beautiful, fast and modern React UI library.
-          </div>
         </div>
-        {error && <div>Error: {error.message}</div>}
 
         <div className="mt-8">
           <Snippet hideCopyButton hideSymbol variant="bordered">

@@ -27,7 +27,7 @@ export const LoginPage = () => {
     if (authContext.user) {
       navigate("/"); // TODO: navigate to the previous path
     }
-  }, [authContext.user, navigate]);
+  }, [authContext.user]);
 
   return (
     <DefaultLayout>
