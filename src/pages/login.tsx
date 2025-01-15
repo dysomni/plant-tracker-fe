@@ -1,4 +1,3 @@
-import { title } from "@/components/primitives";
 import DefaultLayout from "@/layouts/default";
 import { Button } from "@nextui-org/button";
 import { Input } from "@nextui-org/input";
@@ -33,7 +32,7 @@ export const LoginPage = () => {
     <DefaultLayout>
       {/* <section className="flex flex-col items-center justify-center gap-4 py-8 md:py-10"> */}
       <Card className="text-center justify-center p-10 gap-5 max-w-screen-sm lg:max-w-screen-md w-full">
-        <h1 className={title()}>Login</h1>
+        <h1 className="text-3xl font-bold">Login</h1>
         <div className="flex flex-col gap-3">
           <Input
             label="Username"
@@ -53,7 +52,7 @@ export const LoginPage = () => {
           onPress={async (_e) => {
             try {
               setLoginLoading(true);
-              const response = await fetchLoginAuthTokenPost({
+              await fetchLoginAuthTokenPost({
                 body: { username: userInput, password: passwordInput },
               });
               setLoginLoading(false);
