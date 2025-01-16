@@ -7,6 +7,8 @@ import { AuthProvider } from "./auth";
 import { ToastProvider } from "./toast";
 import PlantsPage from "./pages/plants";
 import LocationsPage from "./pages/locations";
+import { ImagePreviewProvider } from "./components/image-preview";
+import { PageLoadingProvider } from "./components/page-loading";
 
 const queryClient = new QueryClient({});
 
@@ -15,12 +17,16 @@ function App() {
     <QueryClientProvider client={queryClient}>
       <ToastProvider>
         <AuthProvider>
-          <Routes>
-            <Route element={<IndexPage />} path="/" />
-            <Route element={<LoginPage />} path="/login" />
-            <Route element={<PlantsPage />} path="/plants" />
-            <Route element={<LocationsPage />} path="/locations" />
-          </Routes>
+          <ImagePreviewProvider>
+            <PageLoadingProvider>
+              <Routes>
+                <Route element={<IndexPage />} path="/" />
+                <Route element={<LoginPage />} path="/login" />
+                <Route element={<PlantsPage />} path="/plants" />
+                <Route element={<LocationsPage />} path="/locations" />
+              </Routes>
+            </PageLoadingProvider>
+          </ImagePreviewProvider>
         </AuthProvider>
       </ToastProvider>
     </QueryClientProvider>
