@@ -1,5 +1,8 @@
 import DefaultLayout from "@/layouts/default";
-import { useGetOutstandingRemindersV1RemindersOutstandingGet } from "../generated/api/plantsComponents";
+import {
+  fetchDeleteReminderV1RemindersReminderIdDelete,
+  useGetOutstandingRemindersV1RemindersOutstandingGet,
+} from "../generated/api/plantsComponents";
 import { AuthContext, useAuthErrorRedirect } from "../auth";
 import { useContext, useMemo } from "react";
 import dayjs from "dayjs";
@@ -11,11 +14,13 @@ import { ReminderWithPlantInfo } from "../generated/api/plantsSchemas";
 import { usePageLoading } from "../components/page-loading";
 import { PlantWateringBadge, PlantWetnessBadge } from "../components/badges";
 import { IconRuler2, IconTrash } from "@tabler/icons-react";
+import { unwrap } from "../util";
+import { useToast } from "../toast";
 dayjs.extend(relativeTime);
 
 export default function IndexPage() {
   const authContext = useContext(AuthContext);
-  const { data, isLoading, error } =
+  const { data, isLoading, error, refetch } =
     useGetOutstandingRemindersV1RemindersOutstandingGet({});
   useAuthErrorRedirect(error);
   usePageLoading(isLoading);
@@ -61,7 +66,11 @@ export default function IndexPage() {
         </div>
         <div className="flex flex-col gap-4 w-full">
           {[...overdueReminders, ...upcomingReminders].map((reminder) => (
-            <ReminderCard reminder={reminder} key={reminder.reminder.id} />
+            <ReminderCard
+              reminder={reminder}
+              key={reminder.reminder.id}
+              reload={() => refetch({})}
+            />
           ))}
         </div>
       </section>
@@ -69,9 +78,16 @@ export default function IndexPage() {
   );
 }
 
-const ReminderCard = ({ reminder }: { reminder: ReminderWithPlantInfo }) => {
+const ReminderCard = ({
+  reminder,
+  reload,
+}: {
+  reminder: ReminderWithPlantInfo;
+  reload: () => void;
+}) => {
   const imagePreview = useImagePreview();
   const reminderDate = dayjs(reminder.reminder.reminder_date);
+  const toast = useToast();
 
   const reminderTextColor = useMemo(() => {
     const now = dayjs();
@@ -174,6 +190,16 @@ const ReminderCard = ({ reminder }: { reminder: ReminderWithPlantInfo }) => {
           color="danger"
           className="font-bold"
           startContent={<IconTrash size={20} />}
+          onPress={async () => {
+            try {
+              await fetchDeleteReminderV1RemindersReminderIdDelete({
+                pathParams: { reminderId: unwrap(reminder.reminder.id) },
+              });
+              reload();
+            } catch (error) {
+              toast({ message: "Failed to delete reminder.", duration: 5000 });
+            }
+          }}
         >
           Delete
         </Button>

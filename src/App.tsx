@@ -9,6 +9,7 @@ import PlantsPage from "./pages/plants";
 import LocationsPage from "./pages/locations";
 import { ImagePreviewProvider } from "./components/image-preview";
 import { PageLoadingProvider } from "./components/page-loading";
+import PlantPage from "./pages/plant";
 
 const queryClient = new QueryClient({});
 
@@ -23,6 +24,7 @@ function App() {
                 <Route element={<IndexPage />} path="/" />
                 <Route element={<LoginPage />} path="/login" />
                 <Route element={<PlantsPage />} path="/plants" />
+                <Route element={<PlantPage />} path="/plants/:plantId" />
                 <Route element={<LocationsPage />} path="/locations" />
               </Routes>
             </PageLoadingProvider>

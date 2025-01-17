@@ -4,7 +4,7 @@ import { useAuthErrorRedirect } from "../auth";
 import { usePageLoading } from "../components/page-loading";
 import { BasicPlantInfoResponseModel } from "../generated/api/plantsSchemas";
 import dayjs from "dayjs";
-import { Image, Input, Link } from "@nextui-org/react";
+import { Button, Image, Input, Link } from "@nextui-org/react";
 import { useImagePreview } from "../components/image-preview";
 import {
   PlantLatestReminderBadge,
@@ -12,10 +12,12 @@ import {
   PlantWetnessBadge,
 } from "../components/badges";
 import { useMemo, useState } from "react";
-import { IconSearch } from "@tabler/icons-react";
+import { IconPlus, IconSearch } from "@tabler/icons-react";
+import { useMediaQueries } from "../components/responsive-hooks";
+import { CreatePlantDrawer } from "../components/create-plant";
 
 export default function PlantsPage() {
-  const { data, isLoading, error } = useListAllPlantsV1PlantsGet({
+  const { data, isLoading, error, refetch } = useListAllPlantsV1PlantsGet({
     queryParams: { include_archived: false },
   });
   useAuthErrorRedirect(error);
@@ -33,19 +35,42 @@ export default function PlantsPage() {
     );
   }, [data, searchInput]);
 
+  const mediaQueries = useMediaQueries();
+  const [createPlantDrawerOpen, setCreatePlantDrawerOpen] = useState(false);
+
   return (
     <DefaultLayout>
+      <CreatePlantDrawer
+        open={createPlantDrawerOpen}
+        setOpen={setCreatePlantDrawerOpen}
+        onPlantCreated={async () => {
+          await refetch();
+        }}
+      />
       <section className="flex flex-col items-center justify-center gap-4 pb-8 md:pb-10 w-full">
-        <Input
-          value={searchInput}
-          placeholder="Search for a plant"
-          onValueChange={setSearchInput}
-          startContent={<IconSearch size={15} />}
-          className="max-w-72"
-          variant="bordered"
-        />
+        <div className="flex flex-row justify-center gap-3 w-full">
+          <Input
+            size={mediaQueries["sm"] ? "md" : "sm"}
+            value={searchInput}
+            placeholder="Search for a plant"
+            onValueChange={setSearchInput}
+            startContent={<IconSearch size={15} />}
+            className="max-w-40 sm:max-w-72"
+            variant="bordered"
+          />
+          <Button
+            size={mediaQueries["sm"] ? "md" : "sm"}
+            startContent={<IconPlus size={15} />}
+            color="success"
+            onPress={() => setCreatePlantDrawerOpen(true)}
+          >
+            Register Plant
+          </Button>
+        </div>
         <div className="flex flex-col gap-4 w-full">
-          {matchedPlants?.map((plant) => <PlantCard plant={plant} />)}
+          {matchedPlants?.map((plant) => (
+            <PlantCard key={plant.plant.id} plant={plant} />
+          ))}
         </div>
         {matchedPlants?.length === 0 ? (
           <div className="text-lg font-bold text-center">No plants found.</div>

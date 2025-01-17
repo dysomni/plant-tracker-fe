@@ -47,8 +47,8 @@ export const ToastProvider = ({ children }: { children: React.ReactNode }) => {
   return (
     <ToastContext.Provider value={{ toastMessages, addToast }}>
       <div
-        className="fixed top-2 left-1/2 transform -translate-x-1/2 z-50 text-center"
-        style={{ pointerEvents: "none" }}
+        className="fixed top-2 left-1/2 transform -translate-x-1/2 text-center"
+        style={{ pointerEvents: "none", zIndex: 1000 }}
       >
         <div
           className="relative flex flex-col gap-2 p-5"
