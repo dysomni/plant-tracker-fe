@@ -44,6 +44,7 @@ export const CreatePlantDrawer = (props: {
   const { open, setOpen, onPlantCreated, editPlant } = props;
 
   const [validationErrors, setValidationErrors] = useState({});
+  const [submitLoading, setSubmitLoading] = useState(false);
   const [formState, setFormState] = useState<{
     name: string;
     scientific_name: string;
@@ -77,11 +78,10 @@ export const CreatePlantDrawer = (props: {
 
   const {
     data: locationData,
-    isLoading,
+    isFetching,
     error,
     refetch,
   } = useListAllLocationsV1LocationsGet({});
-  usePageLoading(isLoading);
   useAuthErrorRedirect(error);
   const toast = useToast();
 
@@ -102,6 +102,7 @@ export const CreatePlantDrawer = (props: {
       return;
     }
 
+    setSubmitLoading(true);
     try {
       if (editPlant) {
         // Update plant
@@ -120,7 +121,7 @@ export const CreatePlantDrawer = (props: {
         type: "danger",
         duration: 5000,
       });
-
+      setSubmitLoading(false);
       return;
     }
 
@@ -129,6 +130,7 @@ export const CreatePlantDrawer = (props: {
       type: "success",
       duration: 5000,
     });
+    setSubmitLoading(false);
     await onPlantCreated?.();
     setOpen(false);
   };
@@ -146,6 +148,11 @@ export const CreatePlantDrawer = (props: {
         autoComplete="off"
       >
         <DrawerContent>
+          {isFetching || submitLoading ? (
+            <div className="flex absolute top-0 bottom-0 left-0 right-0 justify-center items-center bg-black z-50 opacity-30">
+              <CircularProgress />
+            </div>
+          ) : null}
           <DrawerHeader>Create a New Plant</DrawerHeader>
           <DrawerBody>
             <Input

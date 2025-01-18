@@ -4,7 +4,7 @@ import {
   useGetOutstandingRemindersV1RemindersOutstandingGet,
 } from "../generated/api/plantsComponents";
 import { AuthContext, useAuthErrorRedirect } from "../auth";
-import { useContext, useMemo } from "react";
+import { useContext, useMemo, useState } from "react";
 import dayjs from "dayjs";
 import relativeTime from "dayjs/plugin/relativeTime";
 import { Button } from "@nextui-org/button";
@@ -14,28 +14,34 @@ import { ReminderWithPlantInfo } from "../generated/api/plantsSchemas";
 import { usePageLoading } from "../components/page-loading";
 import { PlantWateringBadge, PlantWetnessBadge } from "../components/badges";
 import { IconRuler2, IconTrash } from "@tabler/icons-react";
-import { unwrap } from "../util";
+import { pluralize, unwrap } from "../util";
 import { useToast } from "../toast";
+import { CheckPlantDrawer } from "../components/check-plant";
 dayjs.extend(relativeTime);
 
 export default function IndexPage() {
   const authContext = useContext(AuthContext);
-  const { data, isLoading, error, refetch } =
+  const { data, isFetching, error, refetch } =
     useGetOutstandingRemindersV1RemindersOutstandingGet({});
   useAuthErrorRedirect(error);
-  usePageLoading(isLoading);
+  usePageLoading(isFetching);
 
-  const overdueReminders =
-    data?.reminders.filter(
-      (reminder) => reminder.reminder.reminder_date < new Date().toISOString()
-    ) ?? [];
-  const upcomingReminders =
-    data?.reminders.filter(
-      (reminder) => reminder.reminder.reminder_date >= new Date().toISOString()
-    ) ?? [];
+  const overdueReminders = useMemo(
+    () =>
+      data?.reminders.filter(
+        (reminder) => reminder.reminder.reminder_date < new Date().toISOString()
+      ) ?? [],
+    [data]
+  );
 
-  const pluralize = (count: number, singular: string, plural: string) =>
-    count === 1 ? singular : plural;
+  const upcomingReminders = useMemo(
+    () =>
+      data?.reminders.filter(
+        (reminder) =>
+          reminder.reminder.reminder_date >= new Date().toISOString()
+      ) ?? [],
+    [data]
+  );
 
   return (
     <DefaultLayout>
@@ -89,6 +95,8 @@ const ReminderCard = ({
   const reminderDate = dayjs(reminder.reminder.reminder_date);
   const toast = useToast();
 
+  const [plantToCheck, setPlantToCheck] = useState<string | undefined>();
+
   const reminderTextColor = useMemo(() => {
     const now = dayjs();
     const diffInMinutes = now.diff(reminderDate, "minute");
@@ -129,6 +137,15 @@ const ReminderCard = ({
     <div
       className={`flex gap-6 border-2 ${reminderBorderColor} p-4 rounded-lg items-center shadow-lg dark:black`}
     >
+      {plantToCheck ? (
+        <CheckPlantDrawer
+          plantToCheck={plantToCheck}
+          onClose={() => setPlantToCheck(undefined)}
+          onCheckDone={async () => {
+            await reload();
+          }}
+        />
+      ) : null}
       <div className="flex gap-6 items-left sm:items-center flex-col sm:flex-row grow">
         <div className="flex gap-6 items-center">
           {reminder.plant_info.cover_photo_url ? (
@@ -180,6 +197,11 @@ const ReminderCard = ({
             color="primary"
             className="font-bold"
             startContent={<IconRuler2 size={20} />}
+            onPress={() => {
+              setTimeout(() => {
+                setPlantToCheck(unwrap(reminder.plant_info.plant.id));
+              }, 50);
+            }}
           >
             Check
           </Button>

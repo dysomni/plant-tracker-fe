@@ -19,6 +19,7 @@ import {
   Button,
   Checkbox,
   CircularProgress,
+  Divider,
   Drawer,
   DrawerBody,
   DrawerContent,
@@ -32,6 +33,8 @@ import {
   ModalContent,
   ModalFooter,
   ModalHeader,
+  Tab,
+  Tabs,
   Textarea,
 } from "@nextui-org/react";
 import { useImagePreview } from "../components/image-preview";
@@ -44,8 +47,10 @@ import { useState } from "react";
 import {
   IconArchiveFilled,
   IconCamera,
+  IconEdit,
   IconPlus,
   IconRestore,
+  IconRuler2,
   IconSparkles,
   IconTrash,
 } from "@tabler/icons-react";
@@ -54,6 +59,8 @@ import { CreatePlantDrawer } from "../components/create-plant";
 import { useParams } from "react-router-dom";
 import { unwrap } from "../util";
 import { useToast } from "../toast";
+import { CheckPlantDrawer } from "../components/check-plant";
+import { set } from "zod";
 
 export default function PlantPage() {
   const plantId = useParams<{ plantId: string }>().plantId;
@@ -76,6 +83,7 @@ export default function PlantPage() {
 
   const [archiveModalOpen, setArchiveModalOpen] = useState(false);
   const [deletePhotoId, setDeletePhotoId] = useState("");
+  const [checking, setChecking] = useState(false);
 
   const mediaQueries = useMediaQueries();
   const [editPlantDrawerOpen, setEditPlantDrawerOpen] = useState(false);
@@ -90,8 +98,20 @@ export default function PlantPage() {
     setArchiveModalOpen(false);
   };
 
+  const tabContainerClass =
+    "w-full flex flex-col gap-2 justify-start border-2 rounded-xl shadow-md border-gray-100 dark:border-gray-800 min-h-full p-6";
+
   return (
     <DefaultLayout>
+      {checking && (
+        <CheckPlantDrawer
+          plantToCheck={plantId}
+          onClose={() => setChecking(false)}
+          onCheckDone={async () => {
+            await refetch();
+          }}
+        />
+      )}
       <CreatePlantDrawer
         open={editPlantDrawerOpen}
         setOpen={setEditPlantDrawerOpen}
@@ -100,23 +120,55 @@ export default function PlantPage() {
         }}
         editPlant={data?.plant}
       />
-      <section className="flex flex-col items-center justify-center gap-4 pb-8 md:pb-10 w-full">
-        <div className="flex flex-row justify-center gap-3 w-full">
+      <section className="flex flex-col items-center justify-center gap-4 pb-8 md:pb-10 w-full min-h-full">
+        <div className="flex flex-col sm:flex-row gap-3 sm:gap-7 w-full items-center justify-center sm:justify-center">
+          <div className="shrink-0">
+            <Link href={`/plants/${data?.plant.id}`} color="success">
+              <div className="font-extrabold text-3xl">{data?.plant.name}</div>
+            </Link>
+            {/* <div className="font-bold">{data?.location.name}</div> */}
+          </div>
+          <div className="flex flex-row items-center justify-center sm:justify-end gap-1 flex-wrap">
+            <PlantLatestReminderBadge
+              hasReminders={
+                !!(
+                  data?.outstanding_reminders.filter(
+                    (r) => r.reminder_type === "check"
+                  ).length ?? 0
+                )
+              }
+            />
+            {data && <PlantWetnessBadge lastCheck={data.last_check} />}
+            {data && <PlantWateringBadge lastWatered={data?.last_watering} />}
+          </div>
+        </div>
+        <div className="flex flex-row justify-center gap-3 w-full flex-wrap">
           <Button
             size={mediaQueries["sm"] ? "md" : "sm"}
-            startContent={<IconPlus size={15} />}
+            startContent={<IconEdit size={15} />}
             color="success"
-            onPress={() => setEditPlantDrawerOpen(true)}
+            className="font-bold shrink-0"
+            onPress={() => setTimeout(() => setEditPlantDrawerOpen(true), 50)}
             isDisabled={isFetching}
           >
             Edit Plant
           </Button>
           <Button
             size={mediaQueries["sm"] ? "md" : "sm"}
+            color="primary"
+            className="font-bold shrink-0"
+            startContent={<IconRuler2 size={20} />}
+            onPress={() => setTimeout(() => setChecking(true), 50)}
+          >
+            Check
+          </Button>
+          <Button
+            size={mediaQueries["sm"] ? "md" : "sm"}
             startContent={<IconCamera size={15} />}
             color="default"
+            className="font-bold shrink-0"
             isDisabled={isFetching}
-            onPress={() => setAddPhotoOpen(true)}
+            onPress={() => setTimeout(() => setAddPhotoOpen(true), 50)}
           >
             Add Photo
           </Button>
@@ -125,6 +177,7 @@ export default function PlantPage() {
               size={mediaQueries["sm"] ? "md" : "sm"}
               startContent={<IconRestore size={15} />}
               color="primary"
+              className="font-bold shrink-0"
               onPress={async () => {
                 await handleArchive(false);
               }}
@@ -137,6 +190,7 @@ export default function PlantPage() {
               size={mediaQueries["sm"] ? "md" : "sm"}
               startContent={<IconArchiveFilled size={15} />}
               color="danger"
+              className="font-bold shrink-0"
               onPress={() => setArchiveModalOpen(true)}
               isDisabled={isFetching}
             >
@@ -144,61 +198,112 @@ export default function PlantPage() {
             </Button>
           )}
         </div>
-        <div className="flex flex-row flex-wrap gap-2">
-          {photoData?.photos.map((photo) => (
-            <div
-              key={photo.photo.id}
-              className="flex flex-col gap-1 items-center border-2 rounded-xl p-1 shadow-md border-gray-100 dark:border-gray-800"
-            >
-              <Image
-                className="cursor-pointer"
-                height={mediaQueries["sm"] ? 300 : 150}
-                src={photo.presigned_url}
-                alt={data?.plant.name}
-                onClick={() =>
-                  setPreview({
-                    src: photo.presigned_url,
-                    plantName: data?.plant.name ?? "",
-                  })
-                }
-              />
-              <Link href={photo.presigned_url} target="_blank">
-                View Full Size
-              </Link>
-              {data?.cover_photo?.id === photo.photo.id ? (
-                <p className="flex flex-row gap-1 items-center">
-                  <IconSparkles />
-                  Cover Photo
-                  <IconSparkles />
-                </p>
-              ) : (
-                <Button
-                  size="sm"
-                  color="primary"
-                  onPress={async () => {
-                    await fetchMarkPhotoAsCoverPhotoV1PhotosPhotoIdMarkCoverPhotoPost(
-                      {
-                        pathParams: { photoId: unwrap(photo.photo.id) },
-                      }
-                    );
-                    await Promise.all([refetch(), refetchPhotos()]);
-                  }}
-                >
-                  Set as Cover
-                </Button>
-              )}
 
-              <p>{dayjs(photo.photo.photo_date).format("MMMM D, YYYY")}</p>
-              <Link
-                className="cursor-pointer"
-                color="danger"
-                onPress={() => setDeletePhotoId(unwrap(photo.photo.id))}
-              >
-                <IconTrash size={15} />
-                Delete
-              </Link>
-            </div>
-          ))}
+        <Divider className="w-full" />
+        <div className="w-full flex flex-col gap-0 justify-start grow px-1 pb-6">
+          <Tabs
+            aria-label="Plant Tabs"
+            className="flex justify-center"
+            size="lg"
+          >
+            <Tab title="Details">
+              <div className={tabContainerClass}>
+                <div className="flex flex-col sm:flex-row gap-6">
+                  <div className="flex flex-col items-center shrink-0">
+                    <Image
+                      className="rounded-xl"
+                      src={data?.cover_photo_url ?? "/placeholder.png"}
+                      alt="Plant cover photo"
+                      height={300}
+                    />
+                    <div className="italic font-bold text-sm">
+                      {data?.plant.scientific_name}
+                    </div>
+                  </div>
+                  <div className="grow flex flex-col gap-3">
+                    <div>
+                      <h4 className="text-xl font-bold">
+                        Location - {data?.location.name}
+                      </h4>
+                      <p className="italic text-sm font-serif">
+                        {data?.location.description}
+                      </p>
+                    </div>
+                    <Divider />
+                    <div>
+                      <h4 className="text-xl font-bold">Notes</h4>
+                      <p className="font-serif">{data?.plant.notes}</p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </Tab>
+            <Tab title="History">
+              <div className={tabContainerClass}></div>
+            </Tab>
+            <Tab title="Photos">
+              <div className={tabContainerClass}>
+                <div className="flex flex-row flex-wrap gap-2 w-full justify-center">
+                  {photoData?.photos.map((photo) => (
+                    <div
+                      key={photo.photo.id}
+                      className="flex flex-col gap-1 items-center border-2 rounded-xl p-1 shadow-md border-gray-100 dark:border-gray-800"
+                    >
+                      <Image
+                        className="cursor-pointer"
+                        height={mediaQueries["sm"] ? 300 : 150}
+                        src={photo.presigned_url}
+                        alt={data?.plant.name}
+                        onClick={() =>
+                          setPreview({
+                            src: photo.presigned_url,
+                            plantName: data?.plant.name ?? "a",
+                          })
+                        }
+                      />
+                      <Link href={photo.presigned_url} target="_blank">
+                        View Full Size
+                      </Link>
+                      {data?.cover_photo?.id === photo.photo.id ? (
+                        <p className="flex flex-row gap-1 items-center">
+                          <IconSparkles />
+                          Cover Photo
+                          <IconSparkles />
+                        </p>
+                      ) : (
+                        <Button
+                          size="sm"
+                          color="primary"
+                          onPress={async () => {
+                            await fetchMarkPhotoAsCoverPhotoV1PhotosPhotoIdMarkCoverPhotoPost(
+                              {
+                                pathParams: { photoId: unwrap(photo.photo.id) },
+                              }
+                            );
+                            await Promise.all([refetch(), refetchPhotos()]);
+                          }}
+                        >
+                          Set as Cover
+                        </Button>
+                      )}
+
+                      <p>
+                        {dayjs(photo.photo.photo_date).format("MMMM D, YYYY")}
+                      </p>
+                      <Link
+                        className="cursor-pointer"
+                        color="danger"
+                        onPress={() => setDeletePhotoId(unwrap(photo.photo.id))}
+                      >
+                        <IconTrash size={15} />
+                        Delete
+                      </Link>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </Tab>
+          </Tabs>
         </div>
       </section>
       <Modal isOpen={archiveModalOpen} onOpenChange={setArchiveModalOpen}>

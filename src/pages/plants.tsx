@@ -10,11 +10,14 @@ import {
   PlantLatestReminderBadge,
   PlantWateringBadge,
   PlantWetnessBadge,
+  ReminderlessPlantBadge,
 } from "../components/badges";
 import { useMemo, useState } from "react";
-import { IconPlus, IconSearch } from "@tabler/icons-react";
+import { IconPlus, IconRuler2, IconSearch } from "@tabler/icons-react";
 import { useMediaQueries } from "../components/responsive-hooks";
 import { CreatePlantDrawer } from "../components/create-plant";
+import { CheckPlantDrawer } from "../components/check-plant";
+import { unwrap } from "../util";
 
 export default function PlantsPage() {
   const { data, isLoading, error, refetch } = useListAllPlantsV1PlantsGet({
@@ -37,6 +40,13 @@ export default function PlantsPage() {
 
   const mediaQueries = useMediaQueries();
   const [createPlantDrawerOpen, setCreatePlantDrawerOpen] = useState(false);
+
+  const noRemindersCount = useMemo(
+    () =>
+      data?.plants.filter((plant) => plant.outstanding_reminders.length === 0)
+        .length ?? 0,
+    [data]
+  );
 
   return (
     <DefaultLayout>
@@ -62,14 +72,23 @@ export default function PlantsPage() {
             size={mediaQueries["sm"] ? "md" : "sm"}
             startContent={<IconPlus size={15} />}
             color="success"
-            onPress={() => setCreatePlantDrawerOpen(true)}
+            onPress={() => setTimeout(() => setCreatePlantDrawerOpen(true), 50)}
           >
             Register Plant
           </Button>
         </div>
+        {noRemindersCount ? (
+          <ReminderlessPlantBadge count={noRemindersCount} />
+        ) : null}
         <div className="flex flex-col gap-4 w-full">
           {matchedPlants?.map((plant) => (
-            <PlantCard key={plant.plant.id} plant={plant} />
+            <PlantCard
+              key={plant.plant.id}
+              plant={plant}
+              reload={async () => {
+                refetch({});
+              }}
+            />
           ))}
         </div>
         {matchedPlants?.length === 0 ? (
@@ -80,7 +99,14 @@ export default function PlantsPage() {
   );
 }
 
-const PlantCard = ({ plant }: { plant: BasicPlantInfoResponseModel }) => {
+const PlantCard = ({
+  plant,
+  reload,
+}: {
+  plant: BasicPlantInfoResponseModel;
+  reload: () => Promise<void>;
+}) => {
+  const [checking, setChecking] = useState(false);
   const imagePreview = useImagePreview();
   const latestReminder =
     plant.outstanding_reminders.length > 0
@@ -88,22 +114,31 @@ const PlantCard = ({ plant }: { plant: BasicPlantInfoResponseModel }) => {
       : null;
 
   return (
-    <div className="flex flex-col sm:flex-row gap-6 border-2 p-4 rounded-lg items-center justify-center shadow-lg dark:black max-h-72">
+    <div className="flex flex-col sm:flex-row gap-6 sm:gap-0 border-2 p-4 rounded-lg items-center justify-center sm:justify-between shadow-lg dark:black max-h-72">
+      {checking ? (
+        <CheckPlantDrawer
+          plantToCheck={unwrap(plant.plant.id)}
+          onClose={() => setChecking(false)}
+          onCheckDone={reload}
+        />
+      ) : null}
       <div className="flex flex-row gap-6 items-center justify-center self-start sm:self-auto">
         {plant.cover_photo_url ? (
-          <Image
-            className="hover:cursor-pointer"
-            src={plant.cover_photo_url ?? undefined}
-            height={90}
-            alt="Plant Cover Photo"
-            onClick={() =>
-              imagePreview.setPreview({
-                src: plant.cover_photo_url ?? "",
-                plantName: plant.plant.name,
-                locationName: plant.location.name,
-              })
-            }
-          />
+          <div className="shrink-0">
+            <Image
+              className="hover:cursor-pointer"
+              src={plant.cover_photo_url ?? undefined}
+              height={90}
+              alt="Plant Cover Photo"
+              onClick={() =>
+                imagePreview.setPreview({
+                  src: plant.cover_photo_url ?? "",
+                  plantName: plant.plant.name,
+                  locationName: plant.location.name,
+                })
+              }
+            />
+          </div>
         ) : null}
         <div>
           <Link href={`/plants/${plant.plant.id}`} color="success">
@@ -116,9 +151,21 @@ const PlantCard = ({ plant }: { plant: BasicPlantInfoResponseModel }) => {
         </div>
       </div>
       <div className="flex flex-row flex-wrap gap-1 grow items-center justify-center">
-        <PlantLatestReminderBadge latestReminder={latestReminder} />
+        <PlantLatestReminderBadge hasReminders={!!latestReminder} />
         <PlantWetnessBadge lastCheck={plant.last_check} />
         <PlantWateringBadge lastWatered={plant.last_watering} />
+      </div>
+      <div>
+        <Button
+          size="sm"
+          variant="flat"
+          color="primary"
+          className="font-bold"
+          startContent={<IconRuler2 size={20} />}
+          onPress={() => setTimeout(() => setChecking(true), 50)}
+        >
+          Check
+        </Button>
       </div>
     </div>
   );
