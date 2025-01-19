@@ -1,3 +1,4 @@
+import React from "react";
 import { scaleTime, scaleLinear } from "@visx/scale";
 import { Brush } from "@visx/brush";
 import { extent, bisector } from "@visx/vendor/d3-array";
@@ -15,6 +16,7 @@ import { curveLinear } from "@visx/curve";
 import { RectClipPath } from "@visx/clip-path";
 import { useParentSize } from "@visx/responsive";
 import { localPoint } from "@visx/event";
+import { useMediaQueries } from "./responsive-hooks";
 
 import { Check, Watering } from "../generated/api/plantsSchemas";
 import dayjs from "dayjs";
@@ -22,6 +24,7 @@ import { useCallback, useMemo, useRef, useState } from "react";
 import { Line, LinePath } from "@visx/shape";
 import { GridColumns, GridRows } from "@visx/grid";
 import { AxisBottom, AxisRight } from "@visx/axis";
+import { Slider, Tab, Tabs } from "@nextui-org/react";
 
 const checkAccessors = {
   xAccessor: (d) => dayjs(d.check_date).toDate(),
@@ -33,7 +36,7 @@ const checkAccessors = {
 const purple1 = "#6c5efb";
 const purple2 = "#c998ff";
 export const purple3 = "#a44afe";
-export const background = "#f9f9f9";
+export const background = "#e0e0e0";
 const tooltipStyles = {
   ...defaultStyles,
   minWidth: 60,
@@ -45,7 +48,26 @@ export const MyChart = (props: {
   waterHistory: Watering[];
   checkHistory: Check[];
 }) => {
-  const { waterHistory, checkHistory } = props;
+  const { waterHistory } = props;
+
+  const [dataRangeSelection, setDataRangeSelection] = useState<
+    "alltime" | "year" | "3month" | "month"
+  >("month");
+  const checkHistory = useMemo(() => {
+    const now = dayjs();
+    return props.checkHistory.filter((check) => {
+      if (dataRangeSelection === "alltime") return true;
+      const checkDate = dayjs(check.check_date);
+      if (dataRangeSelection === "year")
+        return checkDate.isAfter(now.subtract(1, "year"));
+      else if (dataRangeSelection === "3month")
+        return checkDate.isAfter(now.subtract(3, "month"));
+      else if (dataRangeSelection === "month")
+        return checkDate.isAfter(now.subtract(1, "month"));
+      return false;
+    });
+  }, [props.checkHistory, dataRangeSelection]);
+  const mediaQueries = useMediaQueries();
 
   const { parentRef, width, height } = useParentSize({
     debounceTime: 150,
@@ -56,11 +78,11 @@ export const MyChart = (props: {
 
   const marginBottom = 20;
   const marginLeft = 20;
-  const marginRight = 50;
+  const marginRight = 40;
   const marginTop = 20;
 
-  const chartSeparation = 30;
-  const brushHeight = 50;
+  const chartSeparation = mediaQueries["md"] ? 60 : mediaQueries["sm"] ? 45 : 0;
+  const brushHeight = mediaQueries["sm"] ? 70 : 10;
   const xRangeStart = marginLeft;
   const xRangeEnd = width - marginRight;
   const xRangeWidth = xRangeEnd - xRangeStart;
@@ -75,9 +97,7 @@ export const MyChart = (props: {
     useState(checkHistory);
   const [brushBounds, setBrushBounds] = useState<Bounds>({
     x0: dayjs(checkHistory[0].check_date).toDate().getTime(),
-    x1: dayjs(checkHistory[checkHistory.length - 1].check_date)
-      .toDate()
-      .getTime(),
+    x1: new Date().getTime(),
     y0: 0,
     y1: 10,
   });
@@ -104,7 +124,7 @@ export const MyChart = (props: {
           Date,
         ],
       }),
-    [xRangeStart, xRangeEnd, filteredCheckHistory]
+    [xRangeStart, xRangeEnd, filteredCheckHistory, brushBounds]
   );
   const wetnessScale = useMemo(
     () =>
@@ -119,7 +139,10 @@ export const MyChart = (props: {
     () =>
       scaleTime<number>({
         range: [0, xRangeWidth],
-        domain: extent(checkHistory, checkAccessors.xAccessor) as [Date, Date],
+        domain: [
+          extent(checkHistory, checkAccessors.xAccessor)[0],
+          new Date(),
+        ] as [Date, Date],
       }),
     [xRangeStart, xRangeEnd, checkHistory]
   );
@@ -139,11 +162,7 @@ export const MyChart = (props: {
         x: brushDateScale(checkAccessors.xAccessor(filteredCheckHistory[0])),
       },
       end: {
-        x: brushDateScale(
-          checkAccessors.xAccessor(
-            filteredCheckHistory[filteredCheckHistory.length - 1]
-          )
-        ),
+        x: brushDateScale(new Date()),
       },
     }),
     [brushDateScale]
@@ -178,6 +197,8 @@ export const MyChart = (props: {
     [showTooltip, checkHistory, dateScale]
   );
 
+  const labelSize = mediaQueries["md"] ? 18 : mediaQueries["sm"] ? 15 : 11;
+
   return (
     <div className="w-full">
       <div className="flex justify-between text-xs sm:text-sm px-4">
@@ -196,7 +217,7 @@ export const MyChart = (props: {
       </div>
       <div
         ref={parentRef}
-        className="w-full min-h-72 relative"
+        className="w-full min-h-[300px] sm:min-h-[400px] md:min-h-[500px] relative bg-slate-50 p-2 rounded-3xl shadow-xl"
         style={{ minWidth: marginLeft + marginRight + 5 + "px" }}
       >
         <svg width={width} height={height} className="relative">
@@ -206,7 +227,7 @@ export const MyChart = (props: {
             width={xRangeWidth}
             height={yRangeHeight}
             fill={background}
-            rx={0}
+            rx={14}
           />
 
           <Group top={yRangeStart} left={xRangeStart}>
@@ -245,7 +266,7 @@ export const MyChart = (props: {
               tickStroke={"black"}
               tickLabelProps={{
                 fill: "black",
-                fontSize: 11,
+                fontSize: labelSize,
                 textAnchor: "middle",
               }}
               numTicks={5}
@@ -257,14 +278,14 @@ export const MyChart = (props: {
               tickStroke={"black"}
               tickLabelProps={() => ({
                 fill: "black",
-                fontSize: 11,
-                textAnchor: "middle",
+                fontSize: labelSize,
+                textAnchor: "start",
               })}
             />
             {waterHistory.map((water) => {
               const x = dateScale(dayjs(water.watering_date).toDate());
               return (
-                <>
+                <React.Fragment key={water.id}>
                   <Line
                     from={{ x: x, y: 0 }}
                     to={{ x: x, y: yRangeHeight }}
@@ -273,6 +294,7 @@ export const MyChart = (props: {
                     pointerEvents="none"
                     strokeDasharray="5,2"
                     opacity={0.8}
+                    clipPath="url(#clip)"
                   />
                   <svg
                     xmlns="http://www.w3.org/2000/svg"
@@ -287,7 +309,7 @@ export const MyChart = (props: {
                     <path stroke="none" d="M0 0h24v24H0z" fill="none" />
                     <path d="M10.708 2.372a2.382 2.382 0 0 0 -.71 .686l-4.892 7.26c-1.981 3.314 -1.22 7.466 1.767 9.882c2.969 2.402 7.286 2.402 10.254 0c2.987 -2.416 3.748 -6.569 1.795 -9.836l-4.919 -7.306c-.722 -1.075 -2.192 -1.376 -3.295 -.686z" />
                   </svg>
-                </>
+                </React.Fragment>
               );
             })}
 
@@ -336,47 +358,58 @@ export const MyChart = (props: {
               </g>
             )}
           </Group>
-          <Group top={yBrushRangeStart} left={xRangeStart}>
-            <RectClipPath
-              id="brushClip"
-              width={xRangeWidth}
-              height={brushHeight}
-            />
-            <LinePath<Check>
-              data={checkHistory}
-              width={xRangeWidth}
-              height={brushHeight}
-              x={(d) => brushDateScale(checkAccessors.xAccessor(d))}
-              y={(d) => brushWetnessScale(checkAccessors.yAccessor(d))}
-              stroke={purple1}
-              strokeWidth={2}
-              curve={curveLinear}
-              clipPath="url(#brushClip)"
-            />
-            <Brush
-              xScale={brushDateScale}
-              yScale={brushWetnessScale}
-              width={xRangeWidth}
-              height={brushHeight}
-              handleSize={8}
-              innerRef={brushRef}
-              resizeTriggerAreas={["left", "right"]}
-              brushDirection="horizontal"
-              initialBrushPosition={initialBrushPosition}
-              onChange={onBrushChange}
-              selectedBoxStyle={{
-                ...Brush.defaultProps.selectedBoxStyle,
-                rx: 5,
-              }}
-              onClick={(event) => {
-                event.preventDefault();
-                event.stopPropagation();
-                setFilteredCheckHistory(checkHistory);
-              }}
-              useWindowMoveEvents
-              renderBrushHandle={(props) => <BrushHandle {...props} />}
-            />
-          </Group>
+          {mediaQueries["sm"] ? (
+            <Group top={yBrushRangeStart} left={xRangeStart}>
+              <rect
+                x={0}
+                y={0}
+                width={xRangeWidth}
+                height={brushHeight}
+                fill={background}
+                rx={14}
+              />
+              <RectClipPath
+                id="brushClip"
+                width={xRangeWidth}
+                height={brushHeight}
+                rx={14}
+              />
+              <LinePath<Check>
+                data={checkHistory}
+                width={xRangeWidth}
+                height={brushHeight}
+                x={(d) => brushDateScale(checkAccessors.xAccessor(d))}
+                y={(d) => brushWetnessScale(checkAccessors.yAccessor(d))}
+                stroke={purple1}
+                strokeWidth={2}
+                curve={curveLinear}
+                clipPath="url(#brushClip)"
+              />
+              <Brush
+                xScale={brushDateScale}
+                yScale={brushWetnessScale}
+                width={xRangeWidth}
+                height={brushHeight}
+                handleSize={8}
+                innerRef={brushRef}
+                resizeTriggerAreas={["left", "right"]}
+                brushDirection="horizontal"
+                initialBrushPosition={initialBrushPosition}
+                onChange={onBrushChange}
+                selectedBoxStyle={{
+                  ...Brush.defaultProps.selectedBoxStyle,
+                  rx: 5,
+                }}
+                onClick={(event) => {
+                  event.preventDefault();
+                  event.stopPropagation();
+                  setFilteredCheckHistory(checkHistory);
+                }}
+                useWindowMoveEvents
+                renderBrushHandle={(props) => <BrushHandle {...props} />}
+              />
+            </Group>
+          ) : null}
         </svg>
         {tooltipData && (
           <div>
@@ -406,6 +439,37 @@ export const MyChart = (props: {
           </div>
         )}
       </div>
+      <div className="flex flex-col px-4 py-2 items-center">
+        {mediaQueries["sm"] ? null : (
+          <Slider
+            aria-label="Discrete slider"
+            color="primary"
+            value={[brushBounds.x0, brushBounds.x1]}
+            onChange={(numbers) => {
+              setBrushBounds({
+                ...brushBounds,
+                x0: numbers[0],
+                x1: numbers[1],
+              });
+            }}
+            minValue={brushDateScale.domain()[0].getTime()}
+            maxValue={brushDateScale.domain()[1].getTime()}
+            step={1000000}
+          />
+        )}
+        <Tabs
+          className="mt-2"
+          aria-label="data range selection"
+          size={mediaQueries["sm"] ? "lg" : "sm"}
+          selectedKey={dataRangeSelection}
+          onSelectionChange={(key) => setDataRangeSelection(key as any)}
+        >
+          <Tab key="month" title="Month" />
+          <Tab key="3month" title="3 Months" />
+          <Tab key="year" title="Year" />
+          <Tab key="alltime" title="All Time" />
+        </Tabs>
+      </div>
     </div>
   );
 };
@@ -420,10 +484,10 @@ const BrushHandle = ({ x, height, isBrushActive }: BrushHandleRenderProps) => {
   return (
     <Group left={x + pathWidth / 2} top={(height - pathHeight) / 2}>
       <rect
-        x={-4}
-        y={-5}
-        width={8}
-        height={25}
+        x={-7}
+        y={-10}
+        width={14}
+        height={35}
         fill="#f2f2f2"
         stroke="#999999"
         strokeWidth="1"

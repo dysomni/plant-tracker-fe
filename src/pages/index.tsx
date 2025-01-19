@@ -8,7 +8,7 @@ import { useContext, useMemo, useState } from "react";
 import dayjs from "dayjs";
 import relativeTime from "dayjs/plugin/relativeTime";
 import { Button } from "@nextui-org/button";
-import { Image, Link, Tooltip } from "@nextui-org/react";
+import { Divider, Image, Link, Tooltip } from "@nextui-org/react";
 import { useImagePreview } from "../components/image-preview";
 import { ReminderWithPlantInfo } from "../generated/api/plantsSchemas";
 import { usePageLoading } from "../components/page-loading";
@@ -71,7 +71,14 @@ export default function IndexPage() {
           </div>
         </div>
         <div className="flex flex-col gap-4 w-full">
-          {[...overdueReminders, ...upcomingReminders].map((reminder) => (
+          {overdueReminders.map((reminder) => (
+            <ReminderCard
+              reminder={reminder}
+              key={reminder.reminder.id}
+              reload={() => refetch({})}
+            />
+          ))}
+          {upcomingReminders.map((reminder) => (
             <ReminderCard
               reminder={reminder}
               key={reminder.reminder.id}

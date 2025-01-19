@@ -1,3 +1,12 @@
+# TODO
+
+- finish list pages for
+- - reminders
+- - checks
+- - waterings
+- quick water button
+- buttons for the graph
+
 # Vite & NextUI Template
 
 This is a template for creating applications using Vite and NextUI (v2).
