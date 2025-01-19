@@ -212,7 +212,7 @@ export type UpdatePlantV1PlantsPlantIdPatchError = Fetcher.ErrorWrapper<
 >;
 
 export type UpdatePlantV1PlantsPlantIdPatchVariables = {
-  body?: Schemas.UpdatePlantRequest;
+  body: Schemas.UpdatePlantRequest;
   pathParams: UpdatePlantV1PlantsPlantIdPatchPathParams;
 } & PlantsContext["fetcherOptions"];
 

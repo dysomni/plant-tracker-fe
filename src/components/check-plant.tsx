@@ -11,6 +11,7 @@ import {
   Textarea,
   Button,
   CircularProgress,
+  Chip,
 } from "@nextui-org/react";
 import { now, getLocalTimeZone, fromDate } from "@internationalized/date";
 import {
@@ -97,6 +98,14 @@ export const CheckPlantDrawer = (props: {
     ).diff(secondLastWatering.watering_date, "hour");
 
     if (watered) {
+      if (plant.plant.default_watering_interval_days) {
+        setNextCheckDate(
+          dayjsToDateValue(
+            lastWatering.add(plant.plant.default_watering_interval_days, "day")
+          )
+        );
+        return;
+      }
       setNextCheckDate(
         dayjsToDateValue(dayjs().add(hoursSinceLastWatering * 0.85, "hour"))
       );
@@ -246,7 +255,7 @@ export const CheckPlantDrawer = (props: {
             ]}
           />
           <div
-            className={`flex flex-col ${watered ? "gap-5" : "gap-0"}`}
+            className={`flex flex-col ${watered ? "gap-3" : "gap-0"}`}
             style={{ transition: "gap 0.2s ease-in-out" }}
           >
             <Checkbox
@@ -258,6 +267,21 @@ export const CheckPlantDrawer = (props: {
             >
               Will the plant be watered?
             </Checkbox>
+            {plant?.plant.default_watering_interval_days && (
+              <div
+                className={`${watered ? "h-7" : "h-0"} overflow-hidden`}
+                style={{ transition: "height 0.2s ease-in-out" }}
+              >
+                <Chip
+                  color="success"
+                  variant="solid"
+                  startContent={<IconDropletFilled size={15} />}
+                >
+                  This plant's default watering interval is{" "}
+                  {plant?.plant.default_watering_interval_days} days
+                </Chip>
+              </div>
+            )}
             <div
               className={`${watered ? "h-6" : "h-0"} overflow-hidden`}
               style={{ transition: "height 0.2s ease-in-out" }}
@@ -300,8 +324,8 @@ export const CheckPlantDrawer = (props: {
             showMonthAndYearPickers
             value={overrideDate}
             onChange={(date) => date && setOverrideDate(date)}
-            label="Override Date"
-            description="Set the date of this check to be something else"
+            label="This Check Occurred On"
+            description="Change this if you want to backfill a check or watering you did in the past."
             variant="bordered"
           />
         </DrawerBody>

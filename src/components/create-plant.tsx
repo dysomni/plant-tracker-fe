@@ -33,6 +33,7 @@ export const createPlantSchema = z.object({
   scientific_name: z.string().min(1),
   location_id: z.string().min(1),
   notes: z.string(),
+  default_watering_interval_days: z.number().nullable(),
 });
 
 export const CreatePlantDrawer = (props: {
@@ -50,11 +51,13 @@ export const CreatePlantDrawer = (props: {
     scientific_name: string;
     location_id: string;
     notes: string;
+    default_watering_interval_days: number | null;
   }>({
     name: "",
     scientific_name: "",
     location_id: "",
     notes: "",
+    default_watering_interval_days: null,
   });
 
   useEffect(() => {
@@ -64,6 +67,7 @@ export const CreatePlantDrawer = (props: {
         scientific_name: "",
         location_id: "",
         notes: "",
+        default_watering_interval_days: null,
       });
       setValidationErrors({});
     } else {
@@ -72,6 +76,8 @@ export const CreatePlantDrawer = (props: {
         scientific_name: editPlant?.scientific_name || "",
         location_id: editPlant?.location_id || "",
         notes: editPlant?.notes || "",
+        default_watering_interval_days:
+          editPlant?.default_watering_interval_days || null,
       });
     }
   }, [open, editPlant]);
@@ -192,6 +198,21 @@ export const CreatePlantDrawer = (props: {
                 setFormState((prev) => ({ ...prev, notes }))
               }
               description="Any additional care details, thoughts, etc."
+            />
+            <Input
+              label="Default Watering Interval (Days)"
+              name="default_watering_interval_days"
+              type="number"
+              value={formState.default_watering_interval_days?.toString() || ""}
+              onValueChange={(default_watering_interval_days) =>
+                setFormState((prev) => ({
+                  ...prev,
+                  default_watering_interval_days: default_watering_interval_days
+                    ? +default_watering_interval_days
+                    : null,
+                }))
+              }
+              description="The default number of days between waterings. Set to 0 to reset."
             />
           </DrawerBody>
           <DrawerFooter>
