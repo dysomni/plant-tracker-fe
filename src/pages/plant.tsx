@@ -10,15 +10,15 @@ import {
 } from "../generated/api/plantsComponents";
 import { useAuthErrorRedirect } from "../auth";
 import { usePageLoading } from "../components/page-loading";
-import {
-  BasicPlantInfoResponseModel,
-  Plant,
-} from "../generated/api/plantsSchemas";
+import { Plant } from "../generated/api/plantsSchemas";
+import { now, getLocalTimeZone } from "@internationalized/date";
 import dayjs from "dayjs";
 import {
   Button,
   Checkbox,
   CircularProgress,
+  DatePicker,
+  DateValue,
   Divider,
   Drawer,
   DrawerBody,
@@ -29,10 +29,11 @@ import {
   Input,
   Link,
   Modal,
-  ModalBody,
   ModalContent,
   ModalFooter,
   ModalHeader,
+  Select,
+  SelectItem,
   Tab,
   Tabs,
   Textarea,
@@ -43,24 +44,26 @@ import {
   PlantWateringBadge,
   PlantWetnessBadge,
 } from "../components/badges";
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import {
   IconArchiveFilled,
+  IconBell,
   IconCamera,
+  IconDropletFilled,
   IconEdit,
-  IconPlus,
   IconRestore,
   IconRuler2,
+  IconSortDescending2,
   IconSparkles,
   IconTrash,
 } from "@tabler/icons-react";
 import { useMediaQueries } from "../components/responsive-hooks";
 import { CreatePlantDrawer } from "../components/create-plant";
 import { useParams } from "react-router-dom";
-import { unwrap } from "../util";
+import { removeTimeZoneBracketFromDatetime, unwrap } from "../util";
 import { useToast } from "../toast";
 import { CheckPlantDrawer } from "../components/check-plant";
-import { set } from "zod";
+import { MyChart } from "../components/history-graph";
 
 export default function PlantPage() {
   const plantId = useParams<{ plantId: string }>().plantId;
@@ -88,6 +91,7 @@ export default function PlantPage() {
   const mediaQueries = useMediaQueries();
   const [editPlantDrawerOpen, setEditPlantDrawerOpen] = useState(false);
   const [addPhotoOpen, setAddPhotoOpen] = useState(false);
+  const [sorting, setSorting] = useState<"new" | "old">("new");
 
   const handleArchive = async (archive: boolean = true) => {
     await fetchUpdatePlantV1PlantsPlantIdPatch({
@@ -98,8 +102,18 @@ export default function PlantPage() {
     setArchiveModalOpen(false);
   };
 
-  const tabContainerClass =
-    "w-full flex flex-col gap-2 justify-start border-2 rounded-xl shadow-md border-gray-100 dark:border-gray-800 min-h-full p-6";
+  const sortedPhotos = useMemo(() => {
+    if (!photoData) return [];
+    const sorted = [...photoData.photos].sort((a, b) => {
+      const dateA = dayjs(a.photo.photo_date);
+      const dateB = dayjs(b.photo.photo_date);
+      return sorting === "new" ? dateB.diff(dateA) : dateA.diff(dateB);
+    });
+    return sorted;
+  }, [photoData, sorting]);
+
+  const borderColor = "border-gray-100 dark:border-gray-800";
+  const tabContainerClass = `w-full flex flex-col gap-2 justify-start border-2 rounded-xl shadow-md ${borderColor} min-h-full`;
 
   return (
     <DefaultLayout>
@@ -208,7 +222,7 @@ export default function PlantPage() {
           >
             <Tab title="Details">
               <div className={tabContainerClass}>
-                <div className="flex flex-col sm:flex-row gap-6">
+                <div className="flex flex-col sm:flex-row gap-6 p-6">
                   <div className="flex flex-col items-center shrink-0">
                     <Image
                       className="rounded-xl"
@@ -239,12 +253,69 @@ export default function PlantPage() {
               </div>
             </Tab>
             <Tab title="History">
-              <div className={tabContainerClass}></div>
+              <div className={tabContainerClass}>
+                <div className="p-3 sm:p-6 flex flex-col gap-4">
+                  <div className="flex gap-3 self-center flex-wrap justify-center">
+                    <Button
+                      size="sm"
+                      as={Link}
+                      href={`/plants/${plantId}/reminders`}
+                      startContent={<IconBell size={15} />}
+                    >
+                      See All Reminders
+                    </Button>
+                    <Button
+                      size="sm"
+                      as={Link}
+                      href={`/plants/${plantId}/checks`}
+                      startContent={<IconRuler2 size={15} />}
+                    >
+                      See All Checks
+                    </Button>
+                    <Button
+                      size="sm"
+                      as={Link}
+                      href={`/plants/${plantId}/waterings`}
+                      startContent={<IconDropletFilled size={15} />}
+                    >
+                      See All Waterings
+                    </Button>
+                  </div>
+                  {data && (
+                    <MyChart
+                      waterHistory={data.waterings}
+                      checkHistory={data.checks}
+                    />
+                  )}
+                </div>
+              </div>
             </Tab>
             <Tab title="Photos">
               <div className={tabContainerClass}>
-                <div className="flex flex-row flex-wrap gap-2 w-full justify-center">
-                  {photoData?.photos.map((photo) => (
+                <div
+                  className={`border-b-2 rounded-md ${borderColor} bg-slate-50 dark:bg-slate-800 py-1 px-4 flex justify-end`}
+                >
+                  <Select
+                    className="max-w-40"
+                    size="sm"
+                    aria-label="Sort Photos By"
+                    startContent={<IconSortDescending2 />}
+                    selectedKeys={[sorting]}
+                    onSelectionChange={(option) => {
+                      setSorting(
+                        (option.currentKey ?? sorting) as typeof sorting
+                      );
+                    }}
+                  >
+                    <SelectItem key="new">Newest First</SelectItem>
+                    <SelectItem key="old">Oldest First</SelectItem>
+                  </Select>
+                </div>
+                <div className="flex flex-row flex-wrap gap-2 w-full justify-center p-6 pt-2">
+                  {sortedPhotos.length === 0 && (
+                    <p className="italic">No photos taken yet.</p>
+                  )}
+                  {sortedPhotos.map((photo) => (
                     <div
                       key={photo.photo.id}
                       className="flex flex-col gap-1 items-center border-2 rounded-xl p-1 shadow-md border-gray-100 dark:border-gray-800"
@@ -388,6 +459,9 @@ const AddPhotoDrawer = (props: {
   const [uploadedFile, setUploadedFile] = useState<File | null>(null);
   const [coverSelected, setCoverSelected] = useState(false);
   const [notes, setNotes] = useState("");
+  const [overrideDate, setOverrideDate] = useState<DateValue>(
+    now(getLocalTimeZone())
+  );
   const toast = useToast();
 
   const handleUpload = async () => {
@@ -399,7 +473,9 @@ const AddPhotoDrawer = (props: {
         body: {
           plant_id: unwrap(plant.id),
           photo_type: uploadedFile.type,
-          photo_date: new Date().toISOString(),
+          photo_date: removeTimeZoneBracketFromDatetime(
+            overrideDate.toString()
+          ),
           cover_photo: coverSelected,
           notes: notes,
         },
@@ -425,7 +501,6 @@ const AddPhotoDrawer = (props: {
       setLoading(false);
     } catch (error) {
       setLoading(false);
-      console.log(error);
       toast({
         message: "Failed to upload photo.",
         type: "danger",
@@ -477,6 +552,14 @@ const AddPhotoDrawer = (props: {
                 onValueChange={setNotes}
                 placeholder="Add notes about the photo..."
                 isDisabled={loading}
+              />
+              <DatePicker
+                showMonthAndYearPickers
+                value={overrideDate}
+                onChange={(date) => date && setOverrideDate(date)}
+                label="Override Date"
+                description="Set the date of this photo to be something else"
+                variant="bordered"
               />
             </DrawerBody>
             <DrawerFooter>
