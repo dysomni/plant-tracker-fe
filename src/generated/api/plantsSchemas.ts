@@ -199,6 +199,7 @@ export type Plant = {
    */
   archived?: boolean;
   archived_at?: string | null;
+  default_watering_interval_days?: number | null;
 };
 
 export type PlantPhotoWithPresignedUrl = {
