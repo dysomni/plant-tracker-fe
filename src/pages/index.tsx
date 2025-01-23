@@ -13,7 +13,11 @@ import { useImagePreview } from "../components/image-preview";
 import { ReminderWithPlantInfo } from "../generated/api/plantsSchemas";
 import { usePageLoading } from "../components/page-loading";
 import { PlantWateringBadge, PlantWetnessBadge } from "../components/badges";
-import { IconRuler2, IconTrash } from "@tabler/icons-react";
+import {
+  IconClockHour7Filled,
+  IconRuler2,
+  IconTrash,
+} from "@tabler/icons-react";
 import { pluralize, unwrap } from "../util";
 import { useToast } from "../toast";
 import { CheckPlantDrawer } from "../components/check-plant";
@@ -103,6 +107,7 @@ const ReminderCard = ({
   const toast = useToast();
 
   const [plantToCheck, setPlantToCheck] = useState<string | undefined>();
+  const [quickWater, setQuickWater] = useState(false);
 
   const reminderTextColor = useMemo(() => {
     const now = dayjs();
@@ -147,10 +152,14 @@ const ReminderCard = ({
       {plantToCheck ? (
         <CheckPlantDrawer
           plantToCheck={plantToCheck}
-          onClose={() => setPlantToCheck(undefined)}
+          onClose={() => {
+            setPlantToCheck(undefined);
+            setQuickWater(false);
+          }}
           onCheckDone={async () => {
             await reload();
           }}
+          quickWater={quickWater}
         />
       ) : null}
       <div className="flex gap-6 items-left sm:items-center flex-col sm:flex-row grow">
@@ -213,25 +222,24 @@ const ReminderCard = ({
             Check
           </Button>
         ) : null}
-        <Button
-          size="sm"
-          variant="flat"
-          color="danger"
-          className="font-bold"
-          startContent={<IconTrash size={20} />}
-          onPress={async () => {
-            try {
-              await fetchDeleteReminderV1RemindersReminderIdDelete({
-                pathParams: { reminderId: unwrap(reminder.reminder.id) },
-              });
-              reload();
-            } catch (error) {
-              toast({ message: "Failed to delete reminder.", duration: 5000 });
-            }
-          }}
-        >
-          Delete
-        </Button>
+        {reminder.reminder.reminder_type === "check" &&
+        reminder.plant_info.plant.default_watering_interval_days ? (
+          <Button
+            size="sm"
+            variant="flat"
+            color="primary"
+            className="font-bold"
+            startContent={<IconClockHour7Filled size={20} />}
+            onPress={() => {
+              setQuickWater(true);
+              setTimeout(() => {
+                setPlantToCheck(unwrap(reminder.plant_info.plant.id));
+              }, 50);
+            }}
+          >
+            Quick Water
+          </Button>
+        ) : null}
       </div>
     </div>
   );

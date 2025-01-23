@@ -6,6 +6,11 @@
 - - waterings
 - quick water button
 - buttons for the graph
+- style the graph
+- improve the home page styling
+- - include sections
+- reschedule button
+- get plant burndown wetness calculation (api side maybe?)
 
 # Vite & NextUI Template
 

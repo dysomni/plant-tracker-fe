@@ -21,7 +21,6 @@ import {
   fetchWaterPlantV1PlantsPlantIdWaterPost,
   useGetPlantV1PlantsPlantIdGet,
 } from "../generated/api/plantsComponents";
-import { usePageLoading } from "./page-loading";
 import { useAuthErrorRedirect } from "../auth";
 import { useToast } from "../toast";
 import { useEffect, useMemo, useState } from "react";
@@ -42,11 +41,12 @@ export const CheckPlantDrawer = (props: {
   plantToCheck: string;
   onClose: () => void;
   onCheckDone?: () => Promise<void>;
+  quickWater?: boolean;
 }) => {
-  const { plantToCheck, onClose, onCheckDone } = props;
+  const { plantToCheck, onClose, onCheckDone, quickWater } = props;
 
-  const [wetness, setWetness] = useState(3);
-  const [watered, setWatered] = useState(false);
+  const [wetness, setWetness] = useState(quickWater ? 1 : 3);
+  const [watered, setWatered] = useState(quickWater ? true : false);
   const [wateredTouched, setWateredTouched] = useState(false);
   const [bottomWatered, setBottomWatered] = useState(false);
   const [notes, setNotes] = useState("");
@@ -267,7 +267,7 @@ export const CheckPlantDrawer = (props: {
             >
               Will the plant be watered?
             </Checkbox>
-            {plant?.plant.default_watering_interval_days && (
+            {plant?.plant.default_watering_interval_days ? (
               <div
                 className={`${watered ? "h-7" : "h-0"} overflow-hidden`}
                 style={{ transition: "height 0.2s ease-in-out" }}
@@ -281,7 +281,7 @@ export const CheckPlantDrawer = (props: {
                   {plant?.plant.default_watering_interval_days} days
                 </Chip>
               </div>
-            )}
+            ) : null}
             <div
               className={`${watered ? "h-6" : "h-0"} overflow-hidden`}
               style={{ transition: "height 0.2s ease-in-out" }}
@@ -296,7 +296,7 @@ export const CheckPlantDrawer = (props: {
           </div>
           <div className="flex flex-col gap-3">
             <p className="font-bold text-lg">
-              Next {watered ? "Watering" : "Check"} in {nextCheckDaysRounded}{" "}
+              Next Reminder in {nextCheckDaysRounded}{" "}
               {pluralize(nextCheckDaysRounded, "day", "days")}
             </p>
             <DatePicker

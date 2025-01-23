@@ -10,6 +10,7 @@ import {
 import { Alert } from "@nextui-org/react";
 import { AuthContext } from "../auth";
 import { useNavigate } from "react-router-dom";
+import { usePageLoading } from "../components/page-loading";
 
 export const LoginPage = () => {
   const navigate = useNavigate();
@@ -22,6 +23,7 @@ export const LoginPage = () => {
   const disabled = userInput === "" || passwordInput === "" || loginLoading;
 
   const authContext = useContext(AuthContext);
+  usePageLoading(false);
   useEffect(() => {
     if (authContext.user) {
       navigate("/"); // TODO: navigate to the previous path
