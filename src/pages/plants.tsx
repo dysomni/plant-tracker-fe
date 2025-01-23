@@ -4,7 +4,7 @@ import { useAuthErrorRedirect } from "../auth";
 import { usePageLoading } from "../components/page-loading";
 import { BasicPlantInfoResponseModel } from "../generated/api/plantsSchemas";
 import dayjs from "dayjs";
-import { Button, Image, Input, Link } from "@nextui-org/react";
+import { Button, Card, Image, Input, Link } from "@nextui-org/react";
 import { useImagePreview } from "../components/image-preview";
 import {
   PlantLatestReminderBadge,
@@ -114,7 +114,7 @@ const PlantCard = ({
       : null;
 
   return (
-    <div className="flex flex-col sm:flex-row gap-6 sm:gap-0 border-2 p-4 rounded-lg items-center justify-center sm:justify-between shadow-lg dark:black max-h-72">
+    <Card className="flex flex-col sm:flex-row gap-6 sm:gap-0 p-4 rounded-lg items-center justify-center sm:justify-between shadow-lg max-h-72 border-1 dark:border-0">
       {checking ? (
         <CheckPlantDrawer
           plantToCheck={unwrap(plant.plant.id)}
@@ -167,6 +167,6 @@ const PlantCard = ({
           Check
         </Button>
       </div>
-    </div>
+    </Card>
   );
 };

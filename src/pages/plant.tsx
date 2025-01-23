@@ -15,6 +15,7 @@ import { now, getLocalTimeZone } from "@internationalized/date";
 import dayjs from "dayjs";
 import {
   Button,
+  Card,
   Checkbox,
   CircularProgress,
   DatePicker,
@@ -112,8 +113,7 @@ export default function PlantPage() {
     return sorted;
   }, [photoData, sorting]);
 
-  const borderColor = "border-gray-100 dark:border-gray-800";
-  const tabContainerClass = `w-full flex flex-col gap-2 justify-start border-2 rounded-xl shadow-md ${borderColor} min-h-full`;
+  const tabContainerClass = `w-full flex flex-col gap-2 justify-start border-1 dark:border-0 rounded-xl min-h-full`;
 
   return (
     <DefaultLayout>
@@ -221,7 +221,7 @@ export default function PlantPage() {
             size="lg"
           >
             <Tab title="Details">
-              <div className={tabContainerClass}>
+              <Card className={tabContainerClass}>
                 <div className="flex flex-col sm:flex-row gap-6 p-6">
                   <div className="flex flex-col items-center shrink-0">
                     <Image
@@ -250,10 +250,10 @@ export default function PlantPage() {
                     </div>
                   </div>
                 </div>
-              </div>
+              </Card>
             </Tab>
             <Tab title="History">
-              <div className={tabContainerClass}>
+              <Card className={tabContainerClass}>
                 <div className="p-3 sm:p-6 flex flex-col gap-4">
                   <div className="flex gap-3 self-center flex-wrap justify-center">
                     <Button
@@ -288,12 +288,12 @@ export default function PlantPage() {
                     />
                   )}
                 </div>
-              </div>
+              </Card>
             </Tab>
             <Tab title="Photos">
-              <div className={tabContainerClass}>
+              <Card className={tabContainerClass}>
                 <div
-                  className={`border-b-2 rounded-md ${borderColor} bg-slate-50 dark:bg-slate-800 py-1 px-4 flex justify-end`}
+                  className={`border-b-1 rounded-xl border-foreground-300 py-2 px-6 flex justify-end`}
                 >
                   <Select
                     className="max-w-40"
@@ -318,7 +318,7 @@ export default function PlantPage() {
                   {sortedPhotos.map((photo) => (
                     <div
                       key={photo.photo.id}
-                      className="flex flex-col gap-1 items-center border-2 rounded-xl p-1 shadow-md border-gray-100 dark:border-gray-800"
+                      className="flex flex-col gap-1 items-center border-2 rounded-xl p-1 shadow-md border-foreground-200"
                     >
                       <Image
                         className="cursor-pointer"
@@ -372,7 +372,7 @@ export default function PlantPage() {
                     </div>
                   ))}
                 </div>
-              </div>
+              </Card>
             </Tab>
           </Tabs>
         </div>

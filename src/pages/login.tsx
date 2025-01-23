@@ -32,7 +32,6 @@ export const LoginPage = () => {
 
   return (
     <DefaultLayout>
-      {/* <section className="flex flex-col items-center justify-center gap-4 py-8 md:py-10"> */}
       <Card className="text-center justify-center p-10 gap-5 max-w-screen-sm lg:max-w-screen-md w-full">
         <h1 className="text-3xl font-bold">Login</h1>
         <div className="flex flex-col gap-3">

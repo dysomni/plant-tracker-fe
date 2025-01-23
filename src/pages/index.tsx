@@ -8,7 +8,7 @@ import { useContext, useMemo, useState } from "react";
 import dayjs from "dayjs";
 import relativeTime from "dayjs/plugin/relativeTime";
 import { Button } from "@nextui-org/button";
-import { Divider, Image, Link, Tooltip } from "@nextui-org/react";
+import { Card, Divider, Image, Link, Tooltip } from "@nextui-org/react";
 import { useImagePreview } from "../components/image-preview";
 import { ReminderWithPlantInfo } from "../generated/api/plantsSchemas";
 import { usePageLoading } from "../components/page-loading";
@@ -33,7 +33,21 @@ export default function IndexPage() {
   const overdueReminders = useMemo(
     () =>
       data?.reminders.filter(
-        (reminder) => reminder.reminder.reminder_date < new Date().toISOString()
+        (reminder) =>
+          reminder.reminder.reminder_date <
+          dayjs().subtract(1, "day").toISOString()
+      ) ?? [],
+    [data]
+  );
+
+  const recentReminders = useMemo(
+    () =>
+      data?.reminders.filter(
+        (reminder) =>
+          reminder.reminder.reminder_date >=
+            dayjs().subtract(1, "day").toISOString() &&
+          reminder.reminder.reminder_date <
+            dayjs().add(12, "hours").toISOString()
       ) ?? [],
     [data]
   );
@@ -42,7 +56,8 @@ export default function IndexPage() {
     () =>
       data?.reminders.filter(
         (reminder) =>
-          reminder.reminder.reminder_date >= new Date().toISOString()
+          reminder.reminder.reminder_date >=
+          dayjs().add(12, "hours").toISOString()
       ) ?? [],
     [data]
   );
@@ -60,21 +75,20 @@ export default function IndexPage() {
           <div className="inline-block max-w-96 sm:max-w-lg text-right self-end sm:self-auto">
             <span className="text-lg whitespace-nowrap">You have&nbsp;</span>
             <span className="text-xl text-amber-800 dark:text-amber-400 font-extrabold whitespace-nowrap">
-              {overdueReminders.length} overdue&nbsp;
+              {overdueReminders.length + recentReminders.length}{" "}
+              outstanding&nbsp;
             </span>
             <span className="text-lg">
-              {pluralize(overdueReminders.length, "reminder", "reminders")}{" "}
-              and&nbsp;
-            </span>
-            <span className="text-xl text-emerald-700 dark:text-emerald-400 font-extrabold whitespace-nowrap">
-              {upcomingReminders.length} upcoming&nbsp;
-            </span>
-            <span className="text-lg">
-              {pluralize(upcomingReminders.length, "reminder", "reminders")}
+              {pluralize(
+                overdueReminders.length + recentReminders.length,
+                "reminder",
+                "reminders"
+              )}
             </span>
           </div>
         </div>
         <div className="flex flex-col gap-4 w-full">
+          {overdueReminders.length ? <OverdueSectionStarter /> : null}
           {overdueReminders.map((reminder) => (
             <ReminderCard
               reminder={reminder}
@@ -82,6 +96,22 @@ export default function IndexPage() {
               reload={() => refetch({})}
             />
           ))}
+          {recentReminders.length ? <RecentSectionStarter /> : null}
+          {recentReminders.map((reminder) => (
+            <ReminderCard
+              reminder={reminder}
+              key={reminder.reminder.id}
+              reload={() => refetch({})}
+            />
+          ))}
+          {!overdueReminders.length && !recentReminders.length ? (
+            <Card className="h-10 flex items-center justify-center rounded-md shadow-md bg-success-50 border-1 dark:border-0">
+              <div className="text-center text-md italic font-bold">
+                All caught up!
+              </div>
+            </Card>
+          ) : null}
+          {upcomingReminders.length ? <UpcomingSectionStarter /> : null}
           {upcomingReminders.map((reminder) => (
             <ReminderCard
               reminder={reminder}
@@ -115,15 +145,15 @@ const ReminderCard = ({
 
     switch (true) {
       case diffInMinutes <= 15:
-        return "text-green-600 dark:text-green-400";
+        return "text-success-600";
       case diffInMinutes <= 60:
-        return "text-yellow-600 dark:text-yellow-400";
+        return "text-warning-500";
       case diffInMinutes <= 1440:
-        return "text-orange-600 dark:text-orange-400";
+        return "text-warning-700";
       case diffInMinutes <= 2880:
-        return "text-red-600 dark:text-red-200";
+        return "text-danger-600";
       default:
-        return "text-red-800 dark:text-red-400";
+        return "text-danger-600";
     }
   }, [reminderDate]);
 
@@ -146,9 +176,7 @@ const ReminderCard = ({
   }, [reminderDate]);
 
   return (
-    <div
-      className={`flex gap-6 border-2 ${reminderBorderColor} p-4 rounded-lg items-center shadow-lg dark:black`}
-    >
+    <Card className="flex flex-row gap-6 p-4 rounded-lg items-center shadow-lg border-1 dark:border-0">
       {plantToCheck ? (
         <CheckPlantDrawer
           plantToCheck={plantToCheck}
@@ -241,6 +269,36 @@ const ReminderCard = ({
           </Button>
         ) : null}
       </div>
+    </Card>
+  );
+};
+
+const OverdueSectionStarter = () => {
+  return (
+    <div className="flex flex-row gap-4 w-full items-center pt-2">
+      <Divider className="grow w-auto" />
+      <h2 className="text-sm font-bold">Overdue</h2>
+      <Divider className="grow w-auto" />
+    </div>
+  );
+};
+
+const RecentSectionStarter = () => {
+  return (
+    <div className="flex flex-row gap-4 w-full items-center pt-2">
+      <Divider className="grow w-auto" />
+      <h2 className="text-sm font-bold">Recent</h2>
+      <Divider className="grow w-auto" />
+    </div>
+  );
+};
+
+const UpcomingSectionStarter = () => {
+  return (
+    <div className="flex flex-row gap-4 w-full items-center pt-2">
+      <Divider className="grow w-auto" />
+      <h2 className="text-sm font-bold">Upcoming</h2>
+      <Divider className="grow w-auto" />
     </div>
   );
 };
