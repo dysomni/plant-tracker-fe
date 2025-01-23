@@ -140,7 +140,6 @@ export default function PlantPage() {
             <Link href={`/plants/${data?.plant.id}`} color="success">
               <div className="font-extrabold text-3xl">{data?.plant.name}</div>
             </Link>
-            {/* <div className="font-bold">{data?.location.name}</div> */}
           </div>
           <div className="flex flex-row items-center justify-center sm:justify-end gap-1 flex-wrap">
             <PlantLatestReminderBadge

@@ -151,9 +151,9 @@ const ReminderCard = ({
       case diffInMinutes <= 1440:
         return "text-warning-700";
       case diffInMinutes <= 2880:
-        return "text-danger-600";
+        return "text-danger-500";
       default:
-        return "text-danger-600";
+        return "text-danger-500";
     }
   }, [reminderDate]);
 
@@ -176,7 +176,7 @@ const ReminderCard = ({
   }, [reminderDate]);
 
   return (
-    <Card className="flex flex-row gap-6 p-4 rounded-lg items-center shadow-lg border-1 dark:border-0">
+    <Card className="flex flex-col sm:flex-row gap-6 p-4 rounded-lg items-center shadow-lg border-1 dark:border-0">
       {plantToCheck ? (
         <CheckPlantDrawer
           plantToCheck={plantToCheck}
@@ -190,50 +190,46 @@ const ReminderCard = ({
           quickWater={quickWater}
         />
       ) : null}
-      <div className="flex gap-6 items-left sm:items-center flex-col sm:flex-row grow">
-        <div className="flex gap-6 items-center">
-          {reminder.plant_info.cover_photo_url ? (
-            <Image
-              src={reminder.plant_info.cover_photo_url}
-              alt={reminder.plant_info.plant.name}
-              height={80}
-              className="rounded-large hover:cursor-pointer"
-              onClick={() =>
-                imagePreview.setPreview({
-                  src: reminder.plant_info.cover_photo_url!,
-                  plantName: reminder.plant_info.plant.name,
-                  locationName: reminder.plant_info.location.name,
-                })
-              }
-            />
-          ) : null}
-          <div className="flex flex-col gap-1 items-left">
-            <Tooltip content={reminderDate.format("MMMM D, YYYY h:mm A")}>
-              <h3 className={`text-lg font-bold ${reminderTextColor}`}>
-                {reminderDate.fromNow()}
-              </h3>
-            </Tooltip>
-            <div className="flex flex-col gap-0">
-              <Link
-                href={`/plants/${reminder.plant_info.plant.id}`}
-                color="primary"
-              >
-                <span className="text-md font-bold">
-                  {reminder.plant_info.plant.name}
-                </span>
-              </Link>
-              <span className="text-sm">
-                {reminder.plant_info.location.name}
+      <div className="flex gap-6 items-center self-start">
+        {reminder.plant_info.cover_photo_url ? (
+          <Image
+            src={reminder.plant_info.cover_photo_url}
+            alt={reminder.plant_info.plant.name}
+            height={80}
+            className="rounded-large hover:cursor-pointer"
+            onClick={() =>
+              imagePreview.setPreview({
+                src: reminder.plant_info.cover_photo_url!,
+                plantName: reminder.plant_info.plant.name,
+                locationName: reminder.plant_info.location.name,
+              })
+            }
+          />
+        ) : null}
+        <div className="flex flex-col gap-1 items-left">
+          <Tooltip content={reminderDate.format("MMMM D, YYYY h:mm A")}>
+            <h3 className={`text-lg font-bold ${reminderTextColor}`}>
+              {reminderDate.fromNow()}
+            </h3>
+          </Tooltip>
+          <div className="flex flex-col gap-0">
+            <Link
+              href={`/plants/${reminder.plant_info.plant.id}`}
+              color="primary"
+            >
+              <span className="text-md font-bold">
+                {reminder.plant_info.plant.name}
               </span>
-            </div>
+            </Link>
+            <span className="text-sm">{reminder.plant_info.location.name}</span>
           </div>
         </div>
-        <div className="flex flex-row flex-wrap gap-1 grow items-center justify-center">
-          <PlantWetnessBadge lastCheck={reminder.plant_info.last_check} />
-          <PlantWateringBadge lastWatered={reminder.plant_info.last_watering} />
-        </div>
       </div>
-      <div className="gap-1 flex-col flex">
+      <div className="flex flex-row flex-wrap gap-1 grow items-center justify-center">
+        <PlantWetnessBadge lastCheck={reminder.plant_info.last_check} />
+        <PlantWateringBadge lastWatered={reminder.plant_info.last_watering} />
+      </div>
+      <div className="gap-1 flex-row sm:flex-col flex flex-wrap justify-center">
         {reminder.reminder.reminder_type === "check" ? (
           <Button
             size="sm"
