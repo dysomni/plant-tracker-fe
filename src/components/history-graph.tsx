@@ -76,23 +76,23 @@ export const MyChart = (props: {
   const { tooltipData, tooltipLeft, tooltipTop, hideTooltip, showTooltip } =
     useTooltip();
 
-  const marginBottom = 20;
+  const marginBottom = 50;
   const marginLeft = 20;
   const marginRight = 40;
   const marginTop = 20;
 
-  const chartSeparation = mediaQueries["md"] ? 60 : mediaQueries["sm"] ? 45 : 0;
-  const brushHeight = mediaQueries["sm"] ? 70 : 10;
+  // const chartSeparation = mediaQueries["md"] ? 60 : mediaQueries["sm"] ? 45 : 0;
+  // const brushHeight = mediaQueries["sm"] ? 70 : 10;
   const xRangeStart = marginLeft;
   const xRangeEnd = width - marginRight;
   const xRangeWidth = xRangeEnd - xRangeStart;
 
   const yRangeStart = marginTop;
-  const yRangeEnd = height - marginBottom - brushHeight - chartSeparation;
+  const yRangeEnd = height - marginBottom; //- brushHeight - chartSeparation;
   const yRangeHeight = yRangeEnd - yRangeStart;
-  const yBrushRangeStart = yRangeEnd + chartSeparation;
+  // const yBrushRangeStart = yRangeEnd + chartSeparation;
 
-  const brushRef = useRef<BaseBrush | null>(null);
+  // const brushRef = useRef<BaseBrush | null>(null);
   const [filteredCheckHistory, setFilteredCheckHistory] =
     useState(checkHistory);
   const [brushBounds, setBrushBounds] = useState<Bounds>({
@@ -102,17 +102,17 @@ export const MyChart = (props: {
     y1: 10,
   });
 
-  const onBrushChange = (domain: Bounds | null) => {
-    if (!domain) return;
-    setBrushBounds(domain);
-    const { x0, x1, y0, y1 } = domain;
-    const copy = checkHistory.filter((s) => {
-      const x = checkAccessors.xAccessor(s).getTime();
-      const y = checkAccessors.yAccessor(s);
-      return x > x0 && x < x1 && y > y0 && y < y1;
-    });
-    setFilteredCheckHistory(copy);
-  };
+  // const onBrushChange = (domain: Bounds | null) => {
+  //   if (!domain) return;
+  //   setBrushBounds(domain);
+  //   const { x0, x1, y0, y1 } = domain;
+  //   const copy = checkHistory.filter((s) => {
+  //     const x = checkAccessors.xAccessor(s).getTime();
+  //     const y = checkAccessors.yAccessor(s);
+  //     return x > x0 && x < x1 && y > y0 && y < y1;
+  //   });
+  //   setFilteredCheckHistory(copy);
+  // };
 
   // scales
   const dateScale = useMemo(
@@ -146,27 +146,27 @@ export const MyChart = (props: {
       }),
     [xRangeStart, xRangeEnd, checkHistory]
   );
-  const brushWetnessScale = useMemo(
-    () =>
-      scaleLinear({
-        range: [brushHeight, 0],
-        domain: [0, 10],
-        nice: true,
-      }),
-    [yRangeEnd, yRangeStart]
-  );
+  // const brushWetnessScale = useMemo(
+  //   () =>
+  //     scaleLinear({
+  //       range: [brushHeight, 0],
+  //       domain: [0, 10],
+  //       nice: true,
+  //     }),
+  //   [yRangeEnd, yRangeStart]
+  // );
 
-  const initialBrushPosition = useMemo(
-    () => ({
-      start: {
-        x: brushDateScale(checkAccessors.xAccessor(filteredCheckHistory[0])),
-      },
-      end: {
-        x: brushDateScale(new Date()),
-      },
-    }),
-    [brushDateScale]
-  );
+  // const initialBrushPosition = useMemo(
+  //   () => ({
+  //     start: {
+  //       x: brushDateScale(checkAccessors.xAccessor(filteredCheckHistory[0])),
+  //     },
+  //     end: {
+  //       x: brushDateScale(new Date()),
+  //     },
+  //   }),
+  //   [brushDateScale]
+  // );
 
   const handleTooltip = useCallback(
     (
@@ -358,7 +358,7 @@ export const MyChart = (props: {
               </g>
             )}
           </Group>
-          {mediaQueries["sm"] ? (
+          {/* {mediaQueries["sm"] ? (
             <Group top={yBrushRangeStart} left={xRangeStart}>
               <rect
                 x={0}
@@ -409,7 +409,7 @@ export const MyChart = (props: {
                 renderBrushHandle={(props) => <BrushHandle {...props} />}
               />
             </Group>
-          ) : null}
+          ) : null} */}
         </svg>
         {tooltipData && (
           <div>
@@ -440,23 +440,21 @@ export const MyChart = (props: {
         )}
       </div>
       <div className="flex flex-col px-4 py-2 items-center">
-        {mediaQueries["sm"] ? null : (
-          <Slider
-            aria-label="Discrete slider"
-            color="primary"
-            value={[brushBounds.x0, brushBounds.x1]}
-            onChange={(numbers) => {
-              setBrushBounds({
-                ...brushBounds,
-                x0: numbers[0],
-                x1: numbers[1],
-              });
-            }}
-            minValue={brushDateScale.domain()[0].getTime()}
-            maxValue={brushDateScale.domain()[1].getTime()}
-            step={1000000}
-          />
-        )}
+        <Slider
+          aria-label="Discrete slider"
+          color="primary"
+          value={[brushBounds.x0, brushBounds.x1]}
+          onChange={(numbers) => {
+            setBrushBounds({
+              ...brushBounds,
+              x0: numbers[0],
+              x1: numbers[1],
+            });
+          }}
+          minValue={brushDateScale.domain()[0].getTime()}
+          maxValue={brushDateScale.domain()[1].getTime()}
+          step={1000000}
+        />
         <Tabs
           className="mt-2"
           aria-label="data range selection"
@@ -474,45 +472,45 @@ export const MyChart = (props: {
   );
 };
 
-// We need to manually offset the handles for them to be rendered at the right position
-const BrushHandle = ({ x, height, isBrushActive }: BrushHandleRenderProps) => {
-  const pathWidth = 8;
-  const pathHeight = 15;
-  if (!isBrushActive) {
-    return null;
-  }
-  return (
-    <Group left={x + pathWidth / 2} top={(height - pathHeight) / 2}>
-      <rect
-        x={-7}
-        y={-10}
-        width={14}
-        height={35}
-        fill="#f2f2f2"
-        stroke="#999999"
-        strokeWidth="1"
-        rx={2}
-        ry={2}
-        style={{ cursor: "ew-resize" }}
-      />
-      <line
-        x1={-1}
-        y1={4}
-        x2={-1}
-        y2={12}
-        stroke="#999999"
-        strokeWidth="1"
-        style={{ cursor: "ew-resize" }}
-      />
-      <line
-        x1={1}
-        y1={4}
-        x2={1}
-        y2={12}
-        stroke="#999999"
-        strokeWidth="1"
-        style={{ cursor: "ew-resize" }}
-      />
-    </Group>
-  );
-};
+// // We need to manually offset the handles for them to be rendered at the right position
+// const BrushHandle = ({ x, height, isBrushActive }: BrushHandleRenderProps) => {
+//   const pathWidth = 8;
+//   const pathHeight = 15;
+//   if (!isBrushActive) {
+//     return null;
+//   }
+//   return (
+//     <Group left={x + pathWidth / 2} top={(height - pathHeight) / 2}>
+//       <rect
+//         x={-7}
+//         y={-10}
+//         width={14}
+//         height={35}
+//         fill="#f2f2f2"
+//         stroke="#999999"
+//         strokeWidth="1"
+//         rx={2}
+//         ry={2}
+//         style={{ cursor: "ew-resize" }}
+//       />
+//       <line
+//         x1={-1}
+//         y1={4}
+//         x2={-1}
+//         y2={12}
+//         stroke="#999999"
+//         strokeWidth="1"
+//         style={{ cursor: "ew-resize" }}
+//       />
+//       <line
+//         x1={1}
+//         y1={4}
+//         x2={1}
+//         y2={12}
+//         stroke="#999999"
+//         strokeWidth="1"
+//         style={{ cursor: "ew-resize" }}
+//       />
+//     </Group>
+//   );
+// };

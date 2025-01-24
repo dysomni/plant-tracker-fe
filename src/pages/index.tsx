@@ -192,19 +192,22 @@ const ReminderCard = ({
       ) : null}
       <div className="flex gap-6 items-center self-start">
         {reminder.plant_info.cover_photo_url ? (
-          <Image
-            src={reminder.plant_info.cover_photo_url}
-            alt={reminder.plant_info.plant.name}
-            height={80}
-            className="rounded-large hover:cursor-pointer"
-            onClick={() =>
-              imagePreview.setPreview({
-                src: reminder.plant_info.cover_photo_url!,
-                plantName: reminder.plant_info.plant.name,
-                locationName: reminder.plant_info.location.name,
-              })
-            }
-          />
+          <div className="flex justify-center items-center shrink-0 w-[80px] h-[80px] rounded-lg overflow-hidden">
+            <Image
+              src={reminder.plant_info.cover_photo_url}
+              alt={reminder.plant_info.plant.name}
+              height={80}
+              width={80}
+              className="hover:cursor-pointer object-cover"
+              onClick={() =>
+                imagePreview.setPreview({
+                  src: reminder.plant_info.cover_photo_url!,
+                  plantName: reminder.plant_info.plant.name,
+                  locationName: reminder.plant_info.location.name,
+                })
+              }
+            />
+          </div>
         ) : null}
         <div className="flex flex-col gap-1 items-left">
           <Tooltip content={reminderDate.format("MMMM D, YYYY h:mm A")}>
@@ -283,7 +286,7 @@ const RecentSectionStarter = () => {
   return (
     <div className="flex flex-row gap-4 w-full items-center pt-2">
       <Divider className="grow w-auto" />
-      <h2 className="text-sm font-bold">Recent</h2>
+      <h2 className="text-sm font-bold">Current</h2>
       <Divider className="grow w-auto" />
     </div>
   );

@@ -15,6 +15,7 @@ export const ReminderlessPlantBadge = (props: { count: number }) => {
       color="danger"
       variant="solid"
       startContent={<IconBellFilled size={15} />}
+      className="p-4"
     >
       {count} {pluralize(count, "plant", "plants")} without reminders
     </Chip>

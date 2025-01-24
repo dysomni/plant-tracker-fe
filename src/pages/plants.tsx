@@ -68,14 +68,18 @@ export default function PlantsPage() {
             className="max-w-40 sm:max-w-72"
             variant="bordered"
           />
-          <Button
-            size={mediaQueries["sm"] ? "md" : "sm"}
-            startContent={<IconPlus size={15} />}
-            color="success"
-            onPress={() => setTimeout(() => setCreatePlantDrawerOpen(true), 50)}
-          >
-            Register Plant
-          </Button>
+          <div>
+            <Button
+              size={mediaQueries["sm"] ? "md" : "sm"}
+              startContent={<IconPlus size={15} />}
+              color="success"
+              onPress={() =>
+                setTimeout(() => setCreatePlantDrawerOpen(true), 50)
+              }
+            >
+              Register Plant
+            </Button>
+          </div>
         </div>
         {noRemindersCount ? (
           <ReminderlessPlantBadge count={noRemindersCount} />
@@ -124,10 +128,11 @@ const PlantCard = ({
       ) : null}
       <div className="flex flex-row gap-6 items-center justify-center self-start sm:self-auto">
         {plant.cover_photo_url ? (
-          <div className="shrink-0">
+          <div className="flex justify-center items-center shrink-0 w-[90px] h-[90px] rounded-lg overflow-hidden">
             <Image
-              className="hover:cursor-pointer"
+              className="hover:cursor-pointer object-cover"
               src={plant.cover_photo_url ?? undefined}
+              width={90}
               height={90}
               alt="Plant Cover Photo"
               onClick={() =>
