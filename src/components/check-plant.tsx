@@ -101,7 +101,7 @@ export const CheckPlantDrawer = (props: {
       if (plant.plant.default_watering_interval_days) {
         setNextCheckDate(
           dayjsToDateValue(
-            lastWatering.add(plant.plant.default_watering_interval_days, "day")
+            dayjs().add(plant.plant.default_watering_interval_days, "day")
           )
         );
         return;
