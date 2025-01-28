@@ -242,7 +242,7 @@ export default function PlantPage() {
                     <div className="flex flex-row gap-4 items-end flex-wrap">
                       <div>
                         <h4 className="text-xl font-bold">
-                          Location - {data?.location.name}
+                          Location: {data?.location.name}
                         </h4>
                         <p className="italic text-sm font-serif">
                           {data?.location.description}
@@ -254,6 +254,18 @@ export default function PlantPage() {
                       </h5>
                     </div>
                     <Divider />
+                    {data && Number(data.wetness_decay_per_day) !== 0 ? (
+                      <div className="flex flex-row gap-3 items-center">
+                        <h4 className="text-md font-bold">
+                          Typical Dry Out Time:
+                        </h4>
+                        <p className="text-right">
+                          {Math.ceil(9 / Number(data.wetness_decay_per_day))}{" "}
+                          days
+                        </p>
+                      </div>
+                    ) : null}
+
                     <div>
                       <h4 className="text-xl font-bold">Notes</h4>
                       <p className="font-serif">{data?.plant.notes}</p>
@@ -295,6 +307,7 @@ export default function PlantPage() {
                     <MyChart
                       waterHistory={data.waterings}
                       checkHistory={data.checks}
+                      wetnessDecayPerDay={data.wetness_decay_per_day}
                     />
                   )}
                 </div>
