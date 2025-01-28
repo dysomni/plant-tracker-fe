@@ -11,6 +11,7 @@ export type BasicPlantInfoResponseModel = {
   outstanding_reminders: Reminder[];
   cover_photo: Photo | null;
   cover_photo_url: string | null;
+  cover_photo_thumbnail_url: string | null;
 };
 
 export type Check = {
@@ -103,6 +104,7 @@ export type FullPlantInfoResponseModel = {
   outstanding_reminders: Reminder[];
   cover_photo: Photo | null;
   cover_photo_url: string | null;
+  cover_photo_thumbnail_url: string | null;
   waterings: Watering[];
   checks: Check[];
   photos: Photo[];
