@@ -127,11 +127,11 @@ const PlantCard = ({
         />
       ) : null}
       <div className="flex flex-row gap-6 items-center justify-center self-start sm:self-auto">
-        {plant.cover_photo_url ? (
+        {plant.cover_photo_thumbnail_url ? (
           <div className="flex justify-center items-center shrink-0 w-[90px] h-[90px] rounded-lg overflow-hidden">
             <Image
               className="hover:cursor-pointer object-cover"
-              src={plant.cover_photo_url ?? undefined}
+              src={plant.cover_photo_thumbnail_url ?? undefined}
               width={90}
               height={90}
               alt="Plant Cover Photo"
@@ -155,10 +155,13 @@ const PlantCard = ({
           </div>
         </div>
       </div>
-      <div className="flex flex-row flex-wrap gap-1 grow items-center justify-center">
+      <div className="flex flex-col flex-wrap gap-1 grow items-center justify-center">
         <PlantLatestReminderBadge hasReminders={!!latestReminder} />
-        <PlantWetnessBadge lastCheck={plant.last_check} />
-        <PlantWateringBadge lastWatered={plant.last_watering} />
+        <PlantWetnessBadge
+          lastCheck={plant.last_check}
+          wetnessDecayPerDay={plant.wetness_decay_per_day}
+        />
+        {/* <PlantWateringBadge lastWatered={plant.last_watering} /> */}
       </div>
       <div>
         <Button

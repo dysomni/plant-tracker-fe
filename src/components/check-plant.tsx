@@ -80,46 +80,35 @@ export const CheckPlantDrawer = (props: {
   useEffect(() => {
     if (nextCheckDateTouched) return;
     if (!plant) return;
-    if (!lastWatering) return;
-    if (plant.waterings.length < 2) return;
 
-    const orderedWaterings = [...plant.waterings].sort(
-      (a, b) =>
-        dayjs(b.watering_date).toDate().getTime() -
-        dayjs(a.watering_date).toDate().getTime()
-    );
-
-    const previousWatering = orderedWaterings[0];
-    const secondLastWatering = orderedWaterings[1];
-
-    const hoursSinceLastWatering = dayjs().diff(lastWatering, "hour");
-    const previousWateringPeriodHours = dayjs(
-      previousWatering.watering_date
-    ).diff(secondLastWatering.watering_date, "hour");
-
-    if (watered) {
-      if (plant.plant.default_watering_interval_days) {
-        setNextCheckDate(
-          dayjsToDateValue(
-            dayjs().add(plant.plant.default_watering_interval_days, "day")
-          )
-        );
-        return;
-      }
-      setNextCheckDate(
-        dayjsToDateValue(dayjs().add(hoursSinceLastWatering * 0.85, "hour"))
+    if (watered && plant.plant.default_watering_interval_days) {
+      const nextCheckDate = dayjs().add(
+        plant.plant.default_watering_interval_days,
+        "day"
       );
+      setNextCheckDate(dayjsToDateValue(nextCheckDate));
       return;
     }
 
-    const wetnessDropPerHour = (10 - 1) / previousWateringPeriodHours;
-    const projectedHoursToNextWatering =
-      Math.max(wetness - 1, 0) / wetnessDropPerHour;
-    const nextCheckDate = dayjs().add(
-      Math.round(projectedHoursToNextWatering),
-      "hour"
-    );
+    const decayPerDay = Number(plant.wetness_decay_per_day);
+    if (decayPerDay === 0 || !lastWatering) {
+      return;
+    }
 
+    const lastWateringDaysAgo = dayjs().diff(lastWatering, "hour") / 24;
+    const decayFromLastWatering = (10 - wetness) / lastWateringDaysAgo;
+    const decayAverage = (decayPerDay + decayFromLastWatering) / 2;
+    const targetCheckWetness = 1.5;
+    const daysUntilTwoFromNow = (wetness - targetCheckWetness) / decayAverage;
+    const daysUntilTwoFromWatering = (10 - targetCheckWetness) / decayAverage;
+
+    if (watered) {
+      const nextCheckDate = dayjs().add(daysUntilTwoFromWatering * 24, "hour");
+      setNextCheckDate(dayjsToDateValue(nextCheckDate));
+      return;
+    }
+
+    const nextCheckDate = dayjs().add(daysUntilTwoFromNow * 24, "hour");
     setNextCheckDate(dayjsToDateValue(nextCheckDate));
   }, [plant, lastWatering, wetness, watered]);
 

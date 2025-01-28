@@ -66,8 +66,10 @@ export const wetnessToLabel = (wetness: number) => {
 
 export const PlantWetnessBadge = ({
   lastCheck,
+  wetnessDecayPerDay,
 }: {
   lastCheck: Check | null;
+  wetnessDecayPerDay: number | string;
 }) => {
   const wetness = Number(lastCheck?.wetness_scale);
   const lastCheckDate = lastCheck ? dayjs(lastCheck?.check_date) : null;
@@ -84,9 +86,16 @@ export const PlantWetnessBadge = ({
     );
   }
   // wetness will always be from 0 to 10
+  // Calculate the decay in wetness based on the number of days since the last check
+  const daysSinceLastCheck = dayjs().diff(lastCheckDate, "day");
+  const decayedWetness = Math.max(
+    0,
+    wetness - daysSinceLastCheck * Number(wetnessDecayPerDay)
+  );
+
   // 0 is dry, 10 is wet
   const wetnessColor =
-    wetness > 5 ? "success" : wetness > 2 ? "warning" : "danger";
+    decayedWetness > 5 ? "success" : decayedWetness > 2 ? "warning" : "danger";
   return (
     <Tooltip content={lastCheckDate.format("MMMM D, YYYY h:mm A")}>
       <Chip

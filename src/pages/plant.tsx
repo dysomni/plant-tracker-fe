@@ -151,7 +151,12 @@ export default function PlantPage() {
                 )
               }
             />
-            {data && <PlantWetnessBadge lastCheck={data.last_check} />}
+            {data && (
+              <PlantWetnessBadge
+                lastCheck={data.last_check}
+                wetnessDecayPerDay={data.wetness_decay_per_day}
+              />
+            )}
             {data && <PlantWateringBadge lastWatered={data?.last_watering} />}
           </div>
         </div>
@@ -234,13 +239,19 @@ export default function PlantPage() {
                     </div>
                   </div>
                   <div className="grow flex flex-col gap-3">
-                    <div>
-                      <h4 className="text-xl font-bold">
-                        Location - {data?.location.name}
-                      </h4>
-                      <p className="italic text-sm font-serif">
-                        {data?.location.description}
-                      </p>
+                    <div className="flex flex-row gap-4 items-end flex-wrap">
+                      <div>
+                        <h4 className="text-xl font-bold">
+                          Location - {data?.location.name}
+                        </h4>
+                        <p className="italic text-sm font-serif">
+                          {data?.location.description}
+                        </p>
+                      </div>
+                      <h5 className="text-md flex-grow text-right">
+                        Created{" "}
+                        {dayjs(data?.plant.created_at).format("MMMM D, YYYY")}
+                      </h5>
                     </div>
                     <Divider />
                     <div>

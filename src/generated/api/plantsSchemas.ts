@@ -12,6 +12,7 @@ export type BasicPlantInfoResponseModel = {
   cover_photo: Photo | null;
   cover_photo_url: string | null;
   cover_photo_thumbnail_url: string | null;
+  wetness_decay_per_day: string;
 };
 
 export type Check = {
@@ -105,6 +106,7 @@ export type FullPlantInfoResponseModel = {
   cover_photo: Photo | null;
   cover_photo_url: string | null;
   cover_photo_thumbnail_url: string | null;
+  wetness_decay_per_day: string;
   waterings: Watering[];
   checks: Check[];
   photos: Photo[];

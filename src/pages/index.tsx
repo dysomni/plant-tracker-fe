@@ -191,10 +191,10 @@ const ReminderCard = ({
         />
       ) : null}
       <div className="flex gap-6 items-center self-start">
-        {reminder.plant_info.cover_photo_url ? (
+        {reminder.plant_info.cover_photo_thumbnail_url ? (
           <div className="flex justify-center items-center shrink-0 w-[80px] h-[80px] rounded-lg overflow-hidden">
             <Image
-              src={reminder.plant_info.cover_photo_url}
+              src={reminder.plant_info.cover_photo_thumbnail_url}
               alt={reminder.plant_info.plant.name}
               height={80}
               width={80}
@@ -229,7 +229,10 @@ const ReminderCard = ({
         </div>
       </div>
       <div className="flex flex-row flex-wrap gap-1 grow items-center justify-center">
-        <PlantWetnessBadge lastCheck={reminder.plant_info.last_check} />
+        <PlantWetnessBadge
+          lastCheck={reminder.plant_info.last_check}
+          wetnessDecayPerDay={reminder.plant_info.wetness_decay_per_day}
+        />
         <PlantWateringBadge lastWatered={reminder.plant_info.last_watering} />
       </div>
       <div className="gap-1 flex-row sm:flex-col flex flex-wrap justify-center">
