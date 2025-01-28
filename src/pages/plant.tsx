@@ -268,7 +268,9 @@ export default function PlantPage() {
 
                     <div>
                       <h4 className="text-xl font-bold">Notes</h4>
-                      <p className="font-serif">{data?.plant.notes}</p>
+                      <p className="font-serif whitespace-pre-line">
+                        {data?.plant.notes}
+                      </p>
                     </div>
                   </div>
                 </div>

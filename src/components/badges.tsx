@@ -54,7 +54,7 @@ export const wetnessToLabel = (wetness: number) => {
     7: "Wet",
     8: "Very Wet",
     9: "Soaked",
-    10: "Saturated",
+    10: "Watered",
   };
 
   if (wetness in mapping) {

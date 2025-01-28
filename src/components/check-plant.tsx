@@ -77,6 +77,15 @@ export const CheckPlantDrawer = (props: {
     [plant]
   );
 
+  const typicalDryoutDays = useMemo(() => {
+    if (!plant) return undefined;
+    if (Number(plant.wetness_decay_per_day) === 0) {
+      return undefined;
+    }
+
+    return 9 / Number(plant.wetness_decay_per_day);
+  }, [plant]);
+
   useEffect(() => {
     if (nextCheckDateTouched) return;
     if (!plant) return;
@@ -284,10 +293,16 @@ export const CheckPlantDrawer = (props: {
             </div>
           </div>
           <div className="flex flex-col gap-3">
-            <p className="font-bold text-lg">
-              Next Reminder in {nextCheckDaysRounded}{" "}
-              {pluralize(nextCheckDaysRounded, "day", "days")}
-            </p>
+            <div className="flex flex-row justify-between flex-wrap">
+              <p className="font-bold text-lg">
+                Next Reminder in {nextCheckDaysRounded}{" "}
+                {pluralize(nextCheckDaysRounded, "day", "days")}
+              </p>
+              {typicalDryoutDays ? (
+                <p>Typical dryout: {Math.round(typicalDryoutDays)} days</p>
+              ) : null}
+            </div>
+
             <DatePicker
               isRequired
               showMonthAndYearPickers
