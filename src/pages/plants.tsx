@@ -8,7 +8,6 @@ import { Button, Card, Image, Input, Link } from "@nextui-org/react";
 import { useImagePreview } from "../components/image-preview";
 import {
   PlantLatestReminderBadge,
-  PlantWateringBadge,
   PlantWetnessBadge,
   ReminderlessPlantBadge,
 } from "../components/badges";

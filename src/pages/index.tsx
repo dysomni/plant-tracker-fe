@@ -1,8 +1,5 @@
 import DefaultLayout from "@/layouts/default";
-import {
-  fetchDeleteReminderV1RemindersReminderIdDelete,
-  useGetOutstandingRemindersV1RemindersOutstandingGet,
-} from "../generated/api/plantsComponents";
+import { useGetOutstandingRemindersV1RemindersOutstandingGet } from "../generated/api/plantsComponents";
 import { AuthContext, useAuthErrorRedirect } from "../auth";
 import { useContext, useMemo, useState } from "react";
 import dayjs from "dayjs";
@@ -13,13 +10,8 @@ import { useImagePreview } from "../components/image-preview";
 import { ReminderWithPlantInfo } from "../generated/api/plantsSchemas";
 import { usePageLoading } from "../components/page-loading";
 import { PlantWateringBadge, PlantWetnessBadge } from "../components/badges";
-import {
-  IconClockHour7Filled,
-  IconRuler2,
-  IconTrash,
-} from "@tabler/icons-react";
+import { IconClockHour7Filled, IconRuler2 } from "@tabler/icons-react";
 import { pluralize, unwrap } from "../util";
-import { useToast } from "../toast";
 import { CheckPlantDrawer } from "../components/check-plant";
 dayjs.extend(relativeTime);
 
@@ -134,7 +126,6 @@ const ReminderCard = ({
 }) => {
   const imagePreview = useImagePreview();
   const reminderDate = dayjs(reminder.reminder.reminder_date);
-  const toast = useToast();
 
   const [plantToCheck, setPlantToCheck] = useState<string | undefined>();
   const [quickWater, setQuickWater] = useState(false);
@@ -154,24 +145,6 @@ const ReminderCard = ({
         return "text-danger-500";
       default:
         return "text-danger-500";
-    }
-  }, [reminderDate]);
-
-  const reminderBorderColor = useMemo(() => {
-    const now = dayjs();
-    const diffInMinutes = now.diff(reminderDate, "minute");
-
-    switch (true) {
-      case diffInMinutes <= 15:
-        return "border-green-600 dark:border-green-400";
-      case diffInMinutes <= 60:
-        return "border-yellow-600 dark:border-yellow-400";
-      case diffInMinutes <= 1440:
-        return "border-orange-600 dark:border-orange-400";
-      case diffInMinutes <= 2880:
-        return "border-red-600 dark:border-red-200";
-      default:
-        return "border-red-800 dark:border-red-400";
     }
   }, [reminderDate]);
 

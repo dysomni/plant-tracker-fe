@@ -24,10 +24,10 @@ import { AxisBottom, AxisRight } from "@visx/axis";
 import { Slider, Tab, Tabs } from "@nextui-org/react";
 
 const checkAccessors = {
-  xAccessor: (d) => dayjs(d.check_date).toDate(),
-  xBisector: bisector((d) => dayjs(d.check_date).toDate()).left,
-  xNumAccessor: (d) => dayjs(d.check_date).toDate().getTime(),
-  yAccessor: (d) => d.wetness_scale,
+  xAccessor: (d: Check) => dayjs(d.check_date).toDate(),
+  xBisector: bisector((d: Check) => dayjs(d.check_date).toDate()).left,
+  xNumAccessor: (d: Check) => dayjs(d.check_date).toDate().getTime(),
+  yAccessor: (d: Check) => d.wetness_scale,
 };
 
 export const purple3 = "#a44afe";

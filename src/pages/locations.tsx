@@ -4,11 +4,10 @@ import { useAuthErrorRedirect } from "../auth";
 import { useToast } from "../toast";
 
 export default function LocationsPage() {
-  const { data, isLoading, error } = useListAllPlantsV1PlantsGet({
+  const { error } = useListAllPlantsV1PlantsGet({
     queryParams: { include_archived: false },
   });
   useAuthErrorRedirect(error);
-  const toast = useToast();
 
   return (
     <DefaultLayout>

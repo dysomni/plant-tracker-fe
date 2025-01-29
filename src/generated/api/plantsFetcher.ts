@@ -1,7 +1,7 @@
 import { PlantsContext } from "./plantsContext";
 import axios from "axios";
 
-const baseUrl = "http://localhost:8000"; // TODO add your baseUrl
+// const baseUrl = "http://localhost:8000"; // TODO add your baseUrl
 
 export type ErrorWrapper<TError> =
   | TError

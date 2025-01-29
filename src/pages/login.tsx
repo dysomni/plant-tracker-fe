@@ -61,7 +61,7 @@ export const LoginPage = () => {
               navigate("/");
             } catch (error) {
               setLoginLoading(false);
-              setLoginError(error);
+              setLoginError(error as unknown as any);
             }
           }}
           isLoading={loginLoading}

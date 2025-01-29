@@ -265,7 +265,7 @@ export type UpdatePlantRequest = {
   location_id?: string | null;
   notes?: string | null;
   archived?: boolean | null;
-  default_watering_interval_days: number | null;
+  default_watering_interval_days?: number | null;
 };
 
 export type User = {
