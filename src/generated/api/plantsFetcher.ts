@@ -1,8 +1,7 @@
 import { PlantsContext } from "./plantsContext";
 import axios from "axios";
-import "dotenv/config";
 
-const baseUrl = process.env.API_HOST;
+const baseUrl = import.meta.env.VITE_API_HOST;
 
 export type ErrorWrapper<TError> =
   | TError

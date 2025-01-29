@@ -108,8 +108,14 @@ export const CheckPlantDrawer = (props: {
     const decayFromLastWatering = (10 - wetness) / lastWateringDaysAgo;
     const decayAverage = (decayPerDay + decayFromLastWatering) / 2;
     const targetCheckWetness = 1.5;
-    const daysUntilTwoFromNow = (wetness - targetCheckWetness) / decayAverage;
-    const daysUntilTwoFromWatering = (10 - targetCheckWetness) / decayAverage;
+    const daysUntilTwoFromNow = Math.max(
+      (wetness - targetCheckWetness) / decayAverage,
+      1 // minimum of 1 day
+    );
+    const daysUntilTwoFromWatering = Math.max(
+      (10 - targetCheckWetness) / decayAverage,
+      1 // minimum of 1 day
+    );
 
     if (watered) {
       const nextCheckDate = dayjs().add(daysUntilTwoFromWatering * 24, "hour");
