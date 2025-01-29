@@ -72,7 +72,7 @@ export const LoginPage = () => {
           <Alert
             color="warning"
             title={
-              loginError.payload?.detail ||
+              (loginError.payload as Record<string, string>)?.detail ??
               "Unknown error occured. Please try again later."
             }
           />

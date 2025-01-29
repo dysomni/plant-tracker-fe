@@ -27,7 +27,7 @@ const checkAccessors = {
   xAccessor: (d: Check) => dayjs(d.check_date).toDate(),
   xBisector: bisector((d: Check) => dayjs(d.check_date).toDate()).left,
   xNumAccessor: (d: Check) => dayjs(d.check_date).toDate().getTime(),
-  yAccessor: (d: Check) => d.wetness_scale,
+  yAccessor: (d: Check) => Number(d.wetness_scale),
 };
 
 export const purple3 = "#a44afe";
@@ -333,7 +333,7 @@ export const MyChart = (props: {
                 left={(tooltipLeft ?? 0) + 20}
                 style={tooltipStyles}
               >
-                {`Wetness ${checkAccessors.yAccessor(tooltipData)}`}
+                {`Wetness ${checkAccessors.yAccessor(tooltipData as Check)}`}
               </TooltipWithBounds>
               <Tooltip
                 top={yRangeEnd}
@@ -346,7 +346,7 @@ export const MyChart = (props: {
                   transform: "translateX(-50%)",
                 }}
               >
-                {dayjs(checkAccessors.xAccessor(tooltipData)).format(
+                {dayjs(checkAccessors.xAccessor(tooltipData as Check)).format(
                   "YYYY-MM-DD h:mm A"
                 )}
               </Tooltip>
@@ -367,8 +367,8 @@ export const MyChart = (props: {
             onChange={(numbers) => {
               setBrushBounds({
                 ...brushBounds,
-                x0: numbers[0],
-                x1: numbers[1],
+                x0: (numbers as number[])[0],
+                x1: (numbers as number[])[1],
               });
             }}
             minValue={brushDateScale.domain()[0].getTime() ?? 0}

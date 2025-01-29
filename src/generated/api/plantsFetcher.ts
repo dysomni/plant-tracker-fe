@@ -1,7 +1,8 @@
 import { PlantsContext } from "./plantsContext";
 import axios from "axios";
+import "dotenv/config";
 
-// const baseUrl = "http://localhost:8000"; // TODO add your baseUrl
+const baseUrl = process.env.API_HOST;
 
 export type ErrorWrapper<TError> =
   | TError
@@ -19,7 +20,7 @@ export type PlantsFetcherOptions<TBody, THeaders, TQueryParams, TPathParams> = {
 
 export async function plantsFetch<
   TData,
-  TError,
+  _TError,
   TBody extends {} | FormData | undefined | null,
   THeaders extends {},
   TQueryParams extends {},

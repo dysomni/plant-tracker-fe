@@ -1,7 +1,6 @@
 import DefaultLayout from "@/layouts/default";
 import { useListAllPlantsV1PlantsGet } from "../generated/api/plantsComponents";
 import { useAuthErrorRedirect } from "../auth";
-import { useToast } from "../toast";
 
 export default function LocationsPage() {
   const { error } = useListAllPlantsV1PlantsGet({
