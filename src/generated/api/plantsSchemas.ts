@@ -210,6 +210,7 @@ export type Plant = {
 export type PlantPhotoWithPresignedUrl = {
   photo: Photo;
   presigned_url: string;
+  thumbnail_presigned_url: string;
 };
 
 export type PlantPhotosResponseModel = {
