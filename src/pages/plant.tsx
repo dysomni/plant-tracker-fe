@@ -347,7 +347,7 @@ export default function PlantPage() {
                     >
                       <Image
                         className="cursor-pointer"
-                        height={mediaQueries["sm"] ? 300 : 150}
+                        height={mediaQueries["sm"] ? 200 : 150}
                         src={photo.thumbnail_presigned_url}
                         alt={data?.plant.name}
                         onClick={() =>
