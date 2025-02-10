@@ -125,6 +125,7 @@ export type FullPlantInfoResponseModel = {
   waterings: Watering[];
   checks: Check[];
   photos: Photo[];
+  reminders: Reminder[];
 };
 
 export type HTTPValidationError = {
