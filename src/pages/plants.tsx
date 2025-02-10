@@ -162,12 +162,12 @@ const PlantCard = ({
         />
         {/* <PlantWateringBadge lastWatered={plant.last_watering} /> */}
       </div>
-      <div>
+      <div className="w-full sm:w-auto">
         <Button
           size="sm"
           variant="flat"
           color="primary"
-          className="font-bold"
+          className="font-bold w-full"
           startContent={<IconRuler2 size={20} />}
           onPress={() => setTimeout(() => setChecking(true), 50)}
         >

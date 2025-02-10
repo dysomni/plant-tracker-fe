@@ -191,7 +191,7 @@ const ReminderCard = ({
           <div className="flex flex-col gap-0">
             <Link
               href={`/plants/${reminder.plant_info.plant.id}`}
-              color="primary"
+              color="success"
             >
               <span className="text-md font-bold">
                 {reminder.plant_info.plant.name}
@@ -208,13 +208,13 @@ const ReminderCard = ({
         />
         <PlantWateringBadge lastWatered={reminder.plant_info.last_watering} />
       </div>
-      <div className="gap-1 flex-row sm:flex-col flex flex-wrap justify-center">
+      <div className="gap-1 flex-row sm:flex-col flex flex-wrap justify-center sm:w-auto w-full">
         {reminder.reminder.reminder_type === "check" ? (
           <Button
             size="sm"
             variant="flat"
             color="primary"
-            className="font-bold"
+            className="font-bold w-full"
             startContent={<IconRuler2 size={20} />}
             onPress={() => {
               setTimeout(() => {

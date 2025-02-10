@@ -25,6 +25,7 @@ import { useMemo, useState } from "react";
 import { IconEdit, IconSortDescending2 } from "@tabler/icons-react";
 import { useMediaQueries } from "../components/responsive-hooks";
 import { useParams } from "react-router-dom";
+import { CreateCheckDrawer } from "../components/create-check";
 
 export default function ChecksPage() {
   const plantId = useParams<{ plantId: string }>().plantId;
@@ -36,6 +37,7 @@ export default function ChecksPage() {
   useAuthErrorRedirect(error);
   usePageLoading(isFetching);
 
+  const [createModalOpen, setCreateModalOpen] = useState(false);
   const [deleteId, setDeleteId] = useState("");
   const mediaQueries = useMediaQueries();
   const [sorting, setSorting] = useState<"new" | "old">("new");
@@ -81,7 +83,7 @@ export default function ChecksPage() {
             startContent={<IconEdit size={15} />}
             color="success"
             className="font-bold shrink-0"
-            onPress={() => setTimeout(() => console.log(true), 50)}
+            onPress={() => setTimeout(() => setCreateModalOpen(true), 50)}
             isDisabled={isFetching}
           >
             Create Check
@@ -139,6 +141,16 @@ export default function ChecksPage() {
           )}
         </ModalContent>
       </Modal>
+      {createModalOpen ? (
+        <CreateCheckDrawer
+          open={createModalOpen}
+          setOpen={setCreateModalOpen}
+          onCheckCreated={async () => {
+            await refetch();
+          }}
+          plantId={plantId}
+        />
+      ) : null}
     </DefaultLayout>
   );
 }

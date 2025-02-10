@@ -25,6 +25,7 @@ import { useMemo, useState } from "react";
 import { IconEdit, IconSortDescending2 } from "@tabler/icons-react";
 import { useMediaQueries } from "../components/responsive-hooks";
 import { useParams } from "react-router-dom";
+import { CreateWateringDrawer } from "../components/create-watering";
 
 export default function WateringsPage() {
   const plantId = useParams<{ plantId: string }>().plantId;
@@ -35,6 +36,8 @@ export default function WateringsPage() {
   });
   useAuthErrorRedirect(error);
   usePageLoading(isFetching);
+
+  const [createModalOpen, setCreateModalOpen] = useState(false);
 
   const [deleteId, setDeleteId] = useState("");
   const mediaQueries = useMediaQueries();
@@ -81,7 +84,7 @@ export default function WateringsPage() {
             startContent={<IconEdit size={15} />}
             color="success"
             className="font-bold shrink-0"
-            onPress={() => setTimeout(() => console.log(true), 50)}
+            onPress={() => setTimeout(() => setCreateModalOpen(true), 50)}
             isDisabled={isFetching}
           >
             Create Watering
@@ -139,6 +142,16 @@ export default function WateringsPage() {
           )}
         </ModalContent>
       </Modal>
+      {createModalOpen ? (
+        <CreateWateringDrawer
+          open={createModalOpen}
+          setOpen={setCreateModalOpen}
+          plantId={plantId}
+          onWateringCreated={async () => {
+            await refetch();
+          }}
+        />
+      ) : null}
     </DefaultLayout>
   );
 }

@@ -25,6 +25,7 @@ import { useMemo, useState } from "react";
 import { IconEdit, IconSortDescending2 } from "@tabler/icons-react";
 import { useMediaQueries } from "../components/responsive-hooks";
 import { useParams } from "react-router-dom";
+import { CreateReminderDrawer } from "../components/create-reminder";
 
 export default function RemindersPage() {
   const plantId = useParams<{ plantId: string }>().plantId;
@@ -36,6 +37,7 @@ export default function RemindersPage() {
   useAuthErrorRedirect(error);
   usePageLoading(isFetching);
 
+  const [createModalOpen, setCreateModalOpen] = useState(false);
   const [deleteId, setDeleteId] = useState("");
   const mediaQueries = useMediaQueries();
   const [sorting, setSorting] = useState<"new" | "old">("new");
@@ -81,7 +83,7 @@ export default function RemindersPage() {
             startContent={<IconEdit size={15} />}
             color="success"
             className="font-bold shrink-0"
-            onPress={() => setTimeout(() => console.log(true), 50)}
+            onPress={() => setTimeout(() => setCreateModalOpen(true), 50)}
             isDisabled={isFetching}
           >
             Create Reminder
@@ -139,6 +141,16 @@ export default function RemindersPage() {
           )}
         </ModalContent>
       </Modal>
+      {createModalOpen ? (
+        <CreateReminderDrawer
+          open={createModalOpen}
+          setOpen={setCreateModalOpen}
+          onCreate={async () => {
+            await refetch();
+          }}
+          plantId={plantId}
+        />
+      ) : null}
     </DefaultLayout>
   );
 }
