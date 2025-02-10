@@ -449,6 +449,72 @@ export const useCheckPlantV1PlantsPlantIdCheckPost = (
   });
 };
 
+export type FullCheckPlantV1PlantsPlantIdFullCheckPostPathParams = {
+  plantId: string;
+};
+
+export type FullCheckPlantV1PlantsPlantIdFullCheckPostError =
+  Fetcher.ErrorWrapper<
+    | {
+        status: 401;
+        payload: Schemas.UnauthorizedResponse;
+      }
+    | {
+        status: 422;
+        payload: Schemas.HTTPValidationError;
+      }
+  >;
+
+export type FullCheckPlantV1PlantsPlantIdFullCheckPostVariables = {
+  body: Schemas.CreateFullCheckRequest;
+  pathParams: FullCheckPlantV1PlantsPlantIdFullCheckPostPathParams;
+} & PlantsContext["fetcherOptions"];
+
+export const fetchFullCheckPlantV1PlantsPlantIdFullCheckPost = (
+  variables: FullCheckPlantV1PlantsPlantIdFullCheckPostVariables,
+  signal?: AbortSignal,
+) =>
+  plantsFetch<
+    Schemas.FullPlantInfoResponseModel,
+    FullCheckPlantV1PlantsPlantIdFullCheckPostError,
+    Schemas.CreateFullCheckRequest,
+    {},
+    {},
+    FullCheckPlantV1PlantsPlantIdFullCheckPostPathParams
+  >({
+    url: "/v1/plants/{plantId}/full_check",
+    method: "post",
+    ...variables,
+    signal,
+  });
+
+export const useFullCheckPlantV1PlantsPlantIdFullCheckPost = (
+  options?: Omit<
+    reactQuery.UseMutationOptions<
+      Schemas.FullPlantInfoResponseModel,
+      FullCheckPlantV1PlantsPlantIdFullCheckPostError,
+      FullCheckPlantV1PlantsPlantIdFullCheckPostVariables
+    >,
+    "mutationFn"
+  >,
+) => {
+  const { fetcherOptions } = usePlantsContext();
+  return reactQuery.useMutation<
+    Schemas.FullPlantInfoResponseModel,
+    FullCheckPlantV1PlantsPlantIdFullCheckPostError,
+    FullCheckPlantV1PlantsPlantIdFullCheckPostVariables
+  >({
+    mutationFn: (
+      variables: FullCheckPlantV1PlantsPlantIdFullCheckPostVariables,
+    ) =>
+      fetchFullCheckPlantV1PlantsPlantIdFullCheckPost({
+        ...fetcherOptions,
+        ...variables,
+      }),
+    ...options,
+  });
+};
+
 export type GetOutstandingRemindersV1RemindersOutstandingGetError =
   Fetcher.ErrorWrapper<
     | {

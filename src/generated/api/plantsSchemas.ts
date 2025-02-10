@@ -45,6 +45,21 @@ export type CreateCheckRequest = {
   notes?: string | null;
 };
 
+export type CreateFullCheckRequest = {
+  /**
+   * @format date-time
+   */
+  check_date?: string;
+  wetness_scale: number | string;
+  /**
+   * @format date-time
+   */
+  next_reminder_date: string;
+  watered: boolean;
+  bottom_watered: boolean;
+  notes?: string | null;
+};
+
 export type CreateLocationRequest = {
   name: string;
   description?: string | null;
