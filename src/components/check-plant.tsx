@@ -18,6 +18,7 @@ import {
   fetchCheckPlantV1PlantsPlantIdCheckPost,
   fetchCreateReminderV1RemindersPost,
   fetchDeleteReminderV1RemindersReminderIdDelete,
+  fetchFullCheckPlantV1PlantsPlantIdFullCheckPost,
   fetchWaterPlantV1PlantsPlantIdWaterPost,
   useGetPlantV1PlantsPlantIdGet,
 } from "../generated/api/plantsComponents";
@@ -139,56 +140,19 @@ export const CheckPlantDrawer = (props: {
     setSubmitLoading(true);
 
     try {
-      await fetchCheckPlantV1PlantsPlantIdCheckPost({
+      await fetchFullCheckPlantV1PlantsPlantIdFullCheckPost({
         pathParams: { plantId: plantToCheck },
         body: {
           check_date: removeTimeZoneBracketFromDatetime(
             overrideDate.toString()
           ),
           wetness_scale: wetness,
-          notes: notes,
-        },
-      });
-      if (watered) {
-        await fetchWaterPlantV1PlantsPlantIdWaterPost({
-          pathParams: { plantId: plantToCheck },
-          body: {
-            saturation_scale: 10,
-            watering_date: removeTimeZoneBracketFromDatetime(
-              overrideDate.add({ seconds: 1 }).toString()
-            ),
-            bottom_watered: bottomWatered,
-            notes: notes,
-          },
-        });
-        await fetchCheckPlantV1PlantsPlantIdCheckPost({
-          pathParams: { plantId: plantToCheck },
-          body: {
-            check_date: removeTimeZoneBracketFromDatetime(
-              overrideDate.add({ seconds: 1 }).toString()
-            ),
-            wetness_scale: 10,
-            notes: notes,
-          },
-        });
-      }
-      const existingOustandingReminderIds = plant.outstanding_reminders
-        .filter((reminder) => reminder.reminder_type === "check")
-        .map((reminder) => unwrap(reminder.id));
-
-      await Promise.all(
-        existingOustandingReminderIds.map((reminderId) =>
-          fetchDeleteReminderV1RemindersReminderIdDelete({
-            pathParams: { reminderId },
-          })
-        )
-      );
-      await fetchCreateReminderV1RemindersPost({
-        body: {
-          plant_id: plantToCheck,
-          reminder_date: nextCheckDayjs.toISOString(),
-          reminder_type: "check",
-          notes: "",
+          next_reminder_date: removeTimeZoneBracketFromDatetime(
+            nextCheckDate.toString()
+          ),
+          watered: watered,
+          bottom_watered: bottomWatered,
+          notes,
         },
       });
       toast({
