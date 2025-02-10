@@ -10,6 +10,9 @@ import LocationsPage from "./pages/locations";
 import { ImagePreviewProvider } from "./components/image-preview";
 import { PageLoadingProvider } from "./components/page-loading";
 import PlantPage from "./pages/plant";
+import WateringsPage from "./pages/waterings";
+import ChecksPage from "./pages/checks";
+import RemindersPage from "./pages/reminders";
 
 const queryClient = new QueryClient({});
 
@@ -25,6 +28,18 @@ function App() {
                 <Route element={<LoginPage />} path="/login" />
                 <Route element={<PlantsPage />} path="/plants" />
                 <Route element={<PlantPage />} path="/plants/:plantId" />
+                <Route
+                  element={<WateringsPage />}
+                  path="/plants/:plantId/waterings"
+                />
+                <Route
+                  element={<ChecksPage />}
+                  path="/plants/:plantId/checks"
+                />
+                <Route
+                  element={<RemindersPage />}
+                  path="/plants/:plantId/reminders"
+                />
                 <Route element={<LocationsPage />} path="/locations" />
               </Routes>
             </PageLoadingProvider>
