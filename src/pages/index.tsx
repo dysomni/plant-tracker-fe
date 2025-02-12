@@ -13,6 +13,7 @@ import { PlantWateringBadge, PlantWetnessBadge } from "../components/badges";
 import { IconClockHour7Filled, IconRuler2 } from "@tabler/icons-react";
 import { pluralize, unwrap } from "../util";
 import { CheckPlantDrawer } from "../components/check-plant";
+import { useMediaQueries } from "../components/responsive-hooks";
 dayjs.extend(relativeTime);
 
 export default function IndexPage() {
@@ -148,6 +149,8 @@ const ReminderCard = ({
     }
   }, [reminderDate]);
 
+  const mediaQueries = useMediaQueries();
+
   return (
     <Card className="flex flex-col sm:flex-row gap-6 p-4 rounded-lg items-center shadow-lg border-1 dark:border-0">
       {plantToCheck ? (
@@ -184,7 +187,7 @@ const ReminderCard = ({
         ) : null}
         <div className="flex flex-col gap-1 items-left">
           <Tooltip content={reminderDate.format("MMMM D, YYYY h:mm A")}>
-            <h3 className={`text-lg font-bold ${reminderTextColor}`}>
+            <h3 className={`text-md font-bold ${reminderTextColor}`}>
               {reminderDate.fromNow()}
             </h3>
           </Tooltip>
@@ -193,7 +196,7 @@ const ReminderCard = ({
               href={`/plants/${reminder.plant_info.plant.id}`}
               color="success"
             >
-              <span className="text-md font-bold">
+              <span className="text-lg font-bold">
                 {reminder.plant_info.plant.name}
               </span>
             </Link>
@@ -211,7 +214,7 @@ const ReminderCard = ({
       <div className="gap-1 flex-row sm:flex-col flex flex-wrap justify-center sm:w-auto w-full">
         {reminder.reminder.reminder_type === "check" ? (
           <Button
-            size="sm"
+            size={mediaQueries.sm ? "sm" : "md"}
             variant="flat"
             color="primary"
             className="font-bold w-full"
@@ -228,10 +231,10 @@ const ReminderCard = ({
         {reminder.reminder.reminder_type === "check" &&
         reminder.plant_info.plant.default_watering_interval_days ? (
           <Button
-            size="sm"
+            size={mediaQueries.sm ? "sm" : "md"}
             variant="flat"
             color="primary"
-            className="font-bold"
+            className="font-bold w-full"
             startContent={<IconClockHour7Filled size={20} />}
             onPress={() => {
               setQuickWater(true);
