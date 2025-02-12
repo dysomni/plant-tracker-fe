@@ -12,6 +12,8 @@ import {
   Button,
   CircularProgress,
   Chip,
+  RadioGroup,
+  Radio,
 } from "@nextui-org/react";
 import { now, getLocalTimeZone, fromDate } from "@internationalized/date";
 import {
@@ -22,7 +24,13 @@ import { useAuthErrorRedirect } from "../auth";
 import { useToast } from "../toast";
 import { useEffect, useMemo, useState } from "react";
 import dayjs from "dayjs";
-import { IconDropletFilled, IconDropletX } from "@tabler/icons-react";
+import {
+  IconDropletFilled,
+  IconDropletX,
+  IconMinus,
+  IconPlus,
+  IconSparkles,
+} from "@tabler/icons-react";
 import { pluralize, removeTimeZoneBracketFromDatetime } from "../util";
 import utc from "dayjs/plugin/utc";
 import timezone from "dayjs/plugin/timezone";
@@ -58,6 +66,8 @@ export const CheckPlantDrawer = (props: {
   const [overrideDate, setOverrideDate] = useState<DateValue>(
     now(getLocalTimeZone())
   );
+  const [overrideTouched, setOverrideTouched] = useState(false);
+  const [scheduleFromCurrentDate, setScheduleFromCurrentDate] = useState(false);
   const [submitLoading, setSubmitLoading] = useState(false);
 
   const {
@@ -87,8 +97,12 @@ export const CheckPlantDrawer = (props: {
     if (nextCheckDateTouched) return;
     if (!plant) return;
 
+    const relativeDate = scheduleFromCurrentDate
+      ? dayjs()
+      : dayjs(overrideDate.toDate(getLocalTimeZone()));
+
     if (watered && plant.plant.default_watering_interval_days) {
-      const nextCheckDate = dayjs().add(
+      const nextCheckDate = relativeDate.add(
         plant.plant.default_watering_interval_days,
         "day"
       );
@@ -115,14 +129,24 @@ export const CheckPlantDrawer = (props: {
     );
 
     if (watered) {
-      const nextCheckDate = dayjs().add(daysUntilTwoFromWatering * 24, "hour");
+      const nextCheckDate = relativeDate.add(
+        daysUntilTwoFromWatering * 24,
+        "hour"
+      );
       setNextCheckDate(dayjsToDateValue(nextCheckDate));
       return;
     }
 
-    const nextCheckDate = dayjs().add(daysUntilTwoFromNow * 24, "hour");
+    const nextCheckDate = relativeDate.add(daysUntilTwoFromNow * 24, "hour");
     setNextCheckDate(dayjsToDateValue(nextCheckDate));
-  }, [plant, lastWatering, wetness, watered]);
+  }, [
+    plant,
+    lastWatering,
+    wetness,
+    watered,
+    overrideDate,
+    scheduleFromCurrentDate,
+  ]);
 
   useEffect(() => {
     if (wateredTouched) return;
@@ -178,133 +202,200 @@ export const CheckPlantDrawer = (props: {
           </div>
         ) : null}
         <DrawerHeader>Check {plant?.plant.name}</DrawerHeader>
-        <DrawerBody className="gap-6">
-          <div className="flex flex-col gap-0 items-center">
-            <h3 className={`text-md font-bold`}>
-              {lastWatering
-                ? `Last watered ${lastWatering.fromNow()}`
-                : "Never watered"}
-            </h3>
-            {lastWatering ? (
-              <p className="text-sm text-gray-500">
-                {lastWatering?.format("MMMM D, YYYY h:mm A")}
-              </p>
-            ) : null}
-          </div>
-          <Slider
-            aria-label="Wetness"
-            label="Wetness Measurement"
-            defaultValue={0.6}
-            maxValue={10}
-            minValue={0}
-            size="lg"
-            step={1}
-            endContent={<IconDropletFilled size={20} />}
-            startContent={<IconDropletX size={20} />}
-            value={wetness}
-            onChange={(num) => setWetness(num as number)}
-            marks={[
-              {
-                value: 0,
-                label: "Bone Dry",
-              },
-              {
-                value: 5,
-                label: "Damp",
-              },
-              {
-                value: 10,
-                label: "Watered",
-              },
-            ]}
-          />
-          <div
-            className={`flex flex-col ${watered ? "gap-3" : "gap-0"}`}
-            style={{ transition: "gap 0.2s ease-in-out" }}
-          >
-            <Checkbox
-              isSelected={watered}
-              onValueChange={(value) => {
-                setWatered(value);
-                setWateredTouched(true);
-              }}
-            >
-              Will the plant be watered?
-            </Checkbox>
-            {plant?.plant.default_watering_interval_days ? (
-              <div
-                className={`${watered ? "h-7" : "h-0"} overflow-hidden`}
-                style={{ transition: "height 0.2s ease-in-out" }}
-              >
-                <Chip
-                  color="success"
-                  variant="solid"
-                  startContent={<IconDropletFilled size={15} />}
-                >
-                  This plant's default watering interval is{" "}
-                  {plant?.plant.default_watering_interval_days} days
-                </Chip>
-              </div>
-            ) : null}
-            <div
-              className={`${watered ? "h-6" : "h-0"} overflow-hidden`}
-              style={{ transition: "height 0.2s ease-in-out" }}
-            >
-              <Checkbox
-                isSelected={bottomWatered}
-                onValueChange={setBottomWatered}
-              >
-                Bottom watered?
-              </Checkbox>
-            </div>
-          </div>
-          <div className="flex flex-col gap-3">
-            <div className="flex flex-row justify-between flex-wrap">
-              <p className="font-bold text-lg">
-                Next Reminder in {nextCheckDaysRounded}{" "}
-                {pluralize(nextCheckDaysRounded, "day", "days")}
-              </p>
-              {typicalDryoutDays ? (
-                <p>Typical dryout: {Math.round(typicalDryoutDays)} days</p>
+        <DrawerBody>
+          <div className="flex flex-col gap-6 overflow-y-scroll h-full">
+            <div className="flex flex-col gap-0 items-center">
+              <h3 className={`text-md font-bold`}>
+                {lastWatering
+                  ? `Last watered ${lastWatering.fromNow()}`
+                  : "Never watered"}
+              </h3>
+              {lastWatering ? (
+                <p className="text-sm text-gray-500">
+                  {lastWatering?.format("MMMM D, YYYY h:mm A")}
+                </p>
               ) : null}
             </div>
+            <Slider
+              aria-label="Wetness"
+              label="Wetness Measurement"
+              defaultValue={0.6}
+              maxValue={10}
+              minValue={0}
+              size="lg"
+              step={1}
+              endContent={<IconDropletFilled size={20} />}
+              startContent={<IconDropletX size={20} />}
+              value={wetness}
+              onChange={(num) => setWetness(num as number)}
+              marks={[
+                {
+                  value: 0,
+                  label: "Bone Dry",
+                },
+                {
+                  value: 5,
+                  label: "Damp",
+                },
+                {
+                  value: 10,
+                  label: "Watered",
+                },
+              ]}
+            />
+            <div
+              className={`flex flex-col ${watered ? "gap-3" : "gap-0"}`}
+              style={{ transition: "gap 0.2s ease-in-out" }}
+            >
+              <Checkbox
+                isSelected={watered}
+                onValueChange={(value) => {
+                  setWatered(value);
+                  setWateredTouched(true);
+                }}
+              >
+                Will the plant be watered?
+              </Checkbox>
+              {plant?.plant.default_watering_interval_days ? (
+                <div
+                  className={`${watered ? "h-7" : "h-0"} overflow-hidden`}
+                  style={{ transition: "height 0.2s ease-in-out" }}
+                >
+                  <Chip
+                    color="success"
+                    variant="solid"
+                    startContent={<IconDropletFilled size={15} />}
+                  >
+                    This plant's default watering interval is{" "}
+                    {plant?.plant.default_watering_interval_days} days
+                  </Chip>
+                </div>
+              ) : null}
+              <div
+                className={`${watered ? "h-6" : "h-0"} overflow-hidden`}
+                style={{ transition: "height 0.2s ease-in-out" }}
+              >
+                <Checkbox
+                  isSelected={bottomWatered}
+                  onValueChange={setBottomWatered}
+                >
+                  Bottom watered?
+                </Checkbox>
+              </div>
+            </div>
+            <div className="flex flex-col gap-3">
+              <div className="flex flex-row justify-between flex-wrap">
+                <p className="font-bold text-lg">
+                  Next Reminder in {nextCheckDaysRounded}{" "}
+                  {pluralize(nextCheckDaysRounded, "day", "days")}
+                </p>
+                {typicalDryoutDays ? (
+                  <p>Typical dryout: {Math.round(typicalDryoutDays)} days</p>
+                ) : null}
+              </div>
+
+              <DatePicker
+                isRequired
+                showMonthAndYearPickers
+                value={nextCheckDate}
+                onChange={(date) => {
+                  if (!date) return;
+                  setNextCheckDate(date);
+                  setNextCheckDateTouched(true);
+                }}
+                startContent={
+                  nextCheckDateTouched ? undefined : <IconSparkles />
+                }
+                label="Next Check Date"
+                description="Set the date for the next check."
+                variant="bordered"
+              />
+              <div className="flex gap-2">
+                <Button
+                  className="w-full"
+                  startContent={<IconMinus />}
+                  variant="flat"
+                  color="default"
+                  onPress={() => {
+                    setNextCheckDateTouched(true);
+                    setNextCheckDate(
+                      dayjsToDateValue(
+                        dayjs(
+                          nextCheckDate.toDate(getLocalTimeZone())
+                        ).subtract(1, "day")
+                      )
+                    );
+                  }}
+                >
+                  1 day
+                </Button>
+                <Button
+                  className="w-full"
+                  startContent={<IconPlus />}
+                  variant="flat"
+                  color="default"
+                  onPress={() => {
+                    setNextCheckDateTouched(true);
+                    setNextCheckDate(
+                      dayjsToDateValue(
+                        dayjs(nextCheckDate.toDate(getLocalTimeZone())).add(
+                          1,
+                          "day"
+                        )
+                      )
+                    );
+                  }}
+                >
+                  1 day
+                </Button>
+              </div>
+            </div>
+            <Textarea
+              label="Notes"
+              placeholder="Thoughts about the check or watering..."
+              value={notes}
+              onValueChange={setNotes}
+            />
 
             <DatePicker
-              isRequired
               showMonthAndYearPickers
-              value={nextCheckDate}
+              value={overrideDate}
               onChange={(date) => {
-                if (!date) return;
-                setNextCheckDate(date);
-                setNextCheckDateTouched(true);
+                setOverrideTouched(true);
+                date && setOverrideDate(date);
               }}
-              label="Next Check Date"
-              description="Set the date for the next check."
+              label="This Check Occurred On"
+              description="Change this if you want to backfill a check or watering you did in the past."
               variant="bordered"
             />
+            {overrideTouched && !nextCheckDateTouched ? (
+              <RadioGroup
+                label="Schedule next check relative to:"
+                defaultValue="no"
+                orientation="horizontal"
+                value={scheduleFromCurrentDate ? "yes" : "no"}
+                onValueChange={(value) =>
+                  setScheduleFromCurrentDate(value === "yes")
+                }
+              >
+                <div className="flex gap-6">
+                  <Radio value="no" className="flex gap-2">
+                    Override Date
+                  </Radio>
+                  <Radio value="yes" className="flex gap-2">
+                    Current Date
+                  </Radio>
+                </div>
+              </RadioGroup>
+            ) : null}
           </div>
-          <Textarea
-            label="Notes"
-            placeholder="Thoughts about the check or watering..."
-            value={notes}
-            onValueChange={setNotes}
-          />
-
-          <DatePicker
-            showMonthAndYearPickers
-            value={overrideDate}
-            onChange={(date) => date && setOverrideDate(date)}
-            label="This Check Occurred On"
-            description="Change this if you want to backfill a check or watering you did in the past."
-            variant="bordered"
-          />
+          <DrawerFooter>
+            <Button onPress={onClose}>Cancel</Button>
+            <Button color="success" onPress={handleSubmit}>
+              Submit
+            </Button>
+          </DrawerFooter>
         </DrawerBody>
-        <DrawerFooter>
-          <Button onPress={onClose}>Cancel</Button>
-          <Button color="success" onPress={handleSubmit}>
-            Submit
-          </Button>
-        </DrawerFooter>
       </DrawerContent>
     </Drawer>
   );
