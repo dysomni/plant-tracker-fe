@@ -54,7 +54,7 @@ export const wetnessToLabel = (wetness: number) => {
     7: "Wet",
     8: "Very Wet",
     9: "Soaked",
-    10: "Watered",
+    10: "Saturated",
   };
 
   if (wetness in mapping) {
@@ -78,7 +78,7 @@ export const PlantWetnessBadge = ({
     return (
       <Chip
         color="default"
-        variant="solid"
+        variant="flat"
         startContent={<IconRuler2 size={15} />}
       >
         Unchecked
@@ -100,8 +100,9 @@ export const PlantWetnessBadge = ({
     <Tooltip content={lastCheckDate.format("MMMM D, YYYY h:mm A")}>
       <Chip
         color={wetnessColor}
-        variant="solid"
+        variant="flat"
         startContent={<IconRuler2 size={15} />}
+        // className="bg-danger-"
       >
         {wetnessToLabel(wetness)}&nbsp;
         {lastCheckDate.fromNow()}
@@ -120,7 +121,7 @@ export const PlantWateringBadge = ({
     return (
       <Chip
         color="default"
-        variant="solid"
+        variant="flat"
         startContent={<IconDropletFilled size={15} />}
       >
         Unwatered
@@ -132,7 +133,7 @@ export const PlantWateringBadge = ({
     <Tooltip content={lastWateredDate.format("MMMM D, YYYY h:mm A")}>
       <Chip
         color="primary"
-        variant="solid"
+        variant="flat"
         startContent={<IconDropletFilled size={15} />}
       >
         {lastWateredDate.fromNow()}
