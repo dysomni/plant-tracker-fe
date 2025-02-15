@@ -10,7 +10,12 @@ import { useImagePreview } from "../components/image-preview";
 import { ReminderWithPlantInfo } from "../generated/api/plantsSchemas";
 import { usePageLoading } from "../components/page-loading";
 import { PlantWateringBadge, PlantWetnessBadge } from "../components/badges";
-import { IconClockHour7Filled, IconRuler2 } from "@tabler/icons-react";
+import {
+  IconCheck,
+  IconClockHour7Filled,
+  IconCloudRain,
+  IconRuler2,
+} from "@tabler/icons-react";
 import { pluralize, unwrap } from "../util";
 import { CheckPlantDrawer } from "../components/check-plant";
 import { useMediaQueries } from "../components/responsive-hooks";
@@ -61,13 +66,13 @@ export default function IndexPage() {
         <div className="flex gap-4 justify-between w-full flex-col sm:flex-row sm:items-center">
           <div className="inline-block max-w-lg text-right justify-center self-start">
             <span className="text-2xl">welcome&nbsp;</span>
-            <span className="text-3xl text-lime-600 dark:text-green-500 font-extrabold">
+            <span className="text-3xl text-success-500 font-extrabold">
               {authContext.user?.name}
             </span>
           </div>
           <div className="inline-block max-w-96 sm:max-w-lg text-right self-end sm:self-auto">
             <span className="text-lg whitespace-nowrap">You have&nbsp;</span>
-            <span className="text-xl text-amber-800 dark:text-amber-400 font-extrabold whitespace-nowrap">
+            <span className="text-xl text-success-500 font-extrabold whitespace-nowrap">
               {overdueReminders.length + recentReminders.length}{" "}
               outstanding&nbsp;
             </span>
@@ -131,28 +136,30 @@ const ReminderCard = ({
   const [plantToCheck, setPlantToCheck] = useState<string | undefined>();
   const [quickWater, setQuickWater] = useState(false);
 
-  const reminderTextColor = useMemo(() => {
+  const reminderBgColor = useMemo(() => {
     const now = dayjs();
     const diffInMinutes = now.diff(reminderDate, "minute");
 
     switch (true) {
       case diffInMinutes <= 15:
-        return "text-success-600";
+        return "bg-success-50";
       case diffInMinutes <= 60:
-        return "text-warning-500";
+        return "bg-warning-50";
       case diffInMinutes <= 1440:
-        return "text-warning-700";
+        return "bg-warning-50";
       case diffInMinutes <= 2880:
-        return "text-danger-500";
+        return "bg-danger-50";
       default:
-        return "text-danger-500";
+        return "bg-danger-50";
     }
   }, [reminderDate]);
 
   const mediaQueries = useMediaQueries();
 
   return (
-    <Card className="flex flex-col sm:flex-row gap-6 p-4 rounded-lg items-center shadow-lg border-1 dark:border-0">
+    <Card
+      className={`flex flex-col sm:flex-row gap-6 p-4 rounded-lg items-center shadow-lg border-1 dark:border-0 ${reminderBgColor}`}
+    >
       {plantToCheck ? (
         <CheckPlantDrawer
           plantToCheck={plantToCheck}
@@ -185,9 +192,9 @@ const ReminderCard = ({
             />
           </div>
         ) : null}
-        <div className="flex flex-col gap-1 items-left">
+        <div className="flex flex-col gap-0 items-left">
           <Tooltip content={reminderDate.format("MMMM D, YYYY h:mm A")}>
-            <h3 className={`text-md font-bold ${reminderTextColor}`}>
+            <h3 className={`text-md font-bold text-foreground-900`}>
               {reminderDate.fromNow()}
             </h3>
           </Tooltip>
@@ -196,7 +203,7 @@ const ReminderCard = ({
               href={`/plants/${reminder.plant_info.plant.id}`}
               color="success"
             >
-              <span className="text-lg font-bold">
+              <span className="text-lg font-bold text-success-700">
                 {reminder.plant_info.plant.name}
               </span>
             </Link>
@@ -253,9 +260,10 @@ const ReminderCard = ({
 
 const OverdueSectionStarter = () => {
   return (
-    <div className="flex flex-row gap-4 w-full items-center pt-2">
-      <Divider className="grow w-auto" />
-      <h2 className="text-sm font-bold">Overdue</h2>
+    <div className="flex flex-row gap-2 w-full items-center pt-2">
+      {/* <Divider className="grow w-auto" /> */}
+      <IconClockHour7Filled size={24} className="text-danger-800" />
+      <h2 className="text-lg font-bold text-danger-800">Overdue</h2>
       <Divider className="grow w-auto" />
     </div>
   );
@@ -264,8 +272,9 @@ const OverdueSectionStarter = () => {
 const RecentSectionStarter = () => {
   return (
     <div className="flex flex-row gap-4 w-full items-center pt-2">
-      <Divider className="grow w-auto" />
-      <h2 className="text-sm font-bold">Current</h2>
+      {/* <Divider className="grow w-auto" /> */}
+      <IconCloudRain size={24} className="text-warning-800" />
+      <h2 className="text-lg font-bold text-warning-800">Current</h2>
       <Divider className="grow w-auto" />
     </div>
   );
@@ -274,8 +283,9 @@ const RecentSectionStarter = () => {
 const UpcomingSectionStarter = () => {
   return (
     <div className="flex flex-row gap-4 w-full items-center pt-2">
-      <Divider className="grow w-auto" />
-      <h2 className="text-sm font-bold">Upcoming</h2>
+      {/* <Divider className="grow w-auto" /> */}
+      <IconCheck size={24} className="text-success-800" />
+      <h2 className="text-lg font-bold text-success-800">Upcoming</h2>
       <Divider className="grow w-auto" />
     </div>
   );
