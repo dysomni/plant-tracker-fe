@@ -37,9 +37,9 @@ export default function IndexPage() {
       data?.reminders.filter(
         (reminder) =>
           reminder.reminder.reminder_date <
-          dayjs().subtract(1, "day").toISOString()
+          dayjs().subtract(1, "day").toISOString(),
       ) ?? [],
-    [data]
+    [data],
   );
 
   const recentReminders = useMemo(
@@ -49,9 +49,9 @@ export default function IndexPage() {
           reminder.reminder.reminder_date >=
             dayjs().subtract(1, "day").toISOString() &&
           reminder.reminder.reminder_date <
-            dayjs().add(12, "hours").toISOString()
+            dayjs().add(12, "hours").toISOString(),
       ) ?? [],
-    [data]
+    [data],
   );
 
   const upcomingReminders = useMemo(
@@ -59,9 +59,9 @@ export default function IndexPage() {
       data?.reminders.filter(
         (reminder) =>
           reminder.reminder.reminder_date >=
-          dayjs().add(12, "hours").toISOString()
+          dayjs().add(12, "hours").toISOString(),
       ) ?? [],
-    [data]
+    [data],
   );
 
   return (
@@ -84,7 +84,7 @@ export default function IndexPage() {
               {pluralize(
                 overdueReminders.length + recentReminders.length,
                 "reminder",
-                "reminders"
+                "reminders",
               )}
             </span>
           </div>

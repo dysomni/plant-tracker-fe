@@ -38,7 +38,7 @@ export default function PlantsPage() {
         plant.location.name.toLowerCase().includes(searchInput.toLowerCase()) ||
         plant.plant.scientific_name
           .toLowerCase()
-          .includes(searchInput.toLowerCase())
+          .includes(searchInput.toLowerCase()),
     );
   }, [data, searchInput]);
 
@@ -49,7 +49,7 @@ export default function PlantsPage() {
     () =>
       data?.plants.filter((plant) => plant.outstanding_reminders.length === 0)
         .length ?? 0,
-    [data]
+    [data],
   );
 
   return (
