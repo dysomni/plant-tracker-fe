@@ -398,8 +398,10 @@ export const CheckPlantDrawer = (props: {
             ) : null}
           </div>
           <DrawerFooter>
-            <Button onPress={onClose}>Cancel</Button>
-            <Button color="success" onPress={handleSubmit}>
+            <Button size="lg" onPress={onClose}>
+              Cancel
+            </Button>
+            <Button color="success" size="lg" onPress={handleSubmit}>
               Submit
             </Button>
           </DrawerFooter>

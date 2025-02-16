@@ -222,7 +222,10 @@ export const CreatePlantDrawer = (props: {
             />
           </DrawerBody>
           <DrawerFooter>
-            <Button color="success" type="submit">
+            <Button size="lg" onPress={() => setOpen(false)}>
+              Cancel
+            </Button>
+            <Button color="success" size="lg" type="submit">
               {editPlant ? "Update" : "Create"}
             </Button>
           </DrawerFooter>

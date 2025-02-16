@@ -169,7 +169,10 @@ export const CreateReminderDrawer = (props: {
             />
           </DrawerBody>
           <DrawerFooter>
-            <Button color="success" type="submit">
+            <Button size="lg" onPress={() => setOpen(false)}>
+              Cancel
+            </Button>
+            <Button color="success" size="lg" type="submit">
               Create
             </Button>
           </DrawerFooter>

@@ -630,7 +630,7 @@ const AddPhotoDrawer = (props: {
               <Button
                 color="default"
                 isDisabled={loading}
-                variant="light"
+                size="lg"
                 onPress={onClose}
               >
                 Cancel
@@ -638,6 +638,7 @@ const AddPhotoDrawer = (props: {
               <Button
                 color="success"
                 isDisabled={!uploadedFiles || !uploadedFiles.length || loading}
+                size="lg"
                 onPress={handleUpload}
               >
                 Upload
