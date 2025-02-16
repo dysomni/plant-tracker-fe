@@ -9,7 +9,8 @@
 		"lint": "eslint -c .eslintrc.json ./src/**/**/*.{ts,tsx} --fix",
 		"preview": "vite preview",
 		"init-codegen": "openapi-codegen init",
-		"codegen": "openapi-codegen gen plants"
+		"codegen": "openapi-codegen gen plants",
+		"prepare": "husky"
 	},
 	"dependencies": {
 		"@nextui-org/button": "2.2.8",
@@ -60,6 +61,7 @@
 		"eslint-plugin-react": "^7.23.2",
 		"eslint-plugin-react-hooks": "^4.6.0",
 		"eslint-plugin-unused-imports": "4.1.4",
+		"husky": "^9.1.7",
 		"postcss": "8.4.38",
 		"prettier": "3.3.3",
 		"typescript": "5.6.3",
