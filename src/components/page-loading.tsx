@@ -38,10 +38,12 @@ export const PageLoadingProvider = ({
 
 export const usePageLoading = (loading: boolean) => {
   const pageLoadingContext = useContext(PageLoadingContext);
+
   if (!pageLoadingContext) {
     throw new Error("usePageLoading must be used within a PageLoadingProvider");
   }
   const { setLoading } = pageLoadingContext;
+
   useEffect(() => {
     setLoading(loading);
   }, [loading]);

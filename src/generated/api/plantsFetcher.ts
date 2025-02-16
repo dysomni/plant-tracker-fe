@@ -1,5 +1,6 @@
-import { PlantsContext } from "./plantsContext";
 import axios from "axios";
+
+import { PlantsContext } from "./plantsContext";
 
 const baseUrl = import.meta.env.VITE_API_HOST;
 
@@ -56,6 +57,7 @@ export async function plantsFetch<
   }
 
   let response;
+
   try {
     response = await axios({
       url: `${baseUrl}${resolveUrl(url, queryParams, pathParams)}`,
@@ -85,9 +87,11 @@ export async function plantsFetch<
 const resolveUrl = (
   url: string,
   queryParams: Record<string, string> = {},
-  pathParams: Record<string, string> = {}
+  pathParams: Record<string, string> = {},
 ) => {
   let query = new URLSearchParams(queryParams).toString();
+
   if (query) query = `?${query}`;
+
   return url.replace(/\{\w*\}/g, (key) => pathParams[key.slice(1, -1)]) + query;
 };

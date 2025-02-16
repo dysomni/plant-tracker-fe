@@ -13,15 +13,16 @@ import { curveLinear } from "@visx/curve";
 import { RectClipPath } from "@visx/clip-path";
 import { useParentSize } from "@visx/responsive";
 import { localPoint } from "@visx/event";
-import { useMediaQueries } from "./responsive-hooks";
-
-import { Check, Watering } from "../generated/api/plantsSchemas";
 import dayjs from "dayjs";
 import { useCallback, useMemo, useState } from "react";
 import { Line, LinePath } from "@visx/shape";
 import { GridColumns, GridRows } from "@visx/grid";
 import { AxisBottom, AxisRight } from "@visx/axis";
 import { Slider, Tab, Tabs } from "@nextui-org/react";
+
+import { Check, Watering } from "../generated/api/plantsSchemas";
+
+import { useMediaQueries } from "./responsive-hooks";
 
 const checkAccessors = {
   xAccessor: (d: Check) => dayjs(d.check_date).toDate(),
@@ -51,15 +52,18 @@ export const MyChart = (props: {
   >("3month");
   const checkHistory = useMemo(() => {
     const now = dayjs();
+
     return props.checkHistory.filter((check) => {
       if (dataRangeSelection === "alltime") return true;
       const checkDate = dayjs(check.check_date);
+
       if (dataRangeSelection === "year")
         return checkDate.isAfter(now.subtract(1, "year"));
       else if (dataRangeSelection === "3month")
         return checkDate.isAfter(now.subtract(3, "month"));
       else if (dataRangeSelection === "month")
         return checkDate.isAfter(now.subtract(1, "month"));
+
       return false;
     });
   }, [props.checkHistory, dataRangeSelection]);
@@ -106,7 +110,7 @@ export const MyChart = (props: {
           Date,
         ],
       }),
-    [xRangeStart, xRangeEnd, brushBounds]
+    [xRangeStart, xRangeEnd, brushBounds],
   );
   const wetnessScale = useMemo(
     () =>
@@ -115,7 +119,7 @@ export const MyChart = (props: {
         domain: [0, 10],
         nice: true,
       }),
-    [yRangeEnd, yRangeStart]
+    [yRangeEnd, yRangeStart],
   );
   const brushDateScale = useMemo(
     () =>
@@ -126,12 +130,14 @@ export const MyChart = (props: {
           new Date(),
         ] as [Date, Date],
       }),
-    [xRangeStart, xRangeEnd, checkHistory]
+    [xRangeStart, xRangeEnd, checkHistory],
   );
 
   const handleTooltip = useCallback(
     (
-      event: React.TouchEvent<SVGRectElement> | React.MouseEvent<SVGRectElement>
+      event:
+        | React.TouchEvent<SVGRectElement>
+        | React.MouseEvent<SVGRectElement>,
     ) => {
       const { x } = localPoint(event) || { x: 0 };
       const actualX = x - marginLeft;
@@ -141,6 +147,7 @@ export const MyChart = (props: {
       const d0 = checkHistory[index - 1];
       const d1 = checkHistory[index];
       let d = d0;
+
       if (d1 && checkAccessors.xAccessor(d1)) {
         d =
           x0.valueOf() - checkAccessors.xAccessor(d0).valueOf() >
@@ -149,13 +156,14 @@ export const MyChart = (props: {
             : d0;
       }
       const xPosition = dateScale(checkAccessors.xAccessor(d));
+
       showTooltip({
         tooltipData: d,
         tooltipLeft: xPosition,
         tooltipTop: wetnessScale(checkAccessors.yAccessor(d)),
       });
     },
-    [showTooltip, checkHistory, dateScale]
+    [showTooltip, checkHistory, dateScale],
   );
 
   const labelSize = mediaQueries["md"] ? 18 : mediaQueries["sm"] ? 15 : 11;
@@ -182,97 +190,98 @@ export const MyChart = (props: {
           className="w-full min-h-[300px] sm:min-h-[400px] md:min-h-[500px] relative bg-slate-50 p-2 rounded-3xl shadow-xl"
           style={{ minWidth: marginLeft + marginRight + 5 + "px" }}
         >
-          <svg width={width} height={height} className="relative">
+          <svg className="relative" height={height} width={width}>
             <rect
+              fill={background}
+              height={yRangeHeight}
+              rx={14}
+              width={xRangeWidth}
               x={xRangeStart}
               y={yRangeStart}
-              width={xRangeWidth}
-              height={yRangeHeight}
-              fill={background}
-              rx={14}
             />
 
-            <Group top={yRangeStart} left={xRangeStart}>
+            <Group left={xRangeStart} top={yRangeStart}>
               <RectClipPath
+                height={yRangeHeight}
                 id="clip"
                 width={xRangeWidth}
-                height={yRangeHeight}
               />
               <LinePath<Check>
+                clipPath="url(#clip)"
+                curve={curveLinear}
                 data={checkHistory}
-                width={xRangeWidth}
                 height={yRangeHeight}
-                x={(d) => dateScale(checkAccessors.xAccessor(d))}
-                y={(d) => wetnessScale(checkAccessors.yAccessor(d))}
                 stroke={"green"}
                 strokeWidth={2}
-                curve={curveLinear}
-                clipPath="url(#clip)"
+                width={xRangeWidth}
+                x={(d) => dateScale(checkAccessors.xAccessor(d))}
+                y={(d) => wetnessScale(checkAccessors.yAccessor(d))}
               />
               <GridRows
-                scale={wetnessScale}
-                width={xRangeWidth}
                 height={yRangeHeight}
+                scale={wetnessScale}
                 stroke="grey"
                 strokeOpacity={0.2}
+                width={xRangeWidth}
               />
               <GridColumns
-                scale={dateScale}
                 height={yRangeHeight}
-                width={xRangeWidth}
+                numTicks={5}
+                scale={dateScale}
                 stroke="grey"
                 strokeOpacity={0.2}
-                numTicks={5}
+                width={xRangeWidth}
               />
 
               <AxisBottom
-                top={yRangeHeight}
+                numTicks={5}
                 scale={dateScale}
                 stroke={"black"}
-                tickStroke={"black"}
                 tickLabelProps={{
                   fill: "black",
                   fontSize: labelSize,
                   textAnchor: "middle",
                 }}
-                numTicks={5}
+                tickStroke={"black"}
+                top={yRangeHeight}
               />
               <AxisRight
-                scale={wetnessScale}
                 left={xRangeWidth}
+                scale={wetnessScale}
                 stroke={"black"}
-                tickStroke={"black"}
                 tickLabelProps={() => ({
                   fill: "black",
                   fontSize: labelSize,
                   textAnchor: "start",
                 })}
+                tickStroke={"black"}
               />
               {waterHistory.map((water) => {
                 const x = dateScale(dayjs(water.watering_date).toDate());
+
                 return (
                   <React.Fragment key={water.id}>
                     <Line
-                      from={{ x: x, y: 0 }}
-                      to={{ x: x, y: yRangeHeight }}
-                      stroke={"blue"}
-                      strokeWidth={2}
-                      pointerEvents="none"
-                      strokeDasharray="5,2"
-                      opacity={0.8}
                       clipPath="url(#clip)"
+                      from={{ x: x, y: 0 }}
+                      opacity={0.8}
+                      pointerEvents="none"
+                      stroke={"blue"}
+                      strokeDasharray="5,2"
+                      strokeWidth={2}
+                      to={{ x: x, y: yRangeHeight }}
                     />
                     <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      width="12"
+                      className="icon icon-tabler icons-tabler-filled icon-tabler-droplet"
+                      fill="blue"
                       height="12"
                       viewBox="0 0 24 24"
-                      fill="blue"
-                      className="icon icon-tabler icons-tabler-filled icon-tabler-droplet"
+                      width="12"
                       x={x - 6}
+                      xmlns="http://www.w3.org/2000/svg"
                       y={yRangeHeight + 1}
                     >
-                      <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+                      <path d="M0 0h24v24H0z" fill="none" stroke="none" />
                       <path d="M10.708 2.372a2.382 2.382 0 0 0 -.71 .686l-4.892 7.26c-1.981 3.314 -1.22 7.466 1.767 9.882c2.969 2.402 7.286 2.402 10.254 0c2.987 -2.416 3.748 -6.569 1.795 -9.836l-4.919 -7.306c-.722 -1.075 -2.192 -1.376 -3.295 -.686z" />
                     </svg>
                   </React.Fragment>
@@ -280,46 +289,46 @@ export const MyChart = (props: {
               })}
 
               <rect
+                fill="transparent"
+                height={yRangeHeight}
+                rx={14}
+                width={xRangeWidth}
                 x={0}
                 y={0}
-                width={xRangeWidth}
-                height={yRangeHeight}
-                fill="transparent"
-                rx={14}
-                onTouchStart={handleTooltip}
-                onTouchMove={handleTooltip}
-                onMouseMove={handleTooltip}
                 onMouseLeave={() => hideTooltip()}
+                onMouseMove={handleTooltip}
+                onTouchMove={handleTooltip}
+                onTouchStart={handleTooltip}
               />
               {tooltipData && (
                 <g>
                   <Line
                     from={{ x: tooltipLeft ?? 0, y: 0 }}
-                    to={{ x: tooltipLeft ?? 0, y: yRangeHeight }}
-                    stroke={"black"}
-                    strokeWidth={2}
                     pointerEvents="none"
+                    stroke={"black"}
                     strokeDasharray="5,2"
+                    strokeWidth={2}
+                    to={{ x: tooltipLeft ?? 0, y: yRangeHeight }}
                   />
                   <circle
                     cx={tooltipLeft ?? 0}
                     cy={(tooltipTop ?? 0) + 1}
-                    r={4}
                     fill="black"
                     fillOpacity={0.1}
+                    pointerEvents="none"
+                    r={4}
                     stroke="black"
                     strokeOpacity={0.1}
                     strokeWidth={2}
-                    pointerEvents="none"
                   />
                   <circle
                     cx={tooltipLeft ?? 0}
                     cy={tooltipTop ?? 0}
-                    r={4}
                     fill={"black"}
+                    pointerEvents="none"
+                    r={4}
                     stroke="white"
                     strokeWidth={2}
-                    pointerEvents="none"
                   />
                 </g>
               )}
@@ -329,25 +338,25 @@ export const MyChart = (props: {
             <div>
               <TooltipWithBounds
                 key={Math.random()}
-                top={(tooltipTop ?? 0) - 12}
                 left={(tooltipLeft ?? 0) + 20}
                 style={tooltipStyles}
+                top={(tooltipTop ?? 0) - 12}
               >
                 {`Wetness ${checkAccessors.yAccessor(tooltipData as Check)}`}
               </TooltipWithBounds>
               <Tooltip
-                top={yRangeEnd}
-                left={(tooltipLeft ?? 0) + 10}
                 className="shadow-lg border-1"
+                left={(tooltipLeft ?? 0) + 10}
                 style={{
                   ...defaultStyles,
                   minWidth: 100,
                   textAlign: "center",
                   transform: "translateX(-50%)",
                 }}
+                top={yRangeEnd}
               >
                 {dayjs(checkAccessors.xAccessor(tooltipData as Check)).format(
-                  "YYYY-MM-DD h:mm A"
+                  "YYYY-MM-DD h:mm A",
                 )}
               </Tooltip>
             </div>
@@ -363,6 +372,9 @@ export const MyChart = (props: {
           <Slider
             aria-label="Discrete slider"
             color="primary"
+            maxValue={brushDateScale.domain()[1].getTime() ?? 0}
+            minValue={brushDateScale.domain()[0].getTime() ?? 0}
+            step={1000000}
             value={[brushBounds.x0, brushBounds.x1]}
             onChange={(numbers) => {
               setBrushBounds({
@@ -371,16 +383,13 @@ export const MyChart = (props: {
                 x1: (numbers as number[])[1],
               });
             }}
-            minValue={brushDateScale.domain()[0].getTime() ?? 0}
-            maxValue={brushDateScale.domain()[1].getTime() ?? 0}
-            step={1000000}
           />
         ) : null}
         <Tabs
-          className="mt-2"
           aria-label="data range selection"
-          size={mediaQueries["sm"] ? "lg" : "sm"}
+          className="mt-2"
           selectedKey={dataRangeSelection}
+          size={mediaQueries["sm"] ? "lg" : "sm"}
           onSelectionChange={(key) => setDataRangeSelection(key as any)}
         >
           <Tab key="month" title="Month" />

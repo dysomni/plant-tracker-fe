@@ -1,16 +1,18 @@
-import DefaultLayout from "@/layouts/default";
 import { Button } from "@nextui-org/button";
 import { Input } from "@nextui-org/input";
 import { Card } from "@nextui-org/card";
 import { useContext, useEffect, useState } from "react";
+import { Alert } from "@nextui-org/react";
+import { useNavigate } from "react-router-dom";
+
 import {
   fetchLoginAuthTokenPost,
   LoginAuthTokenPostError,
 } from "../generated/api/plantsComponents";
-import { Alert } from "@nextui-org/react";
 import { AuthContext } from "../auth";
-import { useNavigate } from "react-router-dom";
 import { usePageLoading } from "../components/page-loading";
+
+import DefaultLayout from "@/layouts/default";
 
 export const LoginPage = () => {
   const navigate = useNavigate();
@@ -18,11 +20,12 @@ export const LoginPage = () => {
   const [passwordInput, setPasswordInput] = useState("");
   const [loginLoading, setLoginLoading] = useState(false);
   const [loginError, setLoginError] = useState<LoginAuthTokenPostError | null>(
-    null
+    null,
   );
   const disabled = userInput === "" || passwordInput === "" || loginLoading;
 
   const authContext = useContext(AuthContext);
+
   usePageLoading(false);
   useEffect(() => {
     if (authContext.user) {
@@ -50,6 +53,7 @@ export const LoginPage = () => {
         <Button
           className="bg-green-500"
           isDisabled={disabled}
+          isLoading={loginLoading}
           onPress={async (_e) => {
             try {
               setLoginLoading(true);
@@ -64,7 +68,6 @@ export const LoginPage = () => {
               setLoginError(error as unknown as any);
             }
           }}
-          isLoading={loginLoading}
         >
           Login
         </Button>

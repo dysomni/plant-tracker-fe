@@ -1,11 +1,12 @@
 import React, { useEffect } from "react";
+import { useNavigate } from "react-router-dom";
+
 import { User } from "./generated/api/plantsSchemas";
 import {
   fetchLogoutAuthLogoutPost,
   fetchReadUsersMeAuthMeGet,
   ReadUsersMeAuthMeGetError,
 } from "./generated/api/plantsComponents";
-import { useNavigate } from "react-router-dom";
 import { ErrorWrapper } from "./generated/api/plantsFetcher";
 import { useToast } from "./toast";
 
@@ -30,7 +31,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const [fetchedUser, setFetchedUser] = React.useState<User | null>(null);
   const [userLoading, setUserLoading] = React.useState(true);
   const [error, setError] = React.useState<ReadUsersMeAuthMeGetError | null>(
-    null
+    null,
   );
 
   useEffect(() => {
@@ -48,6 +49,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
 
   useEffect(() => {
     const isLoginPath = window.location.pathname === "/login";
+
     if (error && error.status === 401 && !isLoginPath) {
       localStorage.setItem("currentPath", window.location.pathname);
       toast({
@@ -93,7 +95,7 @@ export const useAuthErrorRedirect = (
   error: ErrorWrapper<{
     status: number;
     payload: unknown;
-  }> | null
+  }> | null,
 ) => {
   const authContext = React.useContext(AuthContext);
   const toast = useToast();

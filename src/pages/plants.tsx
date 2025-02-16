@@ -1,39 +1,43 @@
-import DefaultLayout from "@/layouts/default";
+import dayjs from "dayjs";
+import { Button, Card, Image, Input, Link } from "@nextui-org/react";
+import { useMemo, useState } from "react";
+import { IconPlus, IconRuler2, IconSearch } from "@tabler/icons-react";
+
 import { useListAllPlantsV1PlantsGet } from "../generated/api/plantsComponents";
 import { useAuthErrorRedirect } from "../auth";
 import { usePageLoading } from "../components/page-loading";
 import { BasicPlantInfoResponseModel } from "../generated/api/plantsSchemas";
-import dayjs from "dayjs";
-import { Button, Card, Image, Input, Link } from "@nextui-org/react";
 import { useImagePreview } from "../components/image-preview";
 import {
   PlantLatestReminderBadge,
   PlantWetnessBadge,
   ReminderlessPlantBadge,
 } from "../components/badges";
-import { useMemo, useState } from "react";
-import { IconPlus, IconRuler2, IconSearch } from "@tabler/icons-react";
 import { useMediaQueries } from "../components/responsive-hooks";
 import { CreatePlantDrawer } from "../components/create-plant";
 import { CheckPlantDrawer } from "../components/check-plant";
 import { unwrap } from "../util";
 
+import DefaultLayout from "@/layouts/default";
+
 export default function PlantsPage() {
   const { data, isLoading, error, refetch } = useListAllPlantsV1PlantsGet({
     queryParams: { include_archived: false },
   });
+
   useAuthErrorRedirect(error);
   usePageLoading(isLoading);
   const [searchInput, setSearchInput] = useState("");
   const matchedPlants = useMemo(() => {
     if (!searchInput) return data?.plants;
+
     return data?.plants.filter(
       (plant) =>
         plant.plant.name.toLowerCase().includes(searchInput.toLowerCase()) ||
         plant.location.name.toLowerCase().includes(searchInput.toLowerCase()) ||
         plant.plant.scientific_name
           .toLowerCase()
-          .includes(searchInput.toLowerCase())
+          .includes(searchInput.toLowerCase()),
     );
   }, [data, searchInput]);
 
@@ -44,7 +48,7 @@ export default function PlantsPage() {
     () =>
       data?.plants.filter((plant) => plant.outstanding_reminders.length === 0)
         .length ?? 0,
-    [data]
+    [data],
   );
 
   return (
@@ -59,19 +63,19 @@ export default function PlantsPage() {
       <section className="flex flex-col items-center justify-center gap-4 pb-8 md:pb-10 w-full">
         <div className="flex flex-row justify-center gap-3 w-full">
           <Input
-            size={mediaQueries["sm"] ? "md" : "sm"}
-            value={searchInput}
-            placeholder="Search for a plant"
-            onValueChange={setSearchInput}
-            startContent={<IconSearch size={15} />}
             className="max-w-40 sm:max-w-72"
+            placeholder="Search for a plant"
+            size={mediaQueries["sm"] ? "md" : "sm"}
+            startContent={<IconSearch size={15} />}
+            value={searchInput}
             variant="bordered"
+            onValueChange={setSearchInput}
           />
           <div>
             <Button
+              color="success"
               size={mediaQueries["sm"] ? "md" : "sm"}
               startContent={<IconPlus size={15} />}
-              color="success"
               onPress={() =>
                 setTimeout(() => setCreatePlantDrawerOpen(true), 50)
               }
@@ -121,19 +125,19 @@ const PlantCard = ({
       {checking ? (
         <CheckPlantDrawer
           plantToCheck={unwrap(plant.plant.id)}
-          onClose={() => setChecking(false)}
           onCheckDone={reload}
+          onClose={() => setChecking(false)}
         />
       ) : null}
       <div className="flex flex-row gap-6 items-center justify-center self-start sm:self-auto">
         {plant.cover_photo_thumbnail_url ? (
           <div className="flex justify-center items-center shrink-0 w-[90px] h-[90px] rounded-lg overflow-hidden">
             <Image
+              alt="Plant Cover Photo"
               className="hover:cursor-pointer object-cover"
+              height={90}
               src={plant.cover_photo_thumbnail_url ?? undefined}
               width={90}
-              height={90}
-              alt="Plant Cover Photo"
               onClick={() =>
                 imagePreview.setPreview({
                   src: plant.cover_photo_url ?? "",
@@ -145,7 +149,7 @@ const PlantCard = ({
           </div>
         ) : null}
         <div>
-          <Link href={`/plants/${plant.plant.id}`} color="success">
+          <Link color="success" href={`/plants/${plant.plant.id}`}>
             <div className="font-bold text-2xl">{plant.plant.name}</div>
           </Link>
           <div>{plant.location.name}</div>
@@ -164,11 +168,11 @@ const PlantCard = ({
       </div>
       <div className="w-full sm:w-auto">
         <Button
-          size="sm"
-          variant="flat"
-          color="primary"
           className="font-bold w-full"
+          color="primary"
+          size="sm"
           startContent={<IconRuler2 size={20} />}
+          variant="flat"
           onPress={() => setTimeout(() => setChecking(true), 50)}
         >
           Check

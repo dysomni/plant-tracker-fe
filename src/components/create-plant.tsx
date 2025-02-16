@@ -14,19 +14,21 @@ import {
 } from "@nextui-org/react";
 import { FormEvent, useEffect, useState } from "react";
 import { z } from "zod";
+import { IconPlus } from "@tabler/icons-react";
+import { Link } from "@nextui-org/link";
+
+import { useAuthErrorRedirect } from "../auth";
+import { useToast } from "../toast";
+import { unwrap } from "../util";
 import {
   fetchCreateLocationV1LocationsPost,
   fetchCreatePlantV1PlantsPost,
   fetchUpdatePlantV1PlantsPlantIdPatch,
   useListAllLocationsV1LocationsGet,
 } from "../generated/api/plantsComponents";
-import { usePageLoading } from "./page-loading";
-import { useAuthErrorRedirect } from "../auth";
-import { useToast } from "../toast";
-import { IconPlus } from "@tabler/icons-react";
-import { unwrap } from "../util";
-import { Link } from "@nextui-org/link";
 import { Plant } from "../generated/api/plantsSchemas";
+
+import { usePageLoading } from "./page-loading";
 
 export const createPlantSchema = z.object({
   name: z.string().min(1),
@@ -88,6 +90,7 @@ export const CreatePlantDrawer = (props: {
     error,
     refetch,
   } = useListAllLocationsV1LocationsGet({});
+
   useAuthErrorRedirect(error);
   const toast = useToast();
 
@@ -98,6 +101,7 @@ export const CreatePlantDrawer = (props: {
 
     if (!result.success) {
       setValidationErrors(result.error.flatten().fieldErrors);
+
       return;
     }
 
@@ -105,6 +109,7 @@ export const CreatePlantDrawer = (props: {
       setValidationErrors({
         location_id: "Location not saved yet.",
       });
+
       return;
     }
 
@@ -128,6 +133,7 @@ export const CreatePlantDrawer = (props: {
         duration: 5000,
       });
       setSubmitLoading(false);
+
       return;
     }
 
@@ -144,14 +150,14 @@ export const CreatePlantDrawer = (props: {
   return (
     <Drawer
       isOpen={open}
-      onClose={() => setOpen(false)}
       placement="right"
       size="2xl"
+      onClose={() => setOpen(false)}
     >
       <Form
-        onSubmit={handleSubmit}
-        validationErrors={validationErrors}
         autoComplete="off"
+        validationErrors={validationErrors}
+        onSubmit={handleSubmit}
       >
         <DrawerContent>
           {isFetching || submitLoading ? (
@@ -163,23 +169,23 @@ export const CreatePlantDrawer = (props: {
           <DrawerBody>
             <Input
               isRequired
+              description="This is how the plant will appear across the app."
               label="Plant Name"
               name="name"
               value={formState.name}
               onValueChange={(name) =>
                 setFormState((prev) => ({ ...prev, name }))
               }
-              description="This is how the plant will appear across the app."
             />
             <Input
               isRequired
+              description="The scientific name of the plant."
               label="Scientific Name"
               name="scientific_name"
               value={formState.scientific_name}
               onValueChange={(scientific_name) =>
                 setFormState((prev) => ({ ...prev, scientific_name }))
               }
-              description="The scientific name of the plant."
             />
             <LocationPicker
               value={formState.location_id}
@@ -191,15 +197,16 @@ export const CreatePlantDrawer = (props: {
               }}
             />
             <Textarea
+              description="Any additional care details, thoughts, etc."
               label="Notes"
               name="notes"
               value={formState.notes}
               onValueChange={(notes) =>
                 setFormState((prev) => ({ ...prev, notes }))
               }
-              description="Any additional care details, thoughts, etc."
             />
             <Input
+              description="The default number of days between waterings. Set to 0 to reset."
               label="Default Watering Interval (Days)"
               name="default_watering_interval_days"
               type="number"
@@ -212,11 +219,10 @@ export const CreatePlantDrawer = (props: {
                     : null,
                 }))
               }
-              description="The default number of days between waterings. Set to 0 to reset."
             />
           </DrawerBody>
           <DrawerFooter>
-            <Button type="submit" color="success">
+            <Button color="success" type="submit">
               {editPlant ? "Update" : "Create"}
             </Button>
           </DrawerFooter>
@@ -233,8 +239,9 @@ export const LocationPicker = (props: {
 }) => {
   const { value, onChange, onLocationCreated } = props;
   const { data, isLoading, error, refetch } = useListAllLocationsV1LocationsGet(
-    {}
+    {},
   );
+
   usePageLoading(isLoading);
   useAuthErrorRedirect(error);
   const toast = useToast();
@@ -244,18 +251,21 @@ export const LocationPicker = (props: {
   useEffect(() => {
     if (value && !searchInput && data) {
       const location = data?.find((l) => l.id === value);
+
       setSearchInput(location?.name || "");
     }
   }, [value, data]);
 
   const handleCreate = async () => {
     const locationName = searchInput.trim();
+
     if (!locationName) {
       toast({
         message: "Location name cannot be empty.",
         type: "warning",
         duration: 5000,
       });
+
       return;
     }
 
@@ -263,6 +273,7 @@ export const LocationPicker = (props: {
       const location = await fetchCreateLocationV1LocationsPost({
         body: { name: locationName },
       });
+
       toast({
         message: "Location created successfully.",
         type: "success",
@@ -278,6 +289,7 @@ export const LocationPicker = (props: {
         type: "danger",
         duration: 5000,
       });
+
       return;
     }
   };
@@ -285,51 +297,52 @@ export const LocationPicker = (props: {
   return (
     <div className="flex flex-row gap-2">
       <Autocomplete
-        autoComplete="off"
-        label="Location"
-        name="location_id"
+        allowsCustomValue
         isRequired
-        inputValue={searchInput}
-        onInputChange={setSearchInput}
-        onBlur={async () => {
-          if (!searchInput) return;
-          const location = data
-            ? data.find((l) => l.name === searchInput)
-            : null;
-          if (!location) {
-            onChange(searchInput);
-          }
-        }}
+        autoComplete="off"
+        defaultItems={data || []}
+        description="The location where the plant is kept."
         endContent={
           isLoading ? (
             <CircularProgress
-              size="sm"
               aria-label="Loading..."
               color="success"
+              size="sm"
             />
           ) : (
             <Link
+              className="cursor-pointer pr-1"
               size="sm"
               onPress={handleCreate}
-              className="cursor-pointer pr-1"
             >
               <IconPlus size={15} />
               New
             </Link>
           )
         }
+        inputValue={searchInput}
         isDisabled={isLoading || !data}
+        label="Location"
+        name="location_id"
         selectedKey={value}
-        allowsCustomValue
+        onBlur={async () => {
+          if (!searchInput) return;
+          const location = data
+            ? data.find((l) => l.name === searchInput)
+            : null;
+
+          if (!location) {
+            onChange(searchInput);
+          }
+        }}
+        onInputChange={setSearchInput}
         onSelectionChange={(location_id) => {
           if (!location_id) return;
           onChange(location_id.toString());
           setSearchInput(
-            (data || []).find((l) => l.id === location_id)?.name || ""
+            (data || []).find((l) => l.id === location_id)?.name || "",
           );
         }}
-        description="The location where the plant is kept."
-        defaultItems={data || []}
       >
         {(location) => (
           <AutocompleteItem key={location.id}>{location.name}</AutocompleteItem>

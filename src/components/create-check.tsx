@@ -14,16 +14,17 @@ import {
 } from "@nextui-org/react";
 import { FormEvent, useState } from "react";
 import { z } from "zod";
-import { fetchCheckPlantV1PlantsPlantIdCheckPost } from "../generated/api/plantsComponents";
-import { useToast } from "../toast";
 import { IconDropletFilled, IconDropletX } from "@tabler/icons-react";
 import { fromDate, getLocalTimeZone } from "@internationalized/date";
 import dayjs from "dayjs";
 
+import { useToast } from "../toast";
+import { fetchCheckPlantV1PlantsPlantIdCheckPost } from "../generated/api/plantsComponents";
+
 const strToDateValue = (date: string): DateValue => {
   return fromDate(
     dayjs(date).tz(getLocalTimeZone()).toDate(),
-    getLocalTimeZone()
+    getLocalTimeZone(),
   );
 };
 
@@ -66,6 +67,7 @@ export const CreateCheckDrawer = (props: {
 
     if (!result.success) {
       setValidationErrors(result.error.flatten().fieldErrors);
+
       return;
     }
 
@@ -82,6 +84,7 @@ export const CreateCheckDrawer = (props: {
         duration: 5000,
       });
       setSubmitLoading(false);
+
       return;
     }
 
@@ -98,14 +101,14 @@ export const CreateCheckDrawer = (props: {
   return (
     <Drawer
       isOpen={open}
-      onClose={() => setOpen(false)}
       placement="right"
       size="2xl"
+      onClose={() => setOpen(false)}
     >
       <Form
-        onSubmit={handleSubmit}
-        validationErrors={validationErrors}
         autoComplete="off"
+        validationErrors={validationErrors}
+        onSubmit={handleSubmit}
       >
         <DrawerContent>
           {submitLoading ? (
@@ -118,7 +121,10 @@ export const CreateCheckDrawer = (props: {
             <DatePicker
               isRequired
               showMonthAndYearPickers
+              description="When did you check this plant?"
+              label="Check Date"
               value={strToDateValue(formState.check_date)}
+              variant="bordered"
               onChange={(date) => {
                 if (!date) return;
                 setFormState((prev) => ({
@@ -126,27 +132,12 @@ export const CreateCheckDrawer = (props: {
                   check_date: dateValueToStr(date),
                 }));
               }}
-              label="Check Date"
-              description="When did you check this plant?"
-              variant="bordered"
             />
             <Slider
               aria-label="Wetness Level"
-              label="Wetness Level"
               defaultValue={10}
-              maxValue={10}
-              minValue={0}
-              size="lg"
-              step={1}
               endContent={<IconDropletFilled size={20} />}
-              startContent={<IconDropletX size={20} />}
-              value={formState.wetness_scale}
-              onChange={(wetness_scale) =>
-                setFormState((prev) => ({
-                  ...prev,
-                  wetness_scale: wetness_scale as number,
-                }))
-              }
+              label="Wetness Level"
               marks={[
                 {
                   value: 0,
@@ -161,19 +152,31 @@ export const CreateCheckDrawer = (props: {
                   label: "Watered",
                 },
               ]}
+              maxValue={10}
+              minValue={0}
+              size="lg"
+              startContent={<IconDropletX size={20} />}
+              step={1}
+              value={formState.wetness_scale}
+              onChange={(wetness_scale) =>
+                setFormState((prev) => ({
+                  ...prev,
+                  wetness_scale: wetness_scale as number,
+                }))
+              }
             />
             <Textarea
+              description="Any additional care details, thoughts, etc."
               label="Notes"
               name="notes"
               value={formState.notes}
               onValueChange={(notes) =>
                 setFormState((prev) => ({ ...prev, notes }))
               }
-              description="Any additional care details, thoughts, etc."
             />
           </DrawerBody>
           <DrawerFooter>
-            <Button type="submit" color="success">
+            <Button color="success" type="submit">
               Create
             </Button>
           </DrawerFooter>

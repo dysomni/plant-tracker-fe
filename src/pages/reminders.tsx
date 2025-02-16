@@ -1,11 +1,3 @@
-import DefaultLayout from "@/layouts/default";
-import {
-  fetchDeleteReminderV1RemindersReminderIdDelete,
-  useGetPlantV1PlantsPlantIdGet,
-} from "../generated/api/plantsComponents";
-import { useAuthErrorRedirect } from "../auth";
-import { usePageLoading } from "../components/page-loading";
-import { Reminder } from "../generated/api/plantsSchemas";
 import dayjs from "dayjs";
 import {
   Button,
@@ -23,17 +15,29 @@ import {
 } from "@nextui-org/react";
 import { useMemo, useState } from "react";
 import { IconEdit, IconSortDescending2 } from "@tabler/icons-react";
-import { useMediaQueries } from "../components/responsive-hooks";
 import { useParams } from "react-router-dom";
+
+import {
+  fetchDeleteReminderV1RemindersReminderIdDelete,
+  useGetPlantV1PlantsPlantIdGet,
+} from "../generated/api/plantsComponents";
+import { useAuthErrorRedirect } from "../auth";
+import { usePageLoading } from "../components/page-loading";
+import { Reminder } from "../generated/api/plantsSchemas";
+import { useMediaQueries } from "../components/responsive-hooks";
 import { CreateReminderDrawer } from "../components/create-reminder";
+
+import DefaultLayout from "@/layouts/default";
 
 export default function RemindersPage() {
   const plantId = useParams<{ plantId: string }>().plantId;
+
   if (!plantId) throw new Error("No plant ID provided.");
 
   const { data, error, refetch, isFetching } = useGetPlantV1PlantsPlantIdGet({
     pathParams: { plantId },
   });
+
   useAuthErrorRedirect(error);
   usePageLoading(isFetching);
 
@@ -55,8 +59,10 @@ export default function RemindersPage() {
     const sorted = [...data.reminders].sort((a, b) => {
       const dateA = dayjs(a.reminder_date);
       const dateB = dayjs(b.reminder_date);
+
       return sorting === "new" ? dateB.diff(dateA) : dateA.diff(dateB);
     });
+
     return sorted;
   }, [data, sorting]);
 
@@ -65,7 +71,7 @@ export default function RemindersPage() {
       <section className="flex flex-col items-center justify-center gap-4 pb-8 md:pb-10 w-full min-h-full">
         <div className="flex flex-col sm:flex-row gap-3 sm:gap-7 w-full items-center justify-center sm:justify-center">
           <div className="shrink-0">
-            <Link href={`/plants/${data?.plant.id}`} color="success">
+            <Link color="success" href={`/plants/${data?.plant.id}`}>
               <div className="font-extrabold text-3xl">
                 Reminders for {data?.plant.name}
               </div>
@@ -79,21 +85,21 @@ export default function RemindersPage() {
         </div>
         <div className="flex flex-row justify-center gap-3 w-full flex-wrap">
           <Button
+            className="font-bold shrink-0"
+            color="success"
+            isDisabled={isFetching}
             size={mediaQueries["sm"] ? "md" : "sm"}
             startContent={<IconEdit size={15} />}
-            color="success"
-            className="font-bold shrink-0"
             onPress={() => setTimeout(() => setCreateModalOpen(true), 50)}
-            isDisabled={isFetching}
           >
             Create Reminder
           </Button>
           <Select
-            className="max-w-40"
-            size={mediaQueries["sm"] ? "md" : "sm"}
             aria-label="Sort Photos By"
-            startContent={<IconSortDescending2 />}
+            className="max-w-40"
             selectedKeys={[sorting]}
+            size={mediaQueries["sm"] ? "md" : "sm"}
+            startContent={<IconSortDescending2 />}
             onSelectionChange={(option) => {
               setSorting((option.currentKey ?? sorting) as typeof sorting);
             }}
@@ -107,8 +113,8 @@ export default function RemindersPage() {
         <div className="w-full flex flex-col gap-0 justify-start grow px-1 pb-6">
           {sortedItems.map((reminder) => (
             <ReminderCard
-              reminder={reminder}
               key={reminder.id}
+              reminder={reminder}
               onDelete={() => setDeleteId(reminder.id ?? "")}
             />
           ))}
@@ -144,11 +150,11 @@ export default function RemindersPage() {
       {createModalOpen ? (
         <CreateReminderDrawer
           open={createModalOpen}
+          plantId={plantId}
           setOpen={setCreateModalOpen}
           onCreate={async () => {
             await refetch();
           }}
-          plantId={plantId}
         />
       ) : null}
     </DefaultLayout>
@@ -160,6 +166,7 @@ export const ReminderCard = (props: {
   onDelete: () => void;
 }) => {
   const { reminder, onDelete } = props;
+
   return (
     <Card>
       <div className="flex flex-row gap-4 flex-wrap justify-between px-4 py-2 items-center">
@@ -172,8 +179,8 @@ export const ReminderCard = (props: {
         </Tooltip>
         <div>Type: {reminder.reminder_type}</div>
         <Tooltip
-          isDisabled={!reminder.completed_date}
           content={dayjs(reminder.completed_date).format("MMMM D, YYYY h:mm A")}
+          isDisabled={!reminder.completed_date}
         >
           <div className="font-semibold">
             Completed: {reminder.complete ? "Yes" : "No"}
@@ -182,7 +189,7 @@ export const ReminderCard = (props: {
         {reminder.notes ? (
           <div className="text-sm font-serif">Notes: {reminder.notes}</div>
         ) : null}
-        <Button size="sm" color="danger" onPress={onDelete}>
+        <Button color="danger" size="sm" onPress={onDelete}>
           Delete
         </Button>
       </div>

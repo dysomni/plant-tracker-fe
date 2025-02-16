@@ -7,19 +7,19 @@ export const LogoutIcon = ({
   ...props
 }: IconSvgProps) => (
   <svg
-    xmlns="http://www.w3.org/2000/svg"
-    width={size || width}
-    height={size || height}
-    viewBox="0 0 24 24"
+    className="icon icon-tabler icons-tabler-outline icon-tabler-logout"
     fill="none"
+    height={size || height}
     stroke="currentColor"
-    strokeWidth="2"
     strokeLinecap="round"
     strokeLinejoin="round"
-    className="icon icon-tabler icons-tabler-outline icon-tabler-logout"
+    strokeWidth="2"
+    viewBox="0 0 24 24"
+    width={size || width}
+    xmlns="http://www.w3.org/2000/svg"
     {...props}
   >
-    <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+    <path d="M0 0h24v24H0z" fill="none" stroke="none" />
     <path d="M14 8v-2a2 2 0 0 0 -2 -2h-7a2 2 0 0 0 -2 2v12a2 2 0 0 0 2 2h7a2 2 0 0 0 2 -2v-2" />
     <path d="M9 12h12l-3 -3" />
     <path d="M18 15l3 -3" />
@@ -28,21 +28,21 @@ export const LogoutIcon = ({
 
 export const PlantIcon = (props: IconSvgProps) => (
   <svg
-    xmlns="http://www.w3.org/2000/svg"
-    width={props.size || 24}
-    height={props.size || 24}
-    viewBox="0 0 24 24"
-    fill="none"
-    stroke="currentColor"
-    strokeWidth="2"
-    strokeLinecap="round"
-    strokeLinejoin="round"
     className={
       (props.className ?? "") +
       `icon icon-tabler icons-tabler-outline icon-tabler-plant`
     }
+    fill="none"
+    height={props.size || 24}
+    stroke="currentColor"
+    strokeLinecap="round"
+    strokeLinejoin="round"
+    strokeWidth="2"
+    viewBox="0 0 24 24"
+    width={props.size || 24}
+    xmlns="http://www.w3.org/2000/svg"
   >
-    <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+    <path d="M0 0h24v24H0z" fill="none" stroke="none" />
     <path d="M7 15h10v4a2 2 0 0 1 -2 2h-6a2 2 0 0 1 -2 -2v-4z" />
     <path d="M12 9a6 6 0 0 0 -6 -6h-3v2a6 6 0 0 0 6 6h3" />
     <path d="M12 11a6 6 0 0 1 6 -6h3v1a6 6 0 0 1 -6 6h-3" />

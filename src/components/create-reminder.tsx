@@ -15,15 +15,16 @@ import {
 } from "@nextui-org/react";
 import { FormEvent, useState } from "react";
 import { z } from "zod";
-import { fetchCreateReminderV1RemindersPost } from "../generated/api/plantsComponents";
-import { useToast } from "../toast";
 import { fromDate, getLocalTimeZone } from "@internationalized/date";
 import dayjs from "dayjs";
+
+import { fetchCreateReminderV1RemindersPost } from "../generated/api/plantsComponents";
+import { useToast } from "../toast";
 
 const strToDateValue = (date: string): DateValue => {
   return fromDate(
     dayjs(date).tz(getLocalTimeZone()).toDate(),
-    getLocalTimeZone()
+    getLocalTimeZone(),
   );
 };
 
@@ -69,6 +70,7 @@ export const CreateReminderDrawer = (props: {
 
     if (!result.success) {
       setValidationErrors(result.error.flatten().fieldErrors);
+
       return;
     }
 
@@ -84,6 +86,7 @@ export const CreateReminderDrawer = (props: {
         duration: 5000,
       });
       setSubmitLoading(false);
+
       return;
     }
 
@@ -100,14 +103,14 @@ export const CreateReminderDrawer = (props: {
   return (
     <Drawer
       isOpen={open}
-      onClose={() => setOpen(false)}
       placement="right"
       size="2xl"
+      onClose={() => setOpen(false)}
     >
       <Form
-        onSubmit={handleSubmit}
-        validationErrors={validationErrors}
         autoComplete="off"
+        validationErrors={validationErrors}
+        onSubmit={handleSubmit}
       >
         <DrawerContent>
           {submitLoading ? (
@@ -119,9 +122,12 @@ export const CreateReminderDrawer = (props: {
           <DrawerBody>
             <DatePicker
               isRequired
-              name="reminder_date"
               showMonthAndYearPickers
+              description="When to remind you."
+              label="Reminder Date"
+              name="reminder_date"
               value={strToDateValue(formState.reminder_date)}
+              variant="bordered"
               onChange={(date) => {
                 if (!date) return;
                 setFormState((prev) => ({
@@ -129,18 +135,15 @@ export const CreateReminderDrawer = (props: {
                   reminder_date: dateValueToStr(date),
                 }));
               }}
-              label="Reminder Date"
-              description="When to remind you."
-              variant="bordered"
             />
             <Select
               isRequired
-              name="reminder_type"
-              size="sm"
               aria-label="Reminder Type"
-              label="Reminder Type"
               description="What type of reminder is this?"
+              label="Reminder Type"
+              name="reminder_type"
               selectedKeys={[formState.reminder_type]}
+              size="sm"
               onSelectionChange={(option) => {
                 setFormState((prev) => ({
                   ...prev,
@@ -156,17 +159,17 @@ export const CreateReminderDrawer = (props: {
               <SelectItem key="prune">Prune</SelectItem>
             </Select>
             <Textarea
+              description="Any additional care details, thoughts, etc."
               label="Notes"
               name="notes"
               value={formState.notes}
               onValueChange={(notes) =>
                 setFormState((prev) => ({ ...prev, notes }))
               }
-              description="Any additional care details, thoughts, etc."
             />
           </DrawerBody>
           <DrawerFooter>
-            <Button type="submit" color="success">
+            <Button color="success" type="submit">
               Create
             </Button>
           </DrawerFooter>

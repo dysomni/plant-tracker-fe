@@ -9,12 +9,14 @@ import {
   NavbarMenu,
   NavbarMenuItem,
 } from "@nextui-org/navbar";
-
-import { ThemeSwitch } from "@/components/theme-switch";
-import { LogoutIcon } from "@/components/icons";
 import { useContext } from "react";
+
 import { AuthContext } from "../auth";
+
 import { Logo } from "./logo";
+
+import { LogoutIcon } from "@/components/icons";
+import { ThemeSwitch } from "@/components/theme-switch";
 
 export const Navbar = () => {
   const authContext = useContext(AuthContext);
@@ -23,11 +25,12 @@ export const Navbar = () => {
     if (path === window.location.pathname) {
       return "text-lime-600 dark:text-green-500 font-bold";
     }
+
     return "text-black dark:text-white";
   };
 
   return (
-    <NextUINavbar maxWidth="xl" position="sticky" disableAnimation>
+    <NextUINavbar disableAnimation maxWidth="xl" position="sticky">
       <NavbarContent className="basis-1/5 sm:basis-full" justify="start">
         <NavbarMenuToggle className="sm:hidden" />
         <NavbarBrand className="gap-3 max-w-fit">
@@ -68,11 +71,11 @@ export const Navbar = () => {
         <NavbarItem className="flex">
           <Button
             className="text-sm font-normal text-default-600"
+            isDisabled={authContext.userLoading || !authContext.user}
+            size="sm"
             startContent={<LogoutIcon size={20} />}
             variant="shadow"
-            isDisabled={authContext.userLoading || !authContext.user}
             onPress={authContext.logout}
-            size="sm"
           >
             Logout
           </Button>

@@ -15,16 +15,17 @@ import {
 } from "@nextui-org/react";
 import { FormEvent, useState } from "react";
 import { z } from "zod";
-import { fetchWaterPlantV1PlantsPlantIdWaterPost } from "../generated/api/plantsComponents";
-import { useToast } from "../toast";
 import { IconDropletFilled, IconDropletX } from "@tabler/icons-react";
 import { fromDate, getLocalTimeZone } from "@internationalized/date";
 import dayjs from "dayjs";
 
+import { useToast } from "../toast";
+import { fetchWaterPlantV1PlantsPlantIdWaterPost } from "../generated/api/plantsComponents";
+
 const strToDateValue = (date: string): DateValue => {
   return fromDate(
     dayjs(date).tz(getLocalTimeZone()).toDate(),
-    getLocalTimeZone()
+    getLocalTimeZone(),
   );
 };
 
@@ -70,6 +71,7 @@ export const CreateWateringDrawer = (props: {
 
     if (!result.success) {
       setValidationErrors(result.error.flatten().fieldErrors);
+
       return;
     }
 
@@ -86,6 +88,7 @@ export const CreateWateringDrawer = (props: {
         duration: 5000,
       });
       setSubmitLoading(false);
+
       return;
     }
 
@@ -102,14 +105,14 @@ export const CreateWateringDrawer = (props: {
   return (
     <Drawer
       isOpen={open}
-      onClose={() => setOpen(false)}
       placement="right"
       size="2xl"
+      onClose={() => setOpen(false)}
     >
       <Form
-        onSubmit={handleSubmit}
-        validationErrors={validationErrors}
         autoComplete="off"
+        validationErrors={validationErrors}
+        onSubmit={handleSubmit}
       >
         <DrawerContent>
           {submitLoading ? (
@@ -122,7 +125,10 @@ export const CreateWateringDrawer = (props: {
             <DatePicker
               isRequired
               showMonthAndYearPickers
+              description="When did you water this plant?"
+              label="Watering Date"
               value={strToDateValue(formState.watering_date)}
+              variant="bordered"
               onChange={(date) => {
                 if (!date) return;
                 setFormState((prev) => ({
@@ -130,27 +136,12 @@ export const CreateWateringDrawer = (props: {
                   watering_date: dateValueToStr(date),
                 }));
               }}
-              label="Watering Date"
-              description="When did you water this plant?"
-              variant="bordered"
             />
             <Slider
               aria-label="Saturation Level"
-              label="Saturation Level"
               defaultValue={10}
-              maxValue={10}
-              minValue={1}
-              size="lg"
-              step={1}
               endContent={<IconDropletFilled size={20} />}
-              startContent={<IconDropletX size={20} />}
-              value={formState.saturation_scale}
-              onChange={(saturation_scale) =>
-                setFormState((prev) => ({
-                  ...prev,
-                  saturation_scale: saturation_scale as number,
-                }))
-              }
+              label="Saturation Level"
               marks={[
                 {
                   value: 1,
@@ -165,6 +156,18 @@ export const CreateWateringDrawer = (props: {
                   label: "Full Watering",
                 },
               ]}
+              maxValue={10}
+              minValue={1}
+              size="lg"
+              startContent={<IconDropletX size={20} />}
+              step={1}
+              value={formState.saturation_scale}
+              onChange={(saturation_scale) =>
+                setFormState((prev) => ({
+                  ...prev,
+                  saturation_scale: saturation_scale as number,
+                }))
+              }
             />
             <Checkbox
               isSelected={formState.bottom_watered}
@@ -175,17 +178,17 @@ export const CreateWateringDrawer = (props: {
               Bottom Watering
             </Checkbox>
             <Textarea
+              description="Any additional care details, thoughts, etc."
               label="Notes"
               name="notes"
               value={formState.notes}
               onValueChange={(notes) =>
                 setFormState((prev) => ({ ...prev, notes }))
               }
-              description="Any additional care details, thoughts, etc."
             />
           </DrawerBody>
           <DrawerFooter>
-            <Button type="submit" color="success">
+            <Button color="success" type="submit">
               Create
             </Button>
           </DrawerFooter>

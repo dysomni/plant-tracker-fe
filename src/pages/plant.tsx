@@ -1,16 +1,3 @@
-import DefaultLayout from "@/layouts/default";
-import {
-  fetchCreatePhotoV1PhotosPost,
-  fetchDeletePhotoV1PhotosPhotoIdDelete,
-  fetchMarkPhotoAsCoverPhotoV1PhotosPhotoIdMarkCoverPhotoPost,
-  fetchMarkPhotoUploadedV1PhotosPhotoIdMarkUploadedPost,
-  fetchUpdatePlantV1PlantsPlantIdPatch,
-  useGetPlantPhotosV1PlantsPlantIdPhotosGet,
-  useGetPlantV1PlantsPlantIdGet,
-} from "../generated/api/plantsComponents";
-import { useAuthErrorRedirect } from "../auth";
-import { usePageLoading } from "../components/page-loading";
-import { Plant } from "../generated/api/plantsSchemas";
 import { now, getLocalTimeZone } from "@internationalized/date";
 import dayjs from "dayjs";
 import {
@@ -38,12 +25,6 @@ import {
   Tabs,
   Textarea,
 } from "@nextui-org/react";
-import { useImagePreview } from "../components/image-preview";
-import {
-  PlantLatestReminderBadge,
-  PlantWateringBadge,
-  PlantWetnessBadge,
-} from "../components/badges";
 import { useMemo, useState } from "react";
 import {
   IconArchiveFilled,
@@ -57,16 +38,38 @@ import {
   IconSparkles,
   IconTrash,
 } from "@tabler/icons-react";
+import { useParams } from "react-router-dom";
+
+import {
+  fetchCreatePhotoV1PhotosPost,
+  fetchDeletePhotoV1PhotosPhotoIdDelete,
+  fetchMarkPhotoAsCoverPhotoV1PhotosPhotoIdMarkCoverPhotoPost,
+  fetchMarkPhotoUploadedV1PhotosPhotoIdMarkUploadedPost,
+  fetchUpdatePlantV1PlantsPlantIdPatch,
+  useGetPlantPhotosV1PlantsPlantIdPhotosGet,
+  useGetPlantV1PlantsPlantIdGet,
+} from "../generated/api/plantsComponents";
+import { useAuthErrorRedirect } from "../auth";
+import { usePageLoading } from "../components/page-loading";
+import { Plant } from "../generated/api/plantsSchemas";
+import { useImagePreview } from "../components/image-preview";
+import {
+  PlantLatestReminderBadge,
+  PlantWateringBadge,
+  PlantWetnessBadge,
+} from "../components/badges";
 import { useMediaQueries } from "../components/responsive-hooks";
 import { CreatePlantDrawer } from "../components/create-plant";
-import { useParams } from "react-router-dom";
 import { removeTimeZoneBracketFromDatetime, unwrap } from "../util";
 import { useToast } from "../toast";
 import { CheckPlantDrawer } from "../components/check-plant";
 import { MyChart } from "../components/history-graph";
 
+import DefaultLayout from "@/layouts/default";
+
 export default function PlantPage() {
   const plantId = useParams<{ plantId: string }>().plantId;
+
   if (!plantId) throw new Error("No plant ID provided.");
 
   const { data, error, refetch, isFetching } = useGetPlantV1PlantsPlantIdGet({
@@ -80,6 +83,7 @@ export default function PlantPage() {
   } = useGetPlantPhotosV1PlantsPlantIdPhotosGet({
     pathParams: { plantId },
   });
+
   useAuthErrorRedirect(error || photoError);
   usePageLoading(isFetching || isFetchingPhotos);
   const { setPreview } = useImagePreview();
@@ -107,8 +111,10 @@ export default function PlantPage() {
     const sorted = [...photoData.photos].sort((a, b) => {
       const dateA = dayjs(a.photo.photo_date);
       const dateB = dayjs(b.photo.photo_date);
+
       return sorting === "new" ? dateB.diff(dateA) : dateA.diff(dateB);
     });
+
     return sorted;
   }, [photoData, sorting]);
 
@@ -119,24 +125,24 @@ export default function PlantPage() {
       {checking && (
         <CheckPlantDrawer
           plantToCheck={plantId}
-          onClose={() => setChecking(false)}
           onCheckDone={async () => {
             await refetch();
           }}
+          onClose={() => setChecking(false)}
         />
       )}
       <CreatePlantDrawer
+        editPlant={data?.plant}
         open={editPlantDrawerOpen}
         setOpen={setEditPlantDrawerOpen}
         onPlantCreated={async () => {
           await refetch();
         }}
-        editPlant={data?.plant}
       />
       <section className="flex flex-col items-center justify-center gap-4 pb-8 md:pb-10 w-full min-h-full">
         <div className="flex flex-col sm:flex-row gap-3 sm:gap-7 w-full items-center justify-center sm:justify-center">
           <div className="shrink-0">
-            <Link href={`/plants/${data?.plant.id}`} color="success">
+            <Link color="success" href={`/plants/${data?.plant.id}`}>
               <div className="font-extrabold text-3xl">{data?.plant.name}</div>
             </Link>
           </div>
@@ -145,7 +151,7 @@ export default function PlantPage() {
               hasReminders={
                 !!(
                   data?.outstanding_reminders.filter(
-                    (r) => r.reminder_type === "check"
+                    (r) => r.reminder_type === "check",
                   ).length ?? 0
                 )
               }
@@ -161,55 +167,55 @@ export default function PlantPage() {
         </div>
         <div className="flex flex-row justify-center gap-3 w-full flex-wrap">
           <Button
+            className="font-bold shrink-0"
+            color="success"
+            isDisabled={isFetching}
             size={mediaQueries["sm"] ? "md" : "sm"}
             startContent={<IconEdit size={15} />}
-            color="success"
-            className="font-bold shrink-0"
             onPress={() => setTimeout(() => setEditPlantDrawerOpen(true), 50)}
-            isDisabled={isFetching}
           >
             Edit Plant
           </Button>
           <Button
-            size={mediaQueries["sm"] ? "md" : "sm"}
-            color="primary"
             className="font-bold shrink-0"
+            color="primary"
+            size={mediaQueries["sm"] ? "md" : "sm"}
             startContent={<IconRuler2 size={20} />}
             onPress={() => setTimeout(() => setChecking(true), 50)}
           >
             Check
           </Button>
           <Button
+            className="font-bold shrink-0"
+            color="default"
+            isDisabled={isFetching}
             size={mediaQueries["sm"] ? "md" : "sm"}
             startContent={<IconCamera size={15} />}
-            color="default"
-            className="font-bold shrink-0"
-            isDisabled={isFetching}
             onPress={() => setTimeout(() => setAddPhotoOpen(true), 50)}
           >
             Add Photos
           </Button>
           {data?.plant.archived ? (
             <Button
+              className="font-bold shrink-0"
+              color="primary"
+              isDisabled={isFetching}
               size={mediaQueries["sm"] ? "md" : "sm"}
               startContent={<IconRestore size={15} />}
-              color="primary"
-              className="font-bold shrink-0"
               onPress={async () => {
                 await handleArchive(false);
               }}
-              isDisabled={isFetching}
             >
               Restore Plant
             </Button>
           ) : (
             <Button
+              className="font-bold shrink-0"
+              color="danger"
+              isDisabled={isFetching}
               size={mediaQueries["sm"] ? "md" : "sm"}
               startContent={<IconArchiveFilled size={15} />}
-              color="danger"
-              className="font-bold shrink-0"
               onPress={() => setArchiveModalOpen(true)}
-              isDisabled={isFetching}
             >
               Archive Plant
             </Button>
@@ -228,10 +234,10 @@ export default function PlantPage() {
                 <div className="flex flex-col sm:flex-row gap-6 p-6">
                   <div className="flex flex-col items-center shrink-0">
                     <Image
-                      className="rounded-xl"
-                      src={data?.cover_photo_url ?? "/placeholder.png"}
                       alt="Plant cover photo"
+                      className="rounded-xl"
                       height={300}
+                      src={data?.cover_photo_url ?? "/placeholder.png"}
                     />
                     <div className="italic font-bold text-sm">
                       {data?.plant.scientific_name}
@@ -280,25 +286,25 @@ export default function PlantPage() {
                 <div className="p-3 sm:p-6 flex flex-col gap-4">
                   <div className="flex gap-3 self-center flex-wrap justify-center">
                     <Button
-                      size="sm"
                       as={Link}
                       href={`/plants/${plantId}/reminders`}
+                      size="sm"
                       startContent={<IconBell size={15} />}
                     >
                       See All Reminders
                     </Button>
                     <Button
-                      size="sm"
                       as={Link}
                       href={`/plants/${plantId}/checks`}
+                      size="sm"
                       startContent={<IconRuler2 size={15} />}
                     >
                       See All Checks
                     </Button>
                     <Button
-                      size="sm"
                       as={Link}
                       href={`/plants/${plantId}/waterings`}
+                      size="sm"
                       startContent={<IconDropletFilled size={15} />}
                     >
                       See All Waterings
@@ -306,8 +312,8 @@ export default function PlantPage() {
                   </div>
                   {data && (
                     <MyChart
-                      waterHistory={data.waterings}
                       checkHistory={data.checks}
+                      waterHistory={data.waterings}
                       wetnessDecayPerDay={data.wetness_decay_per_day}
                     />
                   )}
@@ -320,14 +326,14 @@ export default function PlantPage() {
                   className={`border-b-1 rounded-xl border-foreground-300 py-2 px-6 flex justify-end`}
                 >
                   <Select
-                    className="max-w-40"
-                    size="sm"
                     aria-label="Sort Photos By"
-                    startContent={<IconSortDescending2 />}
+                    className="max-w-40"
                     selectedKeys={[sorting]}
+                    size="sm"
+                    startContent={<IconSortDescending2 />}
                     onSelectionChange={(option) => {
                       setSorting(
-                        (option.currentKey ?? sorting) as typeof sorting
+                        (option.currentKey ?? sorting) as typeof sorting,
                       );
                     }}
                   >
@@ -345,10 +351,10 @@ export default function PlantPage() {
                       className="flex flex-col gap-1 items-center border-2 rounded-xl p-1 shadow-md border-foreground-200"
                     >
                       <Image
+                        alt={data?.plant.name}
                         className="cursor-pointer"
                         height={mediaQueries["sm"] ? 200 : 150}
                         src={photo.thumbnail_presigned_url}
-                        alt={data?.plant.name}
                         onClick={() =>
                           setPreview({
                             src: photo.presigned_url,
@@ -367,13 +373,13 @@ export default function PlantPage() {
                         </p>
                       ) : (
                         <Button
-                          size="sm"
                           color="primary"
+                          size="sm"
                           onPress={async () => {
                             await fetchMarkPhotoAsCoverPhotoV1PhotosPhotoIdMarkCoverPhotoPost(
                               {
                                 pathParams: { photoId: unwrap(photo.photo.id) },
-                              }
+                              },
                             );
                             await Promise.all([refetch(), refetchPhotos()]);
                           }}
@@ -461,8 +467,8 @@ export default function PlantPage() {
       {data && addPhotoOpen && (
         <AddPhotoDrawer
           open={addPhotoOpen}
-          setOpen={setAddPhotoOpen}
           plant={data?.plant}
+          setOpen={setAddPhotoOpen}
           onPhotoUploaded={async () => {
             await Promise.all([refetch(), refetchPhotos()]);
           }}
@@ -484,7 +490,7 @@ const AddPhotoDrawer = (props: {
   const [coverPhotoIndex, setCoverPhotoIndex] = useState<number | null>(null);
   const [notes, setNotes] = useState("");
   const [overrideDate, setOverrideDate] = useState<DateValue>(
-    now(getLocalTimeZone())
+    now(getLocalTimeZone()),
   );
   const toast = useToast();
 
@@ -495,13 +501,14 @@ const AddPhotoDrawer = (props: {
           plant_id: unwrap(plant.id),
           photo_type: file.type,
           photo_date: removeTimeZoneBracketFromDatetime(
-            overrideDate.toString()
+            overrideDate.toString(),
           ),
           cover_photo: coverPhotoIndex === index,
           notes: notes,
         },
       });
       const presignedUrl = newPhotoRecord.upload_presigned_url;
+
       await fetch(presignedUrl, {
         method: "PUT",
         body: file,
@@ -531,6 +538,7 @@ const AddPhotoDrawer = (props: {
 
     setLoading(true);
     const filePromises = uploadedFiles.map(handleSingleUpload);
+
     await Promise.all(filePromises);
     await props.onPhotoUploaded?.();
     setLoading(false);
@@ -548,18 +556,19 @@ const AddPhotoDrawer = (props: {
             <DrawerBody>
               <div className="flex flex-col gap-4">
                 <Input
-                  type="file"
-                  label="Photo"
-                  name="photo"
                   multiple
                   accept="image/*"
+                  isDisabled={loading}
+                  label="Photo"
+                  name="photo"
+                  type="file"
                   onChange={(e) => {
                     const newFiles = e.target.files;
+
                     if (!newFiles) return;
                     setUploadedFiles(Array.from(newFiles));
                     setCoverPhotoIndex(null);
                   }}
-                  isDisabled={loading}
                 />
 
                 {uploadedFiles && (
@@ -569,16 +578,17 @@ const AddPhotoDrawer = (props: {
                       {uploadedFiles.map((file, indx) => (
                         <Image
                           key={file.name}
-                          src={URL.createObjectURL(file)}
                           alt="Uploaded photo preview"
-                          height={100}
                           className={`border-0 border-primary ${indx === coverPhotoIndex ? "border-4" : ""} rounded-xl`}
+                          height={100}
+                          src={URL.createObjectURL(file)}
                           style={{
                             transition: "border-width 0.1s ease",
                           }}
                           onClick={() => {
                             if (indx === coverPhotoIndex) {
                               setCoverPhotoIndex(null);
+
                               return;
                             }
                             setCoverPhotoIndex(indx);
@@ -600,35 +610,35 @@ const AddPhotoDrawer = (props: {
                 )}
               </div>
               <Textarea
+                isDisabled={loading}
                 label="Notes"
+                placeholder="Add notes about the photo..."
                 value={notes}
                 onValueChange={setNotes}
-                placeholder="Add notes about the photo..."
-                isDisabled={loading}
               />
               <DatePicker
                 showMonthAndYearPickers
-                value={overrideDate}
-                onChange={(date) => date && setOverrideDate(date)}
-                label="Override Date"
                 description="Set the date of this photo to be something else"
+                label="Override Date"
+                value={overrideDate}
                 variant="bordered"
+                onChange={(date) => date && setOverrideDate(date)}
               />
             </DrawerBody>
             <DrawerFooter>
               {loading && <CircularProgress />}
               <Button
                 color="default"
+                isDisabled={loading}
                 variant="light"
                 onPress={onClose}
-                isDisabled={loading}
               >
                 Cancel
               </Button>
               <Button
                 color="success"
-                onPress={handleUpload}
                 isDisabled={!uploadedFiles || !uploadedFiles.length || loading}
+                onPress={handleUpload}
               >
                 Upload
               </Button>

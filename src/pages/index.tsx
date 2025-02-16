@@ -1,15 +1,8 @@
-import DefaultLayout from "@/layouts/default";
-import { useGetOutstandingRemindersV1RemindersOutstandingGet } from "../generated/api/plantsComponents";
-import { AuthContext, useAuthErrorRedirect } from "../auth";
 import { useContext, useMemo, useState } from "react";
 import dayjs from "dayjs";
 import relativeTime from "dayjs/plugin/relativeTime";
 import { Button } from "@nextui-org/button";
 import { Card, Divider, Image, Link, Tooltip } from "@nextui-org/react";
-import { useImagePreview } from "../components/image-preview";
-import { ReminderWithPlantInfo } from "../generated/api/plantsSchemas";
-import { usePageLoading } from "../components/page-loading";
-import { PlantWateringBadge, PlantWetnessBadge } from "../components/badges";
 import {
   IconAlertSquareRounded,
   IconCalendarWeekFilled,
@@ -17,15 +10,25 @@ import {
   IconRuler2,
   IconDroplet,
 } from "@tabler/icons-react";
+
+import { useGetOutstandingRemindersV1RemindersOutstandingGet } from "../generated/api/plantsComponents";
+import { AuthContext, useAuthErrorRedirect } from "../auth";
+import { useImagePreview } from "../components/image-preview";
+import { ReminderWithPlantInfo } from "../generated/api/plantsSchemas";
+import { usePageLoading } from "../components/page-loading";
+import { PlantWateringBadge, PlantWetnessBadge } from "../components/badges";
 import { pluralize, unwrap } from "../util";
 import { CheckPlantDrawer } from "../components/check-plant";
 import { useMediaQueries } from "../components/responsive-hooks";
+
+import DefaultLayout from "@/layouts/default";
 dayjs.extend(relativeTime);
 
 export default function IndexPage() {
   const authContext = useContext(AuthContext);
   const { data, isFetching, error, refetch } =
     useGetOutstandingRemindersV1RemindersOutstandingGet({});
+
   useAuthErrorRedirect(error);
   usePageLoading(isFetching);
 
@@ -34,9 +37,9 @@ export default function IndexPage() {
       data?.reminders.filter(
         (reminder) =>
           reminder.reminder.reminder_date <
-          dayjs().subtract(1, "day").toISOString()
+          dayjs().subtract(1, "day").toISOString(),
       ) ?? [],
-    [data]
+    [data],
   );
 
   const recentReminders = useMemo(
@@ -46,9 +49,9 @@ export default function IndexPage() {
           reminder.reminder.reminder_date >=
             dayjs().subtract(1, "day").toISOString() &&
           reminder.reminder.reminder_date <
-            dayjs().add(12, "hours").toISOString()
+            dayjs().add(12, "hours").toISOString(),
       ) ?? [],
-    [data]
+    [data],
   );
 
   const upcomingReminders = useMemo(
@@ -56,9 +59,9 @@ export default function IndexPage() {
       data?.reminders.filter(
         (reminder) =>
           reminder.reminder.reminder_date >=
-          dayjs().add(12, "hours").toISOString()
+          dayjs().add(12, "hours").toISOString(),
       ) ?? [],
-    [data]
+    [data],
   );
 
   return (
@@ -81,7 +84,7 @@ export default function IndexPage() {
               {pluralize(
                 overdueReminders.length + recentReminders.length,
                 "reminder",
-                "reminders"
+                "reminders",
               )}
             </span>
           </div>
@@ -90,18 +93,18 @@ export default function IndexPage() {
           {overdueReminders.length ? <OverdueSectionStarter /> : null}
           {overdueReminders.map((reminder) => (
             <ReminderCard
-              reminder={reminder}
               key={reminder.reminder.id}
               reload={() => refetch({})}
+              reminder={reminder}
               type="overdue"
             />
           ))}
           {recentReminders.length ? <RecentSectionStarter /> : null}
           {recentReminders.map((reminder) => (
             <ReminderCard
-              reminder={reminder}
               key={reminder.reminder.id}
               reload={() => refetch({})}
+              reminder={reminder}
               type="recent"
             />
           ))}
@@ -115,9 +118,9 @@ export default function IndexPage() {
           {upcomingReminders.length ? <UpcomingSectionStarter /> : null}
           {upcomingReminders.map((reminder) => (
             <ReminderCard
-              reminder={reminder}
               key={reminder.reminder.id}
               reload={() => refetch({})}
+              reminder={reminder}
               type="upcoming"
             />
           ))}
@@ -162,25 +165,25 @@ const ReminderCard = ({
       {plantToCheck ? (
         <CheckPlantDrawer
           plantToCheck={plantToCheck}
+          quickWater={quickWater}
+          onCheckDone={async () => {
+            await reload();
+          }}
           onClose={() => {
             setPlantToCheck(undefined);
             setQuickWater(false);
           }}
-          onCheckDone={async () => {
-            await reload();
-          }}
-          quickWater={quickWater}
         />
       ) : null}
       <div className="flex gap-6 items-center self-start">
         {reminder.plant_info.cover_photo_thumbnail_url ? (
           <div className="flex justify-center items-center shrink-0 w-[80px] h-[80px] rounded-lg overflow-hidden">
             <Image
-              src={reminder.plant_info.cover_photo_thumbnail_url}
               alt={reminder.plant_info.plant.name}
-              height={80}
-              width={80}
               className="hover:cursor-pointer object-cover"
+              height={80}
+              src={reminder.plant_info.cover_photo_thumbnail_url}
+              width={80}
               onClick={() =>
                 imagePreview.setPreview({
                   src: reminder.plant_info.cover_photo_url!,
@@ -199,8 +202,8 @@ const ReminderCard = ({
           </Tooltip>
           <div className="flex flex-col gap-0">
             <Link
-              href={`/plants/${reminder.plant_info.plant.id}`}
               color="success"
+              href={`/plants/${reminder.plant_info.plant.id}`}
             >
               <span className="text-lg font-bold text-success-700">
                 {reminder.plant_info.plant.name}
@@ -220,11 +223,11 @@ const ReminderCard = ({
       <div className="gap-1 flex-row sm:flex-col flex flex-wrap justify-center sm:w-auto w-full">
         {reminder.reminder.reminder_type === "check" ? (
           <Button
-            size={mediaQueries.sm ? "sm" : "md"}
-            variant="flat"
-            color="primary"
             className="font-bold w-full"
+            color="primary"
+            size={mediaQueries.sm ? "sm" : "md"}
             startContent={<IconRuler2 size={20} />}
+            variant="flat"
             onPress={() => {
               setTimeout(() => {
                 setPlantToCheck(unwrap(reminder.plant_info.plant.id));
@@ -237,11 +240,11 @@ const ReminderCard = ({
         {reminder.reminder.reminder_type === "check" &&
         reminder.plant_info.plant.default_watering_interval_days ? (
           <Button
-            size={mediaQueries.sm ? "sm" : "md"}
-            variant="flat"
-            color="primary"
             className="font-bold w-full"
+            color="primary"
+            size={mediaQueries.sm ? "sm" : "md"}
             startContent={<IconClockHour7Filled size={20} />}
+            variant="flat"
             onPress={() => {
               setQuickWater(true);
               setTimeout(() => {
@@ -261,7 +264,7 @@ const OverdueSectionStarter = () => {
   return (
     <div className="flex flex-row gap-2 w-full items-center pt-2">
       {/* <Divider className="grow w-auto" /> */}
-      <IconAlertSquareRounded size={24} className="text-danger-800" />
+      <IconAlertSquareRounded className="text-danger-800" size={24} />
       <h2 className="text-lg font-bold text-danger-800">Overdue</h2>
       <Divider className="grow w-auto" />
     </div>
@@ -272,7 +275,7 @@ const RecentSectionStarter = () => {
   return (
     <div className="flex flex-row gap-2 w-full items-center pt-2">
       {/* <Divider className="grow w-auto" /> */}
-      <IconDroplet size={24} className="text-primary-800" />
+      <IconDroplet className="text-primary-800" size={24} />
       <h2 className="text-lg font-bold text-primary-800">Current</h2>
       <Divider className="grow w-auto" />
     </div>
@@ -283,7 +286,7 @@ const UpcomingSectionStarter = () => {
   return (
     <div className="flex flex-row gap-2 w-full items-center pt-2">
       {/* <Divider className="grow w-auto" /> */}
-      <IconCalendarWeekFilled size={24} className="text-success-800" />
+      <IconCalendarWeekFilled className="text-success-800" size={24} />
       <h2 className="text-lg font-bold text-success-800">Upcoming</h2>
       <Divider className="grow w-auto" />
     </div>

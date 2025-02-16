@@ -1,8 +1,6 @@
 import { Route, Routes } from "react-router-dom";
-
-import IndexPage from "@/pages/index";
-import { LoginPage } from "@/pages/login";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+
 import { AuthProvider } from "./auth";
 import { ToastProvider } from "./toast";
 import PlantsPage from "./pages/plants";
@@ -13,6 +11,9 @@ import PlantPage from "./pages/plant";
 import WateringsPage from "./pages/waterings";
 import ChecksPage from "./pages/checks";
 import RemindersPage from "./pages/reminders";
+
+import { LoginPage } from "@/pages/login";
+import IndexPage from "@/pages/index";
 
 const queryClient = new QueryClient({});
 

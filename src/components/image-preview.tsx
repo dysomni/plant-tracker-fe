@@ -39,9 +39,9 @@ export const ImagePreviewProvider = ({
   return (
     <ImagePreviewContext.Provider value={{ setPreview, onClose }}>
       <ImagePreview
-        src={preview.src}
-        plantName={preview.plantName}
         locationName={preview.locationName}
+        plantName={preview.plantName}
+        src={preview.src}
         onClose={onClose}
       />
       {children}
@@ -51,11 +51,13 @@ export const ImagePreviewProvider = ({
 
 export const useImagePreview = () => {
   const context = useContext(ImagePreviewContext);
+
   if (!context) {
     throw new Error(
-      "useImagePreview must be used within an ImagePreviewProvider"
+      "useImagePreview must be used within an ImagePreviewProvider",
     );
   }
+
   return context;
 };
 
@@ -69,10 +71,10 @@ export const ImagePreview = (props: {
 
   return (
     <Modal
-      isOpen={!!props.src}
-      onOpenChange={props.onClose}
       backdrop="blur"
+      isOpen={!!props.src}
       placement="center"
+      onOpenChange={props.onClose}
     >
       <ModalContent>
         {(_onClose) => (
@@ -86,7 +88,7 @@ export const ImagePreview = (props: {
               ) : null}
             </ModalHeader>
             <ModalBody>
-              <Image src={props.src} alt={props.plantName} />
+              <Image alt={props.plantName} src={props.src} />
             </ModalBody>
           </>
         )}

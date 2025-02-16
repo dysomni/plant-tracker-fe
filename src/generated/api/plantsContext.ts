@@ -1,4 +1,5 @@
 import type { QueryKey, UseQueryOptions } from "@tanstack/react-query";
+
 import { QueryOperation } from "./plantsComponents";
 
 export type PlantsContext = {
@@ -71,6 +72,7 @@ const resolvePathParam = (key: string, pathParams: Record<string, string>) => {
   if (key.startsWith("{") && key.endsWith("}")) {
     return pathParams[key.slice(1, -1)];
   }
+
   return key;
 };
 

@@ -5,17 +5,19 @@ import {
   IconRuler2,
 } from "@tabler/icons-react";
 import dayjs from "dayjs";
+
 import { Check, Watering } from "../generated/api/plantsSchemas";
 import { pluralize } from "../util";
 
 export const ReminderlessPlantBadge = (props: { count: number }) => {
   const { count } = props;
+
   return (
     <Chip
-      color="danger"
-      variant="solid"
-      startContent={<IconBellFilled size={15} />}
       className="p-4"
+      color="danger"
+      startContent={<IconBellFilled size={15} />}
+      variant="solid"
     >
       {count} {pluralize(count, "plant", "plants")} without reminders
     </Chip>
@@ -31,8 +33,8 @@ export const PlantLatestReminderBadge = ({
     return (
       <Chip
         color="danger"
-        variant="solid"
         startContent={<IconBellFilled size={15} />}
+        variant="solid"
       >
         No Reminders
       </Chip>
@@ -73,13 +75,14 @@ export const PlantWetnessBadge = ({
 }) => {
   const wetness = Number(lastCheck?.wetness_scale);
   const lastCheckDate = lastCheck ? dayjs(lastCheck?.check_date) : null;
+
   // if wetness is nan or undefined, it has never been checked
   if (isNaN(wetness) || !lastCheckDate) {
     return (
       <Chip
         color="default"
-        variant="flat"
         startContent={<IconRuler2 size={15} />}
+        variant="flat"
       >
         Unchecked
       </Chip>
@@ -90,12 +93,13 @@ export const PlantWetnessBadge = ({
   const daysSinceLastCheck = dayjs().diff(lastCheckDate, "day");
   const decayedWetness = Math.max(
     0,
-    wetness - daysSinceLastCheck * Number(wetnessDecayPerDay)
+    wetness - daysSinceLastCheck * Number(wetnessDecayPerDay),
   );
 
   // 0 is dry, 10 is wet
   const wetnessColor =
     decayedWetness > 5 ? "success" : decayedWetness > 2 ? "warning" : "danger";
+
   return (
     <Tooltip content={lastCheckDate.format("MMMM D, YYYY h:mm A")}>
       <Chip
@@ -117,12 +121,13 @@ export const PlantWateringBadge = ({
   lastWatered: Watering | null;
 }) => {
   const lastWateredDate = lastWatered ? dayjs(lastWatered.watering_date) : null;
+
   if (!lastWateredDate) {
     return (
       <Chip
         color="default"
-        variant="flat"
         startContent={<IconDropletFilled size={15} />}
+        variant="flat"
       >
         Unwatered
       </Chip>
@@ -133,8 +138,8 @@ export const PlantWateringBadge = ({
     <Tooltip content={lastWateredDate.format("MMMM D, YYYY h:mm A")}>
       <Chip
         color="primary"
-        variant="flat"
         startContent={<IconDropletFilled size={15} />}
+        variant="flat"
       >
         {lastWateredDate.fromNow()}
       </Chip>
