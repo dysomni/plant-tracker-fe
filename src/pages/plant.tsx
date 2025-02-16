@@ -188,7 +188,7 @@ export default function PlantPage() {
             isDisabled={isFetching}
             onPress={() => setTimeout(() => setAddPhotoOpen(true), 50)}
           >
-            Add Photo
+            Add Photos
           </Button>
           {data?.plant.archived ? (
             <Button
@@ -465,7 +465,7 @@ export default function PlantPage() {
           setOpen={setAddPhotoOpen}
           plant={data?.plant}
           onPhotoUploaded={async () => {
-            await refetch();
+            await Promise.all([refetch(), refetchPhotos()]);
           }}
         />
       )}
@@ -481,57 +481,61 @@ const AddPhotoDrawer = (props: {
 }) => {
   const { open, setOpen, plant } = props;
   const [loading, setLoading] = useState(false);
-  const [uploadedFile, setUploadedFile] = useState<File | null>(null);
-  const [coverSelected, setCoverSelected] = useState(false);
+  const [uploadedFiles, setUploadedFiles] = useState<File[] | null>(null);
+  const [coverPhotoIndex, setCoverPhotoIndex] = useState<number | null>(null);
   const [notes, setNotes] = useState("");
   const [overrideDate, setOverrideDate] = useState<DateValue>(
     now(getLocalTimeZone())
   );
   const toast = useToast();
 
-  const handleUpload = async () => {
-    if (!uploadedFile) return;
-
-    setLoading(true);
+  const handleSingleUpload = async (file: File, index: number) => {
     try {
       const newPhotoRecord = await fetchCreatePhotoV1PhotosPost({
         body: {
           plant_id: unwrap(plant.id),
-          photo_type: uploadedFile.type,
+          photo_type: file.type,
           photo_date: removeTimeZoneBracketFromDatetime(
             overrideDate.toString()
           ),
-          cover_photo: coverSelected,
+          cover_photo: coverPhotoIndex === index,
           notes: notes,
         },
       });
       const presignedUrl = newPhotoRecord.upload_presigned_url;
       await fetch(presignedUrl, {
         method: "PUT",
-        body: uploadedFile,
+        body: file,
         headers: {
-          "Content-Type": uploadedFile.type,
+          "Content-Type": file.type,
         },
       });
       await fetchMarkPhotoUploadedV1PhotosPhotoIdMarkUploadedPost({
         pathParams: { photoId: unwrap(newPhotoRecord.photo.id) },
       });
-      await props.onPhotoUploaded?.();
       toast({
-        message: "Photo uploaded successfully.",
+        message: `Photo ${file.name} uploaded successfully.`,
         type: "success",
         duration: 5000,
       });
-      setOpen(false);
-      setLoading(false);
     } catch (error) {
-      setLoading(false);
       toast({
-        message: "Failed to upload photo.",
+        message: `Failed to upload photo ${file.name}.`,
         type: "danger",
         duration: 5000,
       });
     }
+  };
+
+  const handleUpload = async () => {
+    if (!uploadedFiles || !uploadedFiles.length) return;
+
+    setLoading(true);
+    const filePromises = uploadedFiles.map(handleSingleUpload);
+    await Promise.all(filePromises);
+    await props.onPhotoUploaded?.();
+    setLoading(false);
+    setOpen(false);
   };
 
   return (
@@ -548,27 +552,52 @@ const AddPhotoDrawer = (props: {
                   type="file"
                   label="Photo"
                   name="photo"
+                  multiple
                   accept="image/*"
                   onChange={(e) => {
-                    const newFile = e.target.files?.[0];
-                    if (!newFile) return;
-                    setUploadedFile(newFile);
+                    const newFiles = e.target.files;
+                    if (!newFiles) return;
+                    setUploadedFiles(Array.from(newFiles));
+                    setCoverPhotoIndex(null);
                   }}
                   isDisabled={loading}
                 />
-                <Checkbox
-                  isSelected={coverSelected}
-                  onValueChange={setCoverSelected}
-                  isDisabled={loading}
-                >
-                  Make Cover Photo
-                </Checkbox>
-                {uploadedFile && (
-                  <Image
-                    src={URL.createObjectURL(uploadedFile)}
-                    alt="Uploaded photo preview"
-                    height={200}
-                  />
+
+                {uploadedFiles && (
+                  <div className="flex flex-col gap-1">
+                    <p className="text-md font-bold pb-0">Uploaded Photos</p>
+                    <div className="flex flex-row gap-1 flex-wrap">
+                      {uploadedFiles.map((file, indx) => (
+                        <Image
+                          key={file.name}
+                          src={URL.createObjectURL(file)}
+                          alt="Uploaded photo preview"
+                          height={100}
+                          className={`border-0 border-primary ${indx === coverPhotoIndex ? "border-4" : ""} rounded-xl`}
+                          style={{
+                            transition: "border-width 0.1s ease",
+                          }}
+                          onClick={() => {
+                            if (indx === coverPhotoIndex) {
+                              setCoverPhotoIndex(null);
+                              return;
+                            }
+                            setCoverPhotoIndex(indx);
+                          }}
+                        />
+                      ))}
+                    </div>
+                    <div className="flex flex-row gap-2">
+                      <p className="font-bold text-sm">
+                        Select/click to set cover photo.
+                      </p>
+                      {coverPhotoIndex !== null && (
+                        <p className="italic text-sm">
+                          (Selected #{coverPhotoIndex + 1})
+                        </p>
+                      )}
+                    </div>
+                  </div>
                 )}
               </div>
               <Textarea
@@ -600,7 +629,7 @@ const AddPhotoDrawer = (props: {
               <Button
                 color="success"
                 onPress={handleUpload}
-                isDisabled={!uploadedFile || loading}
+                isDisabled={!uploadedFiles || !uploadedFiles.length || loading}
               >
                 Upload
               </Button>
