@@ -93,6 +93,7 @@ export default function IndexPage() {
               reminder={reminder}
               key={reminder.reminder.id}
               reload={() => refetch({})}
+              type="overdue"
             />
           ))}
           {recentReminders.length ? <RecentSectionStarter /> : null}
@@ -101,6 +102,7 @@ export default function IndexPage() {
               reminder={reminder}
               key={reminder.reminder.id}
               reload={() => refetch({})}
+              type="recent"
             />
           ))}
           {!overdueReminders.length && !recentReminders.length ? (
@@ -116,6 +118,7 @@ export default function IndexPage() {
               reminder={reminder}
               key={reminder.reminder.id}
               reload={() => refetch({})}
+              type="upcoming"
             />
           ))}
         </div>
@@ -127,9 +130,11 @@ export default function IndexPage() {
 const ReminderCard = ({
   reminder,
   reload,
+  type,
 }: {
   reminder: ReminderWithPlantInfo;
   reload: () => void;
+  type: "overdue" | "recent" | "upcoming";
 }) => {
   const imagePreview = useImagePreview();
   const reminderDate = dayjs(reminder.reminder.reminder_date);
@@ -138,22 +143,15 @@ const ReminderCard = ({
   const [quickWater, setQuickWater] = useState(false);
 
   const reminderBgColor = useMemo(() => {
-    const now = dayjs();
-    const diffInMinutes = now.diff(reminderDate, "minute");
-
     switch (true) {
-      case diffInMinutes <= 15:
+      case type == "upcoming":
         return "bg-success-50";
-      case diffInMinutes <= 60:
-        return "bg-warning-50";
-      case diffInMinutes <= 1440:
-        return "bg-warning-50";
-      case diffInMinutes <= 2880:
-        return "bg-danger-50";
+      case type == "recent":
+        return "bg-primary-50";
       default:
         return "bg-danger-50";
     }
-  }, [reminderDate]);
+  }, [type]);
 
   const mediaQueries = useMediaQueries();
 
@@ -272,10 +270,10 @@ const OverdueSectionStarter = () => {
 
 const RecentSectionStarter = () => {
   return (
-    <div className="flex flex-row gap-4 w-full items-center pt-2">
+    <div className="flex flex-row gap-2 w-full items-center pt-2">
       {/* <Divider className="grow w-auto" /> */}
-      <IconDroplet size={24} className="text-warning-800" />
-      <h2 className="text-lg font-bold text-warning-800">Current</h2>
+      <IconDroplet size={24} className="text-primary-800" />
+      <h2 className="text-lg font-bold text-primary-800">Current</h2>
       <Divider className="grow w-auto" />
     </div>
   );
@@ -283,7 +281,7 @@ const RecentSectionStarter = () => {
 
 const UpcomingSectionStarter = () => {
   return (
-    <div className="flex flex-row gap-4 w-full items-center pt-2">
+    <div className="flex flex-row gap-2 w-full items-center pt-2">
       {/* <Divider className="grow w-auto" /> */}
       <IconCalendarWeekFilled size={24} className="text-success-800" />
       <h2 className="text-lg font-bold text-success-800">Upcoming</h2>
