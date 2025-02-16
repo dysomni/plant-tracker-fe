@@ -10,6 +10,7 @@ import { BasicPlantInfoResponseModel } from "../generated/api/plantsSchemas";
 import { useImagePreview } from "../components/image-preview";
 import {
   PlantLatestReminderBadge,
+  PlantWateringBadge,
   PlantWetnessBadge,
   ReminderlessPlantBadge,
 } from "../components/badges";
@@ -37,7 +38,7 @@ export default function PlantsPage() {
         plant.location.name.toLowerCase().includes(searchInput.toLowerCase()) ||
         plant.plant.scientific_name
           .toLowerCase()
-          .includes(searchInput.toLowerCase()),
+          .includes(searchInput.toLowerCase())
     );
   }, [data, searchInput]);
 
@@ -48,7 +49,7 @@ export default function PlantsPage() {
     () =>
       data?.plants.filter((plant) => plant.outstanding_reminders.length === 0)
         .length ?? 0,
-    [data],
+    [data]
   );
 
   return (
@@ -120,6 +121,8 @@ const PlantCard = ({
       ? dayjs(plant.outstanding_reminders[0].reminder_date)
       : null;
 
+  const mediaQueries = useMediaQueries();
+
   return (
     <Card className="flex flex-col sm:flex-row gap-6 sm:gap-0 p-4 rounded-lg items-center justify-center sm:justify-between shadow-lg max-h-72 border-1 dark:border-0">
       {checking ? (
@@ -129,7 +132,7 @@ const PlantCard = ({
           onClose={() => setChecking(false)}
         />
       ) : null}
-      <div className="flex flex-row gap-6 items-center justify-center self-start sm:self-auto">
+      <div className="flex flex-row gap-6 items-center justify-start self-start sm:self-auto w-full sm:w-3/4 md:w-2/5">
         {plant.cover_photo_thumbnail_url ? (
           <div className="flex justify-center items-center shrink-0 w-[90px] h-[90px] rounded-lg overflow-hidden">
             <Image
@@ -158,15 +161,17 @@ const PlantCard = ({
           </div>
         </div>
       </div>
-      <div className="flex flex-col flex-wrap gap-1 grow items-center justify-center">
-        <PlantLatestReminderBadge hasReminders={!!latestReminder} />
-        <PlantWetnessBadge
-          lastCheck={plant.last_check}
-          wetnessDecayPerDay={plant.wetness_decay_per_day}
-        />
-        {/* <PlantWateringBadge lastWatered={plant.last_watering} /> */}
-      </div>
-      <div className="w-full sm:w-auto">
+      {mediaQueries.sm && !mediaQueries.md ? null : (
+        <div className="flex flex-row sm:flex-col flex-wrap gap-1 grow items-center justify-center w-full md:w-2/5">
+          <PlantLatestReminderBadge hasReminders={!!latestReminder} />
+          <PlantWetnessBadge
+            lastCheck={plant.last_check}
+            wetnessDecayPerDay={plant.wetness_decay_per_day}
+          />
+          <PlantWateringBadge lastWatered={plant.last_watering} />
+        </div>
+      )}
+      <div className="w-full sm:w-1/4 md:w=1/5 sm:max-w-40">
         <Button
           className="font-bold w-full"
           color="primary"

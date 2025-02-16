@@ -37,9 +37,9 @@ export default function IndexPage() {
       data?.reminders.filter(
         (reminder) =>
           reminder.reminder.reminder_date <
-          dayjs().subtract(1, "day").toISOString(),
+          dayjs().subtract(1, "day").toISOString()
       ) ?? [],
-    [data],
+    [data]
   );
 
   const recentReminders = useMemo(
@@ -49,9 +49,9 @@ export default function IndexPage() {
           reminder.reminder.reminder_date >=
             dayjs().subtract(1, "day").toISOString() &&
           reminder.reminder.reminder_date <
-            dayjs().add(12, "hours").toISOString(),
+            dayjs().add(12, "hours").toISOString()
       ) ?? [],
-    [data],
+    [data]
   );
 
   const upcomingReminders = useMemo(
@@ -59,9 +59,9 @@ export default function IndexPage() {
       data?.reminders.filter(
         (reminder) =>
           reminder.reminder.reminder_date >=
-          dayjs().add(12, "hours").toISOString(),
+          dayjs().add(12, "hours").toISOString()
       ) ?? [],
-    [data],
+    [data]
   );
 
   return (
@@ -84,7 +84,7 @@ export default function IndexPage() {
               {pluralize(
                 overdueReminders.length + recentReminders.length,
                 "reminder",
-                "reminders",
+                "reminders"
               )}
             </span>
           </div>
@@ -175,7 +175,7 @@ const ReminderCard = ({
           }}
         />
       ) : null}
-      <div className="flex gap-6 items-center self-start">
+      <div className="flex gap-6 items-center self-start w-full sm:3/4 md:w-2/5">
         {reminder.plant_info.cover_photo_thumbnail_url ? (
           <div className="flex justify-center items-center shrink-0 w-[80px] h-[80px] rounded-lg overflow-hidden">
             <Image
@@ -213,14 +213,16 @@ const ReminderCard = ({
           </div>
         </div>
       </div>
-      <div className="flex flex-row flex-wrap gap-1 grow items-center justify-center">
-        <PlantWetnessBadge
-          lastCheck={reminder.plant_info.last_check}
-          wetnessDecayPerDay={reminder.plant_info.wetness_decay_per_day}
-        />
-        <PlantWateringBadge lastWatered={reminder.plant_info.last_watering} />
-      </div>
-      <div className="gap-1 flex-row sm:flex-col flex flex-wrap justify-center sm:w-auto w-full">
+      {mediaQueries.sm && !mediaQueries.md ? null : (
+        <div className="flex flex-row sm:flex-col flex-wrap gap-1 grow items-center justify-center w-full sm:w-1/4 md:w-2/5">
+          <PlantWetnessBadge
+            lastCheck={reminder.plant_info.last_check}
+            wetnessDecayPerDay={reminder.plant_info.wetness_decay_per_day}
+          />
+          <PlantWateringBadge lastWatered={reminder.plant_info.last_watering} />
+        </div>
+      )}
+      <div className="gap-1 flex-row sm:flex-col flex flex-wrap justify-center w-full sm:w-1/4 md:w-1/5 sm:max-w-40">
         {reminder.reminder.reminder_type === "check" ? (
           <Button
             className="font-bold w-full"
