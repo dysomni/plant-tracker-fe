@@ -6,7 +6,7 @@
   "scripts": {
     "dev": "vite",
     "build": "tsc && vite build",
-    "lint": "eslint -c .eslintrc.json ./src/**/**/*.{ts,tsx}",
+    "lint": "eslint -c .eslintrc.json ./src/**/**/*.{ts,tsx} --fix",
     "format": "prettier --write .",
     "preview": "vite preview",
     "init-codegen": "openapi-codegen init",
