@@ -11,10 +11,11 @@ import { ReminderWithPlantInfo } from "../generated/api/plantsSchemas";
 import { usePageLoading } from "../components/page-loading";
 import { PlantWateringBadge, PlantWetnessBadge } from "../components/badges";
 import {
-  IconCheck,
+  IconAlertSquareRounded,
+  IconCalendarWeekFilled,
   IconClockHour7Filled,
-  IconCloudRain,
   IconRuler2,
+  IconDroplet,
 } from "@tabler/icons-react";
 import { pluralize, unwrap } from "../util";
 import { CheckPlantDrawer } from "../components/check-plant";
@@ -262,7 +263,7 @@ const OverdueSectionStarter = () => {
   return (
     <div className="flex flex-row gap-2 w-full items-center pt-2">
       {/* <Divider className="grow w-auto" /> */}
-      <IconClockHour7Filled size={24} className="text-danger-800" />
+      <IconAlertSquareRounded size={24} className="text-danger-800" />
       <h2 className="text-lg font-bold text-danger-800">Overdue</h2>
       <Divider className="grow w-auto" />
     </div>
@@ -273,7 +274,7 @@ const RecentSectionStarter = () => {
   return (
     <div className="flex flex-row gap-4 w-full items-center pt-2">
       {/* <Divider className="grow w-auto" /> */}
-      <IconCloudRain size={24} className="text-warning-800" />
+      <IconDroplet size={24} className="text-warning-800" />
       <h2 className="text-lg font-bold text-warning-800">Current</h2>
       <Divider className="grow w-auto" />
     </div>
@@ -284,7 +285,7 @@ const UpcomingSectionStarter = () => {
   return (
     <div className="flex flex-row gap-4 w-full items-center pt-2">
       {/* <Divider className="grow w-auto" /> */}
-      <IconCheck size={24} className="text-success-800" />
+      <IconCalendarWeekFilled size={24} className="text-success-800" />
       <h2 className="text-lg font-bold text-success-800">Upcoming</h2>
       <Divider className="grow w-auto" />
     </div>

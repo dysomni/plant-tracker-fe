@@ -11,9 +11,10 @@ import {
 } from "@nextui-org/navbar";
 
 import { ThemeSwitch } from "@/components/theme-switch";
-import { LogoutIcon, PlantIcon } from "@/components/icons";
+import { LogoutIcon } from "@/components/icons";
 import { useContext } from "react";
 import { AuthContext } from "../auth";
+import { Logo } from "./logo";
 
 export const Navbar = () => {
   const authContext = useContext(AuthContext);
@@ -34,10 +35,8 @@ export const Navbar = () => {
             className="flex justify-start items-center gap-1 transition-colors"
             href="/"
           >
-            <PlantIcon
-              size={24}
-              className="text-lime-600 dark:text-green-500 dark:bg-green-500"
-            />
+            <Logo />
+
             <h1 className="text-lg sm:text-2xl text-transparent bg-clip-text font-extrabold bg-gradient-to-l dark:bg-gradient-to-r from-green-700 to-lime-600 dark:from-green-500 dark:to-lime-400">
               Plant Tracker
             </h1>
