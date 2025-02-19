@@ -5,10 +5,9 @@ import dayjs from "dayjs";
 import {
   fetchCreateNotificationSubscriptionV1SubscriptionsPost,
   fetchDisableNotificationSubscriptionV1SubscriptionsSubscriptionIdDisablePost,
+  fetchGetNotificationSubscriptionsV1SubscriptionsGet,
   GetNotificationSubscriptionsV1SubscriptionsGetResponse,
-  useGetNotificationSubscriptionsV1SubscriptionsGet,
 } from "../generated/api/plantsComponents";
-import { useAuthErrorRedirect } from "../auth";
 import { usePageLoading } from "../components/page-loading";
 import { useToast } from "../toast";
 
@@ -39,17 +38,37 @@ const handleNoMatchingWithEndpoint = async (
 
 export default function SettingsPage() {
   const [subscriptionEndpoint, setSubscriptionEndpoint] = useState("");
-  const { data, isLoading, error, refetch } =
-    useGetNotificationSubscriptionsV1SubscriptionsGet({
+  const [data, setData] = useState<
+    GetNotificationSubscriptionsV1SubscriptionsGetResponse | undefined
+  >(undefined);
+  const [isLoading, setIsLoading] = useState(true);
+  const fetch = async (subscriptionEndpointOverride?: string) => {
+    const endpoint = subscriptionEndpointOverride ?? subscriptionEndpoint;
+
+    setIsLoading(true);
+    const response = await fetchGetNotificationSubscriptionsV1SubscriptionsGet({
       queryParams: {
-        subscription_endpoint: subscriptionEndpoint,
+        subscription_endpoint: endpoint,
       },
     });
+
+    setData(response);
+    setIsLoading(false);
+
+    if (response.length) {
+      const matchingSubscription = response.find(
+        (subscription) => subscription.matching,
+      );
+
+      if (!matchingSubscription) {
+        await handleNoMatchingWithEndpoint(response, setSubscriptionEndpoint);
+      }
+    }
+  };
 
   const [notificationsAllowed, setNotificationsAllowed] = useState(false);
 
   usePageLoading(isLoading);
-  useAuthErrorRedirect(error);
 
   useEffect(() => {
     navigator.serviceWorker.ready?.then((registration) => {
@@ -66,12 +85,9 @@ export default function SettingsPage() {
       registration.pushManager.getSubscription().then(async (subscription) => {
         if (subscription) {
           setSubscriptionEndpoint(subscription.endpoint);
-          const response = await refetch();
-
-          await handleNoMatchingWithEndpoint(
-            response.data,
-            setSubscriptionEndpoint,
-          );
+          await fetch(subscription.endpoint);
+        } else {
+          await fetch();
         }
       });
     });
@@ -119,7 +135,7 @@ export default function SettingsPage() {
                         },
                       },
                     );
-                    await refetch();
+                    await fetch();
                   }}
                 >
                   Delete
@@ -143,30 +159,32 @@ export default function SettingsPage() {
 
                   if (pm === "granted") {
                     setNotificationsAllowed(true);
-                    try {
-                      const subscription =
-                        await registration?.pushManager?.subscribe({
-                          userVisibleOnly: true,
-                          applicationServerKey: import.meta.env
-                            .VITE_VAPID_PUBLIC_KEY,
-                        });
+                    if (!subscriptionEndpoint) {
+                      try {
+                        const subscription =
+                          await registration?.pushManager?.subscribe({
+                            userVisibleOnly: true,
+                            applicationServerKey: import.meta.env
+                              .VITE_VAPID_PUBLIC_KEY,
+                          });
 
-                      await fetchCreateNotificationSubscriptionV1SubscriptionsPost(
-                        {
-                          body: {
-                            subscription: subscription,
-                            device_name: navigator.userAgent,
+                        await fetchCreateNotificationSubscriptionV1SubscriptionsPost(
+                          {
+                            body: {
+                              subscription: subscription,
+                              device_name: navigator.userAgent,
+                            },
                           },
-                        },
-                      );
-                      setSubscriptionEndpoint(subscription.endpoint);
-                      await refetch();
-                    } catch (error) {
-                      toast({
-                        message: `Failed to subscribe to notifications. ${error}`,
-                        type: "danger",
-                        duration: 5000,
-                      });
+                        );
+                        setSubscriptionEndpoint(subscription.endpoint);
+                        await fetch(subscription.endpoint);
+                      } catch (error) {
+                        toast({
+                          message: `Failed to subscribe to notifications. ${error}`,
+                          type: "danger",
+                          duration: 5000,
+                        });
+                      }
                     }
                   }
                   toast({
