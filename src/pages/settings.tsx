@@ -18,7 +18,7 @@ export default function SettingsPage() {
     useGetNotificationSubscriptionsV1SubscriptionsGet({});
 
   const [notificationsAllowed, setNotificationsAllowed] = useState(false);
-  const [isSubscribed, setIsSubscribed] = useState(false);
+  const [_isSubscribed, setIsSubscribed] = useState(false);
 
   usePageLoading(isLoading);
   useAuthErrorRedirect(error);
