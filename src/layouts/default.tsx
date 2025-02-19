@@ -1,5 +1,3 @@
-import { Button } from "@nextui-org/react";
-
 import { Navbar } from "@/components/navbar";
 
 export default function DefaultLayout({
@@ -15,40 +13,6 @@ export default function DefaultLayout({
       </main>
       <footer className="w-full flex gap-2 items-center justify-center py-3 bg-content2 dark:bg-content1 text-foreground-400 transition-colors duration-100">
         Website by Dysomni
-        <Button
-          size="sm"
-          onPress={async () => {
-            Notification.requestPermission().then(async (result) => {
-              if (result === "granted") {
-                // do more stuff if needed
-              }
-            });
-          }}
-        >
-          Allow Notifications
-        </Button>
-        <Button
-          size="sm"
-          onPress={async () => {
-            const options = {
-              body: `You have 4 plants that need watering today.`,
-              title: `Time to water your plants!`,
-              icon: "/apple-touch-icon.png",
-              actions: [
-                {
-                  action: "open",
-                  title: "Open the app",
-                },
-              ],
-            };
-
-            const registration = await navigator.serviceWorker.ready;
-
-            await registration?.showNotification("Plant Tracker", options);
-          }}
-        >
-          Test Notification
-        </Button>
       </footer>
     </div>
   );

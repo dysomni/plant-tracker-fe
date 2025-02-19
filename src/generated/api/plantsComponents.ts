@@ -3,13 +3,11 @@
  *
  * @version 0.1.0
  */
-import type * as Fetcher from "./plantsFetcher";
-import type * as Schemas from "./plantsSchemas";
-
 import * as reactQuery from "@tanstack/react-query";
-
 import { usePlantsContext, PlantsContext } from "./plantsContext";
+import type * as Fetcher from "./plantsFetcher";
 import { plantsFetch } from "./plantsFetcher";
+import type * as Schemas from "./plantsSchemas";
 
 export type ListAllPlantsV1PlantsGetQueryParams = {
   /**
@@ -61,7 +59,6 @@ export const useListAllPlantsV1PlantsGet = <
 ) => {
   const { fetcherOptions, queryOptions, queryKeyFn } =
     usePlantsContext(options);
-
   return reactQuery.useQuery<
     Schemas.ListPlantsResponseModel,
     ListAllPlantsV1PlantsGetError,
@@ -121,7 +118,6 @@ export const useCreatePlantV1PlantsPost = (
   >,
 ) => {
   const { fetcherOptions } = usePlantsContext();
-
   return reactQuery.useMutation<
     Schemas.FullPlantInfoResponseModel,
     CreatePlantV1PlantsPostError,
@@ -180,7 +176,6 @@ export const useGetPlantV1PlantsPlantIdGet = <
 ) => {
   const { fetcherOptions, queryOptions, queryKeyFn } =
     usePlantsContext(options);
-
   return reactQuery.useQuery<
     Schemas.FullPlantInfoResponseModel,
     GetPlantV1PlantsPlantIdGetError,
@@ -245,7 +240,6 @@ export const useUpdatePlantV1PlantsPlantIdPatch = (
   >,
 ) => {
   const { fetcherOptions } = usePlantsContext();
-
   return reactQuery.useMutation<
     Schemas.FullPlantInfoResponseModel,
     UpdatePlantV1PlantsPlantIdPatchError,
@@ -309,7 +303,6 @@ export const useGetPlantPhotosV1PlantsPlantIdPhotosGet = <
 ) => {
   const { fetcherOptions, queryOptions, queryKeyFn } =
     usePlantsContext(options);
-
   return reactQuery.useQuery<
     Schemas.PlantPhotosResponseModel,
     GetPlantPhotosV1PlantsPlantIdPhotosGetError,
@@ -379,7 +372,6 @@ export const useWaterPlantV1PlantsPlantIdWaterPost = (
   >,
 ) => {
   const { fetcherOptions } = usePlantsContext();
-
   return reactQuery.useMutation<
     Schemas.FullPlantInfoResponseModel,
     WaterPlantV1PlantsPlantIdWaterPostError,
@@ -443,7 +435,6 @@ export const useCheckPlantV1PlantsPlantIdCheckPost = (
   >,
 ) => {
   const { fetcherOptions } = usePlantsContext();
-
   return reactQuery.useMutation<
     Schemas.FullPlantInfoResponseModel,
     CheckPlantV1PlantsPlantIdCheckPostError,
@@ -508,7 +499,6 @@ export const useFullCheckPlantV1PlantsPlantIdFullCheckPost = (
   >,
 ) => {
   const { fetcherOptions } = usePlantsContext();
-
   return reactQuery.useMutation<
     Schemas.FullPlantInfoResponseModel,
     FullCheckPlantV1PlantsPlantIdFullCheckPostError,
@@ -568,7 +558,6 @@ export const useGetOutstandingRemindersV1RemindersOutstandingGet = <
 ) => {
   const { fetcherOptions, queryOptions, queryKeyFn } =
     usePlantsContext(options);
-
   return reactQuery.useQuery<
     Schemas.OutstandingRemindersResponseModel,
     GetOutstandingRemindersV1RemindersOutstandingGetError,
@@ -628,7 +617,6 @@ export const useCreateReminderV1RemindersPost = (
   >,
 ) => {
   const { fetcherOptions } = usePlantsContext();
-
   return reactQuery.useMutation<
     Schemas.ReminderWithPlantInfo,
     CreateReminderV1RemindersPostError,
@@ -689,7 +677,6 @@ export const useDeleteReminderV1RemindersReminderIdDelete = (
   >,
 ) => {
   const { fetcherOptions } = usePlantsContext();
-
   return reactQuery.useMutation<
     void,
     DeleteReminderV1RemindersReminderIdDeleteError,
@@ -755,7 +742,6 @@ export const useCompleteReminderV1RemindersReminderIdCompletePost = (
   >,
 ) => {
   const { fetcherOptions } = usePlantsContext();
-
   return reactQuery.useMutation<
     Schemas.ReminderWithPlantInfo,
     CompleteReminderV1RemindersReminderIdCompletePostError,
@@ -815,7 +801,6 @@ export const useDeleteCheckV1ChecksCheckIdDelete = (
   >,
 ) => {
   const { fetcherOptions } = usePlantsContext();
-
   return reactQuery.useMutation<
     void,
     DeleteCheckV1ChecksCheckIdDeleteError,
@@ -879,7 +864,6 @@ export const useDeleteWateringV1WateringsWateringIdDelete = (
   >,
 ) => {
   const { fetcherOptions } = usePlantsContext();
-
   return reactQuery.useMutation<
     void,
     DeleteWateringV1WateringsWateringIdDeleteError,
@@ -935,7 +919,6 @@ export const useCreatePhotoV1PhotosPost = (
   >,
 ) => {
   const { fetcherOptions } = usePlantsContext();
-
   return reactQuery.useMutation<
     Schemas.CreatePhotoResponseModel,
     CreatePhotoV1PhotosPostError,
@@ -996,7 +979,6 @@ export const useMarkPhotoUploadedV1PhotosPhotoIdMarkUploadedPost = (
   >,
 ) => {
   const { fetcherOptions } = usePlantsContext();
-
   return reactQuery.useMutation<
     void,
     MarkPhotoUploadedV1PhotosPhotoIdMarkUploadedPostError,
@@ -1062,7 +1044,6 @@ export const useMarkPhotoAsCoverPhotoV1PhotosPhotoIdMarkCoverPhotoPost = (
   >,
 ) => {
   const { fetcherOptions } = usePlantsContext();
-
   return reactQuery.useMutation<
     void,
     MarkPhotoAsCoverPhotoV1PhotosPhotoIdMarkCoverPhotoPostError,
@@ -1122,7 +1103,6 @@ export const useDeletePhotoV1PhotosPhotoIdDelete = (
   >,
 ) => {
   const { fetcherOptions } = usePlantsContext();
-
   return reactQuery.useMutation<
     void,
     DeletePhotoV1PhotosPhotoIdDeleteError,
@@ -1181,7 +1161,6 @@ export const useListAllLocationsV1LocationsGet = <
 ) => {
   const { fetcherOptions, queryOptions, queryKeyFn } =
     usePlantsContext(options);
-
   return reactQuery.useQuery<
     ListAllLocationsV1LocationsGetResponse,
     ListAllLocationsV1LocationsGetError,
@@ -1241,7 +1220,6 @@ export const useCreateLocationV1LocationsPost = (
   >,
 ) => {
   const { fetcherOptions } = usePlantsContext();
-
   return reactQuery.useMutation<
     Schemas.Location,
     CreateLocationV1LocationsPostError,
@@ -1270,7 +1248,7 @@ export type UpdateLocationV1LocationsLocationIdPatchError =
   >;
 
 export type UpdateLocationV1LocationsLocationIdPatchVariables = {
-  body: Schemas.CreateLocationRequest;
+  body?: Schemas.UpdateLocationRequest;
   pathParams: UpdateLocationV1LocationsLocationIdPatchPathParams;
 } & PlantsContext["fetcherOptions"];
 
@@ -1281,7 +1259,7 @@ export const fetchUpdateLocationV1LocationsLocationIdPatch = (
   plantsFetch<
     Schemas.Location,
     UpdateLocationV1LocationsLocationIdPatchError,
-    Schemas.CreateLocationRequest,
+    Schemas.UpdateLocationRequest,
     {},
     {},
     UpdateLocationV1LocationsLocationIdPatchPathParams
@@ -1303,7 +1281,6 @@ export const useUpdateLocationV1LocationsLocationIdPatch = (
   >,
 ) => {
   const { fetcherOptions } = usePlantsContext();
-
   return reactQuery.useMutation<
     Schemas.Location,
     UpdateLocationV1LocationsLocationIdPatchError,
@@ -1320,6 +1297,196 @@ export const useUpdateLocationV1LocationsLocationIdPatch = (
   });
 };
 
+export type GetNotificationSubscriptionsV1SubscriptionsGetError =
+  Fetcher.ErrorWrapper<
+    | {
+        status: 401;
+        payload: Schemas.UnauthorizedResponse;
+      }
+    | {
+        status: 422;
+        payload: Schemas.HTTPValidationError;
+      }
+  >;
+
+export type GetNotificationSubscriptionsV1SubscriptionsGetResponse =
+  Schemas.SubscriptionResponse[];
+
+export type GetNotificationSubscriptionsV1SubscriptionsGetVariables =
+  PlantsContext["fetcherOptions"];
+
+export const fetchGetNotificationSubscriptionsV1SubscriptionsGet = (
+  variables: GetNotificationSubscriptionsV1SubscriptionsGetVariables,
+  signal?: AbortSignal,
+) =>
+  plantsFetch<
+    GetNotificationSubscriptionsV1SubscriptionsGetResponse,
+    GetNotificationSubscriptionsV1SubscriptionsGetError,
+    undefined,
+    {},
+    {},
+    {}
+  >({ url: "/v1/subscriptions", method: "get", ...variables, signal });
+
+export const useGetNotificationSubscriptionsV1SubscriptionsGet = <
+  TData = GetNotificationSubscriptionsV1SubscriptionsGetResponse,
+>(
+  variables: GetNotificationSubscriptionsV1SubscriptionsGetVariables,
+  options?: Omit<
+    reactQuery.UseQueryOptions<
+      GetNotificationSubscriptionsV1SubscriptionsGetResponse,
+      GetNotificationSubscriptionsV1SubscriptionsGetError,
+      TData
+    >,
+    "queryKey" | "queryFn" | "initialData"
+  >,
+) => {
+  const { fetcherOptions, queryOptions, queryKeyFn } =
+    usePlantsContext(options);
+  return reactQuery.useQuery<
+    GetNotificationSubscriptionsV1SubscriptionsGetResponse,
+    GetNotificationSubscriptionsV1SubscriptionsGetError,
+    TData
+  >({
+    queryKey: queryKeyFn({
+      path: "/v1/subscriptions",
+      operationId: "getNotificationSubscriptionsV1SubscriptionsGet",
+      variables,
+    }),
+    queryFn: ({ signal }) =>
+      fetchGetNotificationSubscriptionsV1SubscriptionsGet(
+        { ...fetcherOptions, ...variables },
+        signal,
+      ),
+    ...options,
+    ...queryOptions,
+  });
+};
+
+export type CreateNotificationSubscriptionV1SubscriptionsPostError =
+  Fetcher.ErrorWrapper<
+    | {
+        status: 401;
+        payload: Schemas.UnauthorizedResponse;
+      }
+    | {
+        status: 422;
+        payload: Schemas.HTTPValidationError;
+      }
+  >;
+
+export type CreateNotificationSubscriptionV1SubscriptionsPostVariables = {
+  body: Schemas.CreateNotitificationSubscriptionSchema;
+} & PlantsContext["fetcherOptions"];
+
+export const fetchCreateNotificationSubscriptionV1SubscriptionsPost = (
+  variables: CreateNotificationSubscriptionV1SubscriptionsPostVariables,
+  signal?: AbortSignal,
+) =>
+  plantsFetch<
+    Schemas.SubscriptionResponse,
+    CreateNotificationSubscriptionV1SubscriptionsPostError,
+    Schemas.CreateNotitificationSubscriptionSchema,
+    {},
+    {},
+    {}
+  >({ url: "/v1/subscriptions", method: "post", ...variables, signal });
+
+export const useCreateNotificationSubscriptionV1SubscriptionsPost = (
+  options?: Omit<
+    reactQuery.UseMutationOptions<
+      Schemas.SubscriptionResponse,
+      CreateNotificationSubscriptionV1SubscriptionsPostError,
+      CreateNotificationSubscriptionV1SubscriptionsPostVariables
+    >,
+    "mutationFn"
+  >,
+) => {
+  const { fetcherOptions } = usePlantsContext();
+  return reactQuery.useMutation<
+    Schemas.SubscriptionResponse,
+    CreateNotificationSubscriptionV1SubscriptionsPostError,
+    CreateNotificationSubscriptionV1SubscriptionsPostVariables
+  >({
+    mutationFn: (
+      variables: CreateNotificationSubscriptionV1SubscriptionsPostVariables,
+    ) =>
+      fetchCreateNotificationSubscriptionV1SubscriptionsPost({
+        ...fetcherOptions,
+        ...variables,
+      }),
+    ...options,
+  });
+};
+
+export type DisableNotificationSubscriptionV1SubscriptionsSubscriptionIdDisablePostPathParams =
+  {
+    subscriptionId: string;
+  };
+
+export type DisableNotificationSubscriptionV1SubscriptionsSubscriptionIdDisablePostError =
+  Fetcher.ErrorWrapper<
+    | {
+        status: 401;
+        payload: Schemas.UnauthorizedResponse;
+      }
+    | {
+        status: 422;
+        payload: Schemas.HTTPValidationError;
+      }
+  >;
+
+export type DisableNotificationSubscriptionV1SubscriptionsSubscriptionIdDisablePostVariables =
+  {
+    pathParams: DisableNotificationSubscriptionV1SubscriptionsSubscriptionIdDisablePostPathParams;
+  } & PlantsContext["fetcherOptions"];
+
+export const fetchDisableNotificationSubscriptionV1SubscriptionsSubscriptionIdDisablePost =
+  (
+    variables: DisableNotificationSubscriptionV1SubscriptionsSubscriptionIdDisablePostVariables,
+    signal?: AbortSignal,
+  ) =>
+    plantsFetch<
+      Schemas.SubscriptionResponse,
+      DisableNotificationSubscriptionV1SubscriptionsSubscriptionIdDisablePostError,
+      undefined,
+      {},
+      {},
+      DisableNotificationSubscriptionV1SubscriptionsSubscriptionIdDisablePostPathParams
+    >({
+      url: "/v1/subscriptions/{subscriptionId}/disable",
+      method: "post",
+      ...variables,
+      signal,
+    });
+
+export const useDisableNotificationSubscriptionV1SubscriptionsSubscriptionIdDisablePost =
+  (
+    options?: Omit<
+      reactQuery.UseMutationOptions<
+        Schemas.SubscriptionResponse,
+        DisableNotificationSubscriptionV1SubscriptionsSubscriptionIdDisablePostError,
+        DisableNotificationSubscriptionV1SubscriptionsSubscriptionIdDisablePostVariables
+      >,
+      "mutationFn"
+    >,
+  ) => {
+    const { fetcherOptions } = usePlantsContext();
+    return reactQuery.useMutation<
+      Schemas.SubscriptionResponse,
+      DisableNotificationSubscriptionV1SubscriptionsSubscriptionIdDisablePostError,
+      DisableNotificationSubscriptionV1SubscriptionsSubscriptionIdDisablePostVariables
+    >({
+      mutationFn: (
+        variables: DisableNotificationSubscriptionV1SubscriptionsSubscriptionIdDisablePostVariables,
+      ) =>
+        fetchDisableNotificationSubscriptionV1SubscriptionsSubscriptionIdDisablePost(
+          { ...fetcherOptions, ...variables },
+        ),
+      ...options,
+    });
+  };
+
 export type LambdaHealthGetError = Fetcher.ErrorWrapper<undefined>;
 
 export type LambdaHealthGetVariables = PlantsContext["fetcherOptions"];
@@ -1335,7 +1502,7 @@ export const fetchLambdaHealthGet = (
     signal,
   });
 
-export const useLambdaHealthGet = <TData = void>(
+export const useLambdaHealthGet = <TData = void,>(
   variables: LambdaHealthGetVariables,
   options?: Omit<
     reactQuery.UseQueryOptions<void, LambdaHealthGetError, TData>,
@@ -1344,7 +1511,6 @@ export const useLambdaHealthGet = <TData = void>(
 ) => {
   const { fetcherOptions, queryOptions, queryKeyFn } =
     usePlantsContext(options);
-
   return reactQuery.useQuery<void, LambdaHealthGetError, TData>({
     queryKey: queryKeyFn({
       path: "/health",
@@ -1397,7 +1563,6 @@ export const useLoginAuthTokenPost = (
   >,
 ) => {
   const { fetcherOptions } = usePlantsContext();
-
   return reactQuery.useMutation<
     Schemas.TokenResponse,
     LoginAuthTokenPostError,
@@ -1440,7 +1605,6 @@ export const useLogoutAuthLogoutPost = (
   >,
 ) => {
   const { fetcherOptions } = usePlantsContext();
-
   return reactQuery.useMutation<
     Schemas.LogoutResponse,
     LogoutAuthLogoutPostError,
@@ -1476,7 +1640,7 @@ export const fetchReadUsersMeAuthMeGet = (
     signal,
   });
 
-export const useReadUsersMeAuthMeGet = <TData = Schemas.User>(
+export const useReadUsersMeAuthMeGet = <TData = Schemas.User,>(
   variables: ReadUsersMeAuthMeGetVariables,
   options?: Omit<
     reactQuery.UseQueryOptions<Schemas.User, ReadUsersMeAuthMeGetError, TData>,
@@ -1485,7 +1649,6 @@ export const useReadUsersMeAuthMeGet = <TData = Schemas.User>(
 ) => {
   const { fetcherOptions, queryOptions, queryKeyFn } =
     usePlantsContext(options);
-
   return reactQuery.useQuery<Schemas.User, ReadUsersMeAuthMeGetError, TData>({
     queryKey: queryKeyFn({
       path: "/auth/me",
@@ -1524,6 +1687,11 @@ export type QueryOperation =
       path: "/v1/locations";
       operationId: "listAllLocationsV1LocationsGet";
       variables: ListAllLocationsV1LocationsGetVariables;
+    }
+  | {
+      path: "/v1/subscriptions";
+      operationId: "getNotificationSubscriptionsV1SubscriptionsGet";
+      variables: GetNotificationSubscriptionsV1SubscriptionsGetVariables;
     }
   | {
       path: "/health";

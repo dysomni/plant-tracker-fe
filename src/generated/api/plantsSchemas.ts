@@ -65,6 +65,11 @@ export type CreateLocationRequest = {
   description?: string | null;
 };
 
+export type CreateNotitificationSubscriptionSchema = {
+  device_name: string;
+  subscription: Record<string, any>;
+};
+
 export type CreatePhotoRequest = {
   plant_id: string;
   /**
@@ -267,6 +272,15 @@ export type ReminderWithPlantInfo = {
   plant_info: BasicPlantInfoResponseModel;
 };
 
+export type SubscriptionResponse = {
+  id: string;
+  device_name: string;
+  /**
+   * @format date-time
+   */
+  created_at: string;
+};
+
 export type TokenResponse = {
   access_token: string;
   token_type: string;
@@ -274,6 +288,11 @@ export type TokenResponse = {
 
 export type UnauthorizedResponse = {
   detail: string;
+};
+
+export type UpdateLocationRequest = {
+  name?: string | null;
+  description?: string | null;
 };
 
 export type UpdatePlantRequest = {

@@ -13,6 +13,7 @@ import PlantPage from "./pages/plant";
 import WateringsPage from "./pages/waterings";
 import ChecksPage from "./pages/checks";
 import RemindersPage from "./pages/reminders";
+import SettingsPage from "./pages/settings";
 
 import { LoginPage } from "@/pages/login";
 import IndexPage from "@/pages/index";
@@ -60,6 +61,7 @@ function App() {
                   path="/plants/:plantId/reminders"
                 />
                 <Route element={<LocationsPage />} path="/locations" />
+                <Route element={<SettingsPage />} path="/settings" />
               </Routes>
             </PageLoadingProvider>
           </ImagePreviewProvider>
