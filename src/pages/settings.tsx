@@ -14,11 +14,15 @@ import { useToast } from "../toast";
 import DefaultLayout from "@/layouts/default";
 
 export default function SettingsPage() {
+  const [subscriptionEndpoint, setSubscriptionEndpoint] = useState("");
   const { data, isLoading, error, refetch } =
-    useGetNotificationSubscriptionsV1SubscriptionsGet({});
+    useGetNotificationSubscriptionsV1SubscriptionsGet({
+      queryParams: {
+        subscription_endpoint: subscriptionEndpoint,
+      },
+    });
 
   const [notificationsAllowed, setNotificationsAllowed] = useState(false);
-  const [_isSubscribed, setIsSubscribed] = useState(false);
 
   usePageLoading(isLoading);
   useAuthErrorRedirect(error);
@@ -37,7 +41,8 @@ export default function SettingsPage() {
         });
       registration.pushManager.getSubscription().then((subscription) => {
         if (subscription) {
-          setIsSubscribed(true);
+          setSubscriptionEndpoint(subscription.endpoint);
+          void refetch();
         }
       });
     });
@@ -53,6 +58,9 @@ export default function SettingsPage() {
             <h2 className="text-lg font-semibold">Notification Devices</h2>
             {data.map((subscription) => (
               <Card key={subscription.id} className="flex gap-2 p-4 w-full">
+                {subscription.matching ? (
+                  <div className="text-success">Current Device</div>
+                ) : null}
                 <div className="text-nowrap overflow-x-hidden">
                   {subscription.device_name}
                 </div>
@@ -64,6 +72,17 @@ export default function SettingsPage() {
                 <Button
                   size="sm"
                   onPress={async () => {
+                    if (subscription.matching) {
+                      const registration = await navigator.serviceWorker.ready;
+                      const subscription =
+                        await registration?.pushManager?.getSubscription();
+
+                      if (subscription) {
+                        await subscription.unsubscribe();
+                        setSubscriptionEndpoint("");
+                      }
+                    }
+
                     await fetchDisableNotificationSubscriptionV1SubscriptionsSubscriptionIdDisablePost(
                       {
                         pathParams: {
@@ -80,7 +99,7 @@ export default function SettingsPage() {
             ))}
           </div>
         ) : null}
-        {isLoading ? null : (
+        {isLoading || (notificationsAllowed && subscriptionEndpoint) ? null : (
           <Button
             size="sm"
             onPress={async () => {
@@ -111,7 +130,7 @@ export default function SettingsPage() {
                           },
                         },
                       );
-                      setIsSubscribed(true);
+                      setSubscriptionEndpoint(subscription.endpoint);
                       await refetch();
                     } catch (error) {
                       toast({

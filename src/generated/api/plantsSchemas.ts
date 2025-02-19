@@ -279,6 +279,10 @@ export type SubscriptionResponse = {
    * @format date-time
    */
   created_at: string;
+  /**
+   * @default false
+   */
+  matching?: boolean;
 };
 
 export type TokenResponse = {
