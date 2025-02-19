@@ -31,8 +31,8 @@ export default function DefaultLayout({
           size="sm"
           onPress={async () => {
             const options = {
-              body: `New message from yay`,
-              title: `Plant Tracker`,
+              body: `You have 4 plants that need watering today.`,
+              title: `Time to water your plants!`,
               icon: "/apple-touch-icon.png",
               actions: [
                 {
