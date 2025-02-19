@@ -55,15 +55,7 @@ export default function SettingsPage() {
     setData(response);
     setIsLoading(false);
 
-    if (response.length) {
-      const matchingSubscription = response.find(
-        (subscription) => subscription.matching,
-      );
-
-      if (!matchingSubscription) {
-        await handleNoMatchingWithEndpoint(response, setSubscriptionEndpoint);
-      }
-    }
+    return response;
   };
 
   const [notificationsAllowed, setNotificationsAllowed] = useState(false);
@@ -85,7 +77,9 @@ export default function SettingsPage() {
       registration.pushManager.getSubscription().then(async (subscription) => {
         if (subscription) {
           setSubscriptionEndpoint(subscription.endpoint);
-          await fetch(subscription.endpoint);
+          const response = await fetch(subscription.endpoint);
+
+          await handleNoMatchingWithEndpoint(response, setSubscriptionEndpoint);
         } else {
           await fetch();
         }
