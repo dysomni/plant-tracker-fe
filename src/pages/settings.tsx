@@ -5,6 +5,7 @@ import dayjs from "dayjs";
 import {
   fetchCreateNotificationSubscriptionV1SubscriptionsPost,
   fetchDisableNotificationSubscriptionV1SubscriptionsSubscriptionIdDisablePost,
+  GetNotificationSubscriptionsV1SubscriptionsGetResponse,
   useGetNotificationSubscriptionsV1SubscriptionsGet,
 } from "../generated/api/plantsComponents";
 import { useAuthErrorRedirect } from "../auth";
@@ -12,6 +13,29 @@ import { usePageLoading } from "../components/page-loading";
 import { useToast } from "../toast";
 
 import DefaultLayout from "@/layouts/default";
+
+const handleNoMatchingWithEndpoint = async (
+  response: GetNotificationSubscriptionsV1SubscriptionsGetResponse | undefined,
+  setSubscriptionEndpoint: (val: string) => void,
+) => {
+  if (!response) {
+    return;
+  }
+  const matchingSubscription = response.find(
+    (subscription) => subscription.matching,
+  );
+
+  if (!matchingSubscription) {
+    navigator.serviceWorker.ready?.then(async (registration) => {
+      const subscription = await registration?.pushManager?.getSubscription();
+
+      if (subscription) {
+        await subscription.unsubscribe();
+        setSubscriptionEndpoint("");
+      }
+    });
+  }
+};
 
 export default function SettingsPage() {
   const [subscriptionEndpoint, setSubscriptionEndpoint] = useState("");
@@ -39,10 +63,15 @@ export default function SettingsPage() {
             setNotificationsAllowed(true);
           }
         });
-      registration.pushManager.getSubscription().then((subscription) => {
+      registration.pushManager.getSubscription().then(async (subscription) => {
         if (subscription) {
           setSubscriptionEndpoint(subscription.endpoint);
-          void refetch();
+          const response = await refetch();
+
+          await handleNoMatchingWithEndpoint(
+            response.data,
+            setSubscriptionEndpoint,
+          );
         }
       });
     });
