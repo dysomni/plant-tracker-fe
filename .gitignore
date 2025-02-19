@@ -27,3 +27,8 @@ yarn.lock
 package-lock.json
 bun.lockb
 .env
+
+
+# Serwist
+public/sw*
+public/swe-worker*

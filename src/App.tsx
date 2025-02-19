@@ -1,5 +1,7 @@
 import { Route, Routes } from "react-router-dom";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { useEffect } from "react";
+import { getSerwist } from "virtual:serwist";
 
 import { AuthProvider } from "./auth";
 import { ToastProvider } from "./toast";
@@ -18,6 +20,22 @@ import IndexPage from "@/pages/index";
 const queryClient = new QueryClient({});
 
 function App() {
+  useEffect(() => {
+    const loadSerwist = async () => {
+      if ("serviceWorker" in navigator) {
+        const serwist = await getSerwist();
+
+        // serwist?.addEventListener("installed", () => {
+        //   console.log("Serwist installed!");
+        // });
+
+        await serwist?.register();
+      }
+    };
+
+    loadSerwist();
+  }, []);
+
   return (
     <QueryClientProvider client={queryClient}>
       <ToastProvider>
