@@ -33,3 +33,14 @@ export const isNotifySupported = () => {
     "PushManager" in window
   );
 };
+
+self.addEventListener("push", (event) => {
+  if (event.data) {
+    const notificationData = event.data.json(); // Parse payload
+
+    self.registration.showNotification(notificationData.title, {
+      body: notificationData.body,
+      icon: "/apple-touch-icon.png",
+    });
+  }
+});
