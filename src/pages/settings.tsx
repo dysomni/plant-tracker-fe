@@ -158,7 +158,7 @@ export default function SettingsPage() {
 
               const registration = await navigator.serviceWorker.ready;
 
-              await registration?.showNotification("Plant Tracker", options);
+              await registration?.showNotification(options.title, options);
             }}
           >
             Test Local Notification
