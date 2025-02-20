@@ -10,6 +10,7 @@ import {
   NavbarMenuItem,
 } from "@nextui-org/navbar";
 import { useContext } from "react";
+import { IconHome, IconLeaf, IconMap, IconSettings } from "@tabler/icons-react";
 
 import { AuthContext } from "../auth";
 
@@ -46,7 +47,7 @@ export const Navbar = () => {
           </Link>
         </NavbarBrand>
       </NavbarContent>
-      <NavbarContent className="basis-full hidden sm:flex" justify="center">
+      <NavbarContent className="basis-full hidden md:flex" justify="center">
         <NavbarItem className="flex gap-2">
           <Link className={currentPathStyles("/")} href="/">
             Home
@@ -65,6 +66,31 @@ export const Navbar = () => {
         <NavbarItem className="flex gap-2">
           <Link className={currentPathStyles("/settings")} href="/settings">
             Settings
+          </Link>
+        </NavbarItem>
+      </NavbarContent>
+      <NavbarContent
+        className="basis-full hidden sm:flex md:hidden"
+        justify="center"
+      >
+        <NavbarItem className="flex gap-2">
+          <Link className={currentPathStyles("/")} href="/">
+            <IconHome size={20} />
+          </Link>
+        </NavbarItem>
+        <NavbarItem className="flex gap-2">
+          <Link className={currentPathStyles("/plants")} href="/plants">
+            <IconLeaf size={20} />
+          </Link>
+        </NavbarItem>
+        <NavbarItem className="flex gap-2">
+          <Link className={currentPathStyles("/locations")} href="/locations">
+            <IconMap size={20} />
+          </Link>
+        </NavbarItem>
+        <NavbarItem className="flex gap-2">
+          <Link className={currentPathStyles("/settings")} href="/settings">
+            <IconSettings size={20} />
           </Link>
         </NavbarItem>
       </NavbarContent>
