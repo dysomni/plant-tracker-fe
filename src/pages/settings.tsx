@@ -1,6 +1,8 @@
-import { Button, Card } from "@nextui-org/react";
-import { useEffect, useState } from "react";
+import { Button, Card, Divider } from "@nextui-org/react";
+import { useEffect, useMemo, useState } from "react";
 import dayjs from "dayjs";
+import { UAParser } from "ua-parser-js";
+import { IconBellCheck, IconDevices, IconTrash } from "@tabler/icons-react";
 
 import {
   fetchCreateNotificationSubscriptionV1SubscriptionsPost,
@@ -62,6 +64,19 @@ export default function SettingsPage() {
 
   usePageLoading(isLoading);
 
+  const deviceDescription = useMemo(() => {
+    const results = UAParser();
+    const itemList = [
+      results.device.vendor,
+      results.device.model,
+      results.os.name,
+      results.os.version,
+      results.browser.name,
+    ];
+
+    return itemList.filter((item) => !!item).join(" ");
+  }, []);
+
   useEffect(() => {
     navigator.serviceWorker.ready?.then((registration) => {
       registration?.pushManager
@@ -91,25 +106,47 @@ export default function SettingsPage() {
 
   return (
     <DefaultLayout>
-      <section className="flex flex-col items-center justify-center gap-4 py-8 md:py-10 w-full">
-        {data && data.length ? (
-          <div className="flex flex-col gap-2 w-full">
-            <h2 className="text-lg font-semibold">Notification Devices</h2>
-            {data.map((subscription) => (
-              <Card key={subscription.id} className="flex gap-2 p-4 w-full">
-                {subscription.matching ? (
-                  <div className="text-success">Current Device</div>
-                ) : null}
-                <div className="text-nowrap overflow-x-hidden">
-                  {subscription.device_name}
-                </div>
-                <div>
-                  {dayjs(subscription.created_at).format(
-                    "YYYY-MM-DD HH:mm:ss Z",
-                  )}
+      <section className="flex flex-col items-center justify-center gap-4 py-0 md:py-10 w-full">
+        <div className="flex flex-col gap-3 w-full">
+          <div className="flex flex-row items-center gap-2">
+            <IconDevices size={20} />
+            <h2 className="text-2xl font-semibold">Notification Devices</h2>
+          </div>
+          {!data || data.length === 0 ? (
+            <div className="italic">
+              No devices registered for notifications.
+            </div>
+          ) : null}
+          {(data ?? []).map((subscription) => (
+            <Card
+              key={subscription.id}
+              className="flex gap-2 p-4 w-full font-bold"
+            >
+              {subscription.matching ? (
+                <div className="text-success">Current Device</div>
+              ) : null}
+              <div className="text-nowrap overflow-x-hidden">
+                {subscription.device_name}
+              </div>
+              <div className="flex flex-row justify-between items-center">
+                <div className="flex flex-row flex-wrap gap-3 gap-y-0 items-center">
+                  <div className="text-sm">
+                    Created <b>{dayjs(subscription.created_at).fromNow()}</b>
+                  </div>
+                  <div className="text-xs">
+                    <i>
+                      (
+                      {dayjs(subscription.created_at).format(
+                        "YYYY-MM-DD hh:mm A",
+                      )}
+                      )
+                    </i>
+                  </div>
                 </div>
                 <Button
+                  className="self-end w-32"
                   size="sm"
+                  startContent={<IconTrash size={20} />}
                   onPress={async () => {
                     if (subscription.matching) {
                       const registration = await navigator.serviceWorker.ready;
@@ -134,13 +171,16 @@ export default function SettingsPage() {
                 >
                   Delete
                 </Button>
-              </Card>
-            ))}
-          </div>
-        ) : null}
+              </div>
+            </Card>
+          ))}
+        </div>
+        <Divider />
         {isLoading || (notificationsAllowed && subscriptionEndpoint) ? null : (
           <Button
-            size="sm"
+            color="primary"
+            size="md"
+            startContent={<IconBellCheck size={20} />}
             onPress={async () => {
               Notification.requestPermission().then(async (result) => {
                 if (result === "granted") {
@@ -154,6 +194,7 @@ export default function SettingsPage() {
                   if (pm === "granted") {
                     setNotificationsAllowed(true);
                     if (!subscriptionEndpoint) {
+                      setIsLoading(true);
                       try {
                         const subscription =
                           await registration?.pushManager?.subscribe({
@@ -166,13 +207,14 @@ export default function SettingsPage() {
                           {
                             body: {
                               subscription: subscription,
-                              device_name: navigator.userAgent,
+                              device_name: deviceDescription,
                             },
                           },
                         );
                         setSubscriptionEndpoint(subscription.endpoint);
                         await fetch(subscription.endpoint);
                       } catch (error) {
+                        setIsLoading(false);
                         toast({
                           message: `Failed to subscribe to notifications. ${error}`,
                           type: "danger",
@@ -197,7 +239,7 @@ export default function SettingsPage() {
               });
             }}
           >
-            Enable Notifications
+            Enable Notifications For This Device
           </Button>
         )}
         {notificationsAllowed && (
