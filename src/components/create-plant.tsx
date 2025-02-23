@@ -12,9 +12,10 @@ import {
   Input,
   Textarea,
 } from "@nextui-org/react";
-import { FormEvent, useEffect, useState } from "react";
+import { debounce } from "lodash";
+import { FormEvent, useCallback, useEffect, useState } from "react";
 import { z } from "zod";
-import { IconPlus } from "@tabler/icons-react";
+import { IconInfoCircle, IconPlus, IconSparkles } from "@tabler/icons-react";
 import { Link } from "@nextui-org/link";
 
 import { useAuthErrorRedirect } from "../auth";
@@ -23,10 +24,14 @@ import { unwrap } from "../util";
 import {
   fetchCreateLocationV1LocationsPost,
   fetchCreatePlantV1PlantsPost,
+  fetchSuggestScientificNameV1GenaiSuggestScientificNamePost,
   fetchUpdatePlantV1PlantsPlantIdPatch,
   useListAllLocationsV1LocationsGet,
 } from "../generated/api/plantsComponents";
-import { Plant } from "../generated/api/plantsSchemas";
+import {
+  Plant,
+  SuggestScientificNameResponse,
+} from "../generated/api/plantsSchemas";
 
 import { usePageLoading } from "./page-loading";
 
@@ -61,6 +66,13 @@ export const CreatePlantDrawer = (props: {
     notes: "",
     default_watering_interval_days: null,
   });
+  const [delayedName, setDelayedName] = useState("");
+  const debouncedSetDelayedName = useCallback(
+    debounce(setDelayedName, 500),
+    [],
+  );
+  const [aiSuggestion, setAiSuggestion] =
+    useState<SuggestScientificNameResponse | null>(null);
 
   useEffect(() => {
     if (!open) {
@@ -71,6 +83,8 @@ export const CreatePlantDrawer = (props: {
         notes: "",
         default_watering_interval_days: null,
       });
+      setDelayedName("");
+      setAiSuggestion(null);
       setValidationErrors({});
     } else {
       setFormState({
@@ -81,6 +95,7 @@ export const CreatePlantDrawer = (props: {
         default_watering_interval_days:
           editPlant?.default_watering_interval_days || null,
       });
+      setDelayedName(editPlant?.name || "");
     }
   }, [open, editPlant]);
 
@@ -93,6 +108,27 @@ export const CreatePlantDrawer = (props: {
 
   useAuthErrorRedirect(error);
   const toast = useToast();
+
+  useEffect(() => {
+    if (!delayedName.trim()) {
+      setAiSuggestion(null);
+
+      return;
+    }
+
+    fetchSuggestScientificNameV1GenaiSuggestScientificNamePost({
+      body: {
+        given_name: delayedName.trim(),
+        existing_scientific_name: formState.scientific_name || undefined,
+      },
+    })
+      .then((response) => {
+        setAiSuggestion(response);
+      })
+      .catch(() => {
+        setAiSuggestion(null);
+      });
+  }, [delayedName]);
 
   const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -173,20 +209,74 @@ export const CreatePlantDrawer = (props: {
               label="Plant Name"
               name="name"
               value={formState.name}
-              onValueChange={(name) =>
-                setFormState((prev) => ({ ...prev, name }))
-              }
+              onValueChange={(name) => {
+                setFormState((prev) => ({ ...prev, name }));
+                debouncedSetDelayedName(name);
+              }}
             />
-            <Input
-              isRequired
-              description="The scientific name of the plant."
-              label="Scientific Name"
-              name="scientific_name"
-              value={formState.scientific_name}
-              onValueChange={(scientific_name) =>
-                setFormState((prev) => ({ ...prev, scientific_name }))
-              }
-            />
+            <div className="flex flex-col gap-1">
+              <Input
+                isRequired
+                description="The scientific name of the plant."
+                label="Scientific Name"
+                name="scientific_name"
+                value={formState.scientific_name}
+                onValueChange={(scientific_name) =>
+                  setFormState((prev) => ({ ...prev, scientific_name }))
+                }
+              />
+              <div
+                className={`flex flex-col gap-1 pb-2 ${!aiSuggestion ? "hidden" : ""}`}
+              >
+                {aiSuggestion?.suggestions.map((suggestion) => (
+                  <div
+                    key={suggestion}
+                    className="flex flex-row gap-1 items-center"
+                  >
+                    <Input
+                      color="secondary"
+                      endContent={
+                        <div className="flex flex-row gap-1">
+                          <Button
+                            isIconOnly
+                            aria-label="Use this suggestion"
+                            color="secondary"
+                            size="sm"
+                            onPress={() => {
+                              setFormState((prev) => ({
+                                ...prev,
+                                scientific_name: suggestion,
+                              }));
+                              setAiSuggestion(null);
+                            }}
+                          >
+                            <IconPlus size={18} />
+                          </Button>
+                          <Button
+                            isIconOnly
+                            aria-label="View this suggestion on Google"
+                            color="secondary"
+                            size="sm"
+                            onPress={() => {
+                              window.open(
+                                `https://www.google.com/search?q=${suggestion}`,
+                                "_blank",
+                              );
+                            }}
+                          >
+                            <IconInfoCircle size={18} />
+                          </Button>
+                        </div>
+                      }
+                      label="Scientific Name Suggestion"
+                      size="sm"
+                      startContent={<IconSparkles size={18} />}
+                      value={suggestion}
+                    />
+                  </div>
+                ))}
+              </div>
+            </div>
             <LocationPicker
               value={formState.location_id}
               onChange={(location_id) =>

@@ -285,6 +285,16 @@ export type SubscriptionResponse = {
   matching?: boolean;
 };
 
+export type SuggestScientificNameRequest = {
+  given_name: string;
+  existing_scientific_name?: string | null;
+};
+
+export type SuggestScientificNameResponse = {
+  suggestions: string[];
+  explanation?: string | null;
+};
+
 export type TokenResponse = {
   access_token: string;
   token_type: string;
