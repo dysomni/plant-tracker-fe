@@ -226,7 +226,7 @@ export const CreatePlantDrawer = (props: {
                 }
               />
               <div
-                className={`flex flex-col gap-1 pb-2 ${!aiSuggestion ? "hidden" : ""}`}
+                className={`flex flex-col gap-1 pb-2 ${!aiSuggestion || aiSuggestion.suggestions.length ? "hidden" : ""}`}
               >
                 {aiSuggestion?.suggestions.map((suggestion) => (
                   <div
