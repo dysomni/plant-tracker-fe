@@ -32,6 +32,7 @@ export const ThemeSwitch: FC<ThemeSwitchProps> = ({
 
   const onChange = () => {
     toggleTheme();
+    setBarThemeColor(true);
   };
 
   const {
@@ -48,7 +49,7 @@ export const ThemeSwitch: FC<ThemeSwitchProps> = ({
 
   useEffect(() => {
     setIsMounted(true);
-    setBarThemeColor(true);
+    setBarThemeColor();
   }, [isMounted]);
 
   // Prevent Hydration Mismatch
