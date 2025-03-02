@@ -17,9 +17,22 @@ export const ThemeSwitch: FC<ThemeSwitchProps> = ({
 }) => {
   const [isMounted, setIsMounted] = useState(false);
 
-  const { theme, toggleTheme } = useTheme();
+  const { theme, toggleTheme, isLight } = useTheme();
 
-  const onChange = toggleTheme;
+  const setBarThemeColor = (toggle = false) => {
+    let disiredLight = isLight;
+
+    if (toggle) {
+      disiredLight = !isLight;
+    }
+    const newColor = disiredLight ? "#ffffff" : "#1a1c17";
+
+    document.getElementById("themeColor")?.setAttribute("content", newColor);
+  };
+
+  const onChange = () => {
+    toggleTheme();
+  };
 
   const {
     Component,
@@ -35,6 +48,7 @@ export const ThemeSwitch: FC<ThemeSwitchProps> = ({
 
   useEffect(() => {
     setIsMounted(true);
+    setBarThemeColor(true);
   }, [isMounted]);
 
   // Prevent Hydration Mismatch
