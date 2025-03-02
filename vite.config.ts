@@ -12,7 +12,6 @@ export default defineConfig({
     VitePWA({
       registerType: "autoUpdate",
       manifest: {
-        theme_color: "???",
         icons: [
           {
             src: "/apple-touch-icon.png",
