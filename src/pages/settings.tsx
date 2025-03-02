@@ -120,7 +120,7 @@ export default function SettingsPage() {
           {(data ?? []).map((subscription) => (
             <Card
               key={subscription.id}
-              className="flex gap-2 p-4 w-full font-bold"
+              className="flex gap-2 p-4 w-full font-bold dark:border-2 dark:border-neutral-700"
             >
               {subscription.matching ? (
                 <div className="text-success">Current Device</div>

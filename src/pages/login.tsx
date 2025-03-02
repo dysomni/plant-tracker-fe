@@ -35,7 +35,7 @@ export const LoginPage = () => {
 
   return (
     <DefaultLayout>
-      <Card className="text-center justify-center p-10 gap-5 max-w-screen-sm lg:max-w-screen-md w-full">
+      <Card className="text-center justify-center p-10 gap-5 max-w-screen-sm lg:max-w-screen-md w-full dark:border-2 dark:border-neutral-700">
         <h1 className="text-3xl font-bold">Login</h1>
         <div className="flex flex-col gap-3">
           <Input

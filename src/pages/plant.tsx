@@ -118,7 +118,7 @@ export default function PlantPage() {
     return sorted;
   }, [photoData, sorting]);
 
-  const tabContainerClass = `w-full flex flex-col gap-2 justify-start border-1 dark:border-0 rounded-xl min-h-full`;
+  const tabContainerClass = `w-full flex flex-col gap-2 justify-start border-1 dark:border-2 dark:border-neutral-700 rounded-xl min-h-full`;
 
   return (
     <DefaultLayout>
