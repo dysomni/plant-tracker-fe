@@ -315,7 +315,7 @@ export const CreatePlantDrawer = (props: {
             <Button size="lg" onPress={() => setOpen(false)}>
               Cancel
             </Button>
-            <Button color="success" size="lg" type="submit">
+            <Button color="primary" size="lg" type="submit">
               {editPlant ? "Update" : "Create"}
             </Button>
           </DrawerFooter>
@@ -399,7 +399,7 @@ export const LocationPicker = (props: {
           isLoading ? (
             <CircularProgress
               aria-label="Loading..."
-              color="success"
+              color="primary"
               size="sm"
             />
           ) : (

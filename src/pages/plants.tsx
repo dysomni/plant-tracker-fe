@@ -74,7 +74,7 @@ export default function PlantsPage() {
           />
           <div>
             <Button
-              color="success"
+              color="primary"
               size={mediaQueries["sm"] ? "md" : "sm"}
               startContent={<IconPlus size={15} />}
               onPress={() =>
@@ -124,7 +124,7 @@ const PlantCard = ({
   const mediaQueries = useMediaQueries();
 
   return (
-    <Card className="flex flex-col sm:flex-row gap-6 sm:gap-0 p-4 rounded-lg items-center justify-center sm:justify-between shadow-lg max-h-72 border-1 dark:border-0">
+    <Card className="flex flex-col sm:flex-row gap-6 sm:gap-0 p-4 rounded-lg items-center justify-center sm:justify-between shadow-lg max-h-72 border-1 dark:border-0 bg-default-100">
       {checking ? (
         <CheckPlantDrawer
           plantToCheck={unwrap(plant.plant.id)}
@@ -152,7 +152,7 @@ const PlantCard = ({
           </div>
         ) : null}
         <div>
-          <Link color="success" href={`/plants/${plant.plant.id}`}>
+          <Link color="primary" href={`/plants/${plant.plant.id}`}>
             <div className="font-bold text-2xl">{plant.plant.name}</div>
           </Link>
           <div>{plant.location.name}</div>

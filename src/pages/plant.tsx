@@ -142,7 +142,7 @@ export default function PlantPage() {
       <section className="flex flex-col items-center justify-center gap-4 pb-8 md:pb-10 w-full min-h-full">
         <div className="flex flex-col sm:flex-row gap-3 sm:gap-7 w-full items-center justify-center sm:justify-center">
           <div className="shrink-0">
-            <Link color="success" href={`/plants/${data?.plant.id}`}>
+            <Link color="primary" href={`/plants/${data?.plant.id}`}>
               <div className="font-extrabold text-3xl">{data?.plant.name}</div>
             </Link>
           </div>
@@ -168,7 +168,7 @@ export default function PlantPage() {
         <div className="flex flex-row justify-center gap-3 w-full flex-wrap">
           <Button
             className="font-bold shrink-0"
-            color="success"
+            color="primary"
             isDisabled={isFetching}
             size={mediaQueries["sm"] ? "md" : "sm"}
             startContent={<IconEdit size={15} />}
@@ -579,7 +579,7 @@ const AddPhotoDrawer = (props: {
                         <Image
                           key={file.name}
                           alt="Uploaded photo preview"
-                          className={`border-0 border-primary ${indx === coverPhotoIndex ? "border-4" : ""} rounded-xl`}
+                          className={`border-0 border-secondary ${indx === coverPhotoIndex ? "border-4" : ""} rounded-xl`}
                           height={100}
                           src={URL.createObjectURL(file)}
                           style={{
@@ -636,7 +636,7 @@ const AddPhotoDrawer = (props: {
                 Cancel
               </Button>
               <Button
-                color="success"
+                color="primary"
                 isDisabled={!uploadedFiles || !uploadedFiles.length || loading}
                 size="lg"
                 onPress={handleUpload}

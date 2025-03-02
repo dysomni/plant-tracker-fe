@@ -28,7 +28,7 @@ export const PageLoadingProvider = ({
             zIndex: 1000,
           }}
         >
-          <CircularProgress aria-label="Loading..." color="success" />
+          <CircularProgress aria-label="Loading..." color="primary" />
         </div>
       ) : null}
       {children}

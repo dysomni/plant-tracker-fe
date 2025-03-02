@@ -98,7 +98,7 @@ export const PlantWetnessBadge = ({
 
   // 0 is dry, 10 is wet
   const wetnessColor =
-    decayedWetness > 5 ? "success" : decayedWetness > 2 ? "warning" : "danger";
+    decayedWetness > 5 ? "primary" : decayedWetness > 2 ? "warning" : "danger";
 
   return (
     <Tooltip content={lastCheckDate.format("MMMM D, YYYY h:mm A")}>
@@ -137,7 +137,7 @@ export const PlantWateringBadge = ({
   return (
     <Tooltip content={lastWateredDate.format("MMMM D, YYYY h:mm A")}>
       <Chip
-        color="primary"
+        color="secondary"
         startContent={<IconDropletFilled size={15} />}
         variant="flat"
       >

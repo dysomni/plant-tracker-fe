@@ -371,7 +371,6 @@ export const MyChart = (props: {
         {checkHistory.length > 0 ? (
           <Slider
             aria-label="Discrete slider"
-            color="primary"
             maxValue={brushDateScale.domain()[1].getTime() ?? 0}
             minValue={brushDateScale.domain()[0].getTime() ?? 0}
             step={1000000}

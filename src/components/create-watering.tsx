@@ -191,7 +191,7 @@ export const CreateWateringDrawer = (props: {
             <Button size="lg" onPress={() => setOpen(false)}>
               Cancel
             </Button>
-            <Button color="success" size="lg" type="submit">
+            <Button color="primary" size="lg" type="submit">
               Create
             </Button>
           </DrawerFooter>

@@ -70,13 +70,13 @@ export default function IndexPage() {
         <div className="flex gap-4 justify-between w-full flex-col sm:flex-row sm:items-center">
           <div className="inline-block max-w-lg text-right justify-center self-start">
             <span className="text-2xl">welcome&nbsp;</span>
-            <span className="text-3xl text-success-500 font-extrabold">
+            <span className="text-3xl text-primary-500 font-extrabold">
               {authContext.user?.name}
             </span>
           </div>
           <div className="inline-block max-w-96 sm:max-w-lg text-right self-end sm:self-auto">
             <span className="text-lg whitespace-nowrap">You have&nbsp;</span>
-            <span className="text-xl text-success-500 font-extrabold whitespace-nowrap">
+            <span className="text-xl text-primary-500 font-extrabold whitespace-nowrap">
               {overdueReminders.length + recentReminders.length}{" "}
               outstanding&nbsp;
             </span>
@@ -109,7 +109,7 @@ export default function IndexPage() {
             />
           ))}
           {!overdueReminders.length && !recentReminders.length ? (
-            <Card className="h-10 flex items-center justify-center rounded-md shadow-md bg-success-50 border-1 dark:border-0">
+            <Card className="h-10 flex items-center justify-center rounded-md shadow-md bg-primary-50 border-1 dark:border-0">
               <div className="text-center text-md italic font-bold">
                 All caught up!
               </div>
@@ -148,11 +148,11 @@ const ReminderCard = ({
   const reminderBgColor = useMemo(() => {
     switch (true) {
       case type == "upcoming":
-        return "bg-success-50";
+        return "bg-primary-500";
       case type == "recent":
-        return "bg-primary-50";
+        return "bg-secondary-500";
       default:
-        return "bg-danger-50";
+        return "bg-danger-500";
     }
   }, [type]);
 
@@ -160,7 +160,7 @@ const ReminderCard = ({
 
   return (
     <Card
-      className={`flex flex-col sm:flex-row gap-6 p-4 rounded-lg items-center shadow-lg border-1 dark:border-0 ${reminderBgColor}`}
+      className={`flex flex-col sm:flex-row gap-6 p-4 rounded-lg items-center shadow-lg border-1 dark:border-0 bg-default-100`}
     >
       {plantToCheck ? (
         <CheckPlantDrawer
@@ -176,24 +176,31 @@ const ReminderCard = ({
         />
       ) : null}
       <div className="flex gap-6 items-center self-start w-full sm:3/4 md:w-2/5">
-        {reminder.plant_info.cover_photo_thumbnail_url ? (
-          <div className="flex justify-center items-center shrink-0 w-[80px] h-[80px] rounded-lg overflow-hidden">
-            <Image
-              alt={reminder.plant_info.plant.name}
-              className="hover:cursor-pointer object-cover"
-              height={80}
-              src={reminder.plant_info.cover_photo_thumbnail_url}
-              width={80}
-              onClick={() =>
-                imagePreview.setPreview({
-                  src: reminder.plant_info.cover_photo_url!,
-                  plantName: reminder.plant_info.plant.name,
-                  locationName: reminder.plant_info.location.name,
-                })
-              }
-            />
-          </div>
-        ) : null}
+        <div className="flex flex-row gap-0 h-full items-center">
+          {reminder.plant_info.cover_photo_thumbnail_url ? (
+            <div
+              className={`flex justify-center items-center shrink-0 w-[80px] h-[80px] rounded-lg overflow-hidden`}
+            >
+              <Image
+                alt={reminder.plant_info.plant.name}
+                className="hover:cursor-pointer object-cover"
+                height={80}
+                src={reminder.plant_info.cover_photo_thumbnail_url}
+                width={80}
+                onClick={() =>
+                  imagePreview.setPreview({
+                    src: reminder.plant_info.cover_photo_url!,
+                    plantName: reminder.plant_info.plant.name,
+                    locationName: reminder.plant_info.location.name,
+                  })
+                }
+              />
+            </div>
+          ) : null}
+          <div
+            className={`${reminderBgColor} rounded-md w-2 h-[75px] translate-x-[12px]`}
+          />
+        </div>
         <div className="flex flex-col gap-0 items-left">
           <Tooltip content={reminderDate.format("MMMM D, YYYY h:mm A")}>
             <h3 className={`text-md font-bold text-foreground-900`}>
@@ -202,10 +209,10 @@ const ReminderCard = ({
           </Tooltip>
           <div className="flex flex-col gap-0">
             <Link
-              color="success"
+              color="primary"
               href={`/plants/${reminder.plant_info.plant.id}`}
             >
-              <span className="text-lg font-bold text-success-700">
+              <span className="text-lg font-bold text-primary-700">
                 {reminder.plant_info.plant.name}
               </span>
             </Link>
@@ -277,8 +284,8 @@ const RecentSectionStarter = () => {
   return (
     <div className="flex flex-row gap-2 w-full items-center pt-2">
       {/* <Divider className="grow w-auto" /> */}
-      <IconDroplet className="text-primary-800" size={24} />
-      <h2 className="text-lg font-bold text-primary-800">Current</h2>
+      <IconDroplet className="text-secondary-800" size={24} />
+      <h2 className="text-lg font-bold text-secondary-800">Current</h2>
       <Divider className="grow w-auto" />
     </div>
   );
@@ -288,8 +295,8 @@ const UpcomingSectionStarter = () => {
   return (
     <div className="flex flex-row gap-2 w-full items-center pt-2">
       {/* <Divider className="grow w-auto" /> */}
-      <IconCalendarWeekFilled className="text-success-800" size={24} />
-      <h2 className="text-lg font-bold text-success-800">Upcoming</h2>
+      <IconCalendarWeekFilled className="text-primary-800" size={24} />
+      <h2 className="text-lg font-bold text-primary-800">Upcoming</h2>
       <Divider className="grow w-auto" />
     </div>
   );

@@ -71,7 +71,7 @@ export default function RemindersPage() {
       <section className="flex flex-col items-center justify-center gap-4 pb-8 md:pb-10 w-full min-h-full">
         <div className="flex flex-col sm:flex-row gap-3 sm:gap-7 w-full items-center justify-center sm:justify-center">
           <div className="shrink-0">
-            <Link color="success" href={`/plants/${data?.plant.id}`}>
+            <Link color="primary" href={`/plants/${data?.plant.id}`}>
               <div className="font-extrabold text-3xl">
                 Reminders for {data?.plant.name}
               </div>
@@ -86,7 +86,7 @@ export default function RemindersPage() {
         <div className="flex flex-row justify-center gap-3 w-full flex-wrap">
           <Button
             className="font-bold shrink-0"
-            color="success"
+            color="primary"
             isDisabled={isFetching}
             size={mediaQueries["sm"] ? "md" : "sm"}
             startContent={<IconEdit size={15} />}
