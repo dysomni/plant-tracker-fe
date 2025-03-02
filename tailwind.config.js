@@ -107,7 +107,7 @@ const invertColors = (color) => {
 const applyDefaultAndForeground = (
   color,
   the_default = 500,
-  foreground = 950
+  foreground = 950,
 ) => {
   return {
     DEFAULT: color[the_default],
@@ -150,19 +150,19 @@ module.exports = {
           colors: {
             background: applyDefaultAndForeground(
               invertColors(colors.neutral),
-              50
+              50,
             ),
             foreground: applyDefaultAndForeground(
               invertColors(colors.neutral),
-              950
+              950,
             ),
             content3: applyDefaultAndForeground(
               invertColors(colors.neutral),
-              200
+              200,
             ),
             content1: applyDefaultAndForeground(
               invertColors(colors.neutral),
-              50
+              50,
             ),
             primary: applyDefaultAndForeground(invertColors(colors.green), 500),
             secondary: applyDefaultAndForeground(invertColors(colors.blue)),
@@ -171,7 +171,7 @@ module.exports = {
             danger: applyDefaultAndForeground(invertColors(colors.red)),
             default: applyDefaultAndForeground(
               invertColors(colors.neutral),
-              300
+              300,
             ),
           },
         },
