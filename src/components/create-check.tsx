@@ -1,4 +1,5 @@
 import {
+  addToast,
   Button,
   CircularProgress,
   DatePicker,
@@ -18,7 +19,6 @@ import { IconDropletFilled, IconDropletX } from "@tabler/icons-react";
 import { fromDate, getLocalTimeZone } from "@internationalized/date";
 import dayjs from "dayjs";
 
-import { useToast } from "../toast";
 import { fetchCheckPlantV1PlantsPlantIdCheckPost } from "../generated/api/plantsComponents";
 
 const strToDateValue = (date: string): DateValue => {
@@ -58,8 +58,6 @@ export const CreateCheckDrawer = (props: {
     notes: "",
   });
 
-  const toast = useToast();
-
   const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     const data = formState;
@@ -78,20 +76,20 @@ export const CreateCheckDrawer = (props: {
         body: result.data,
       });
     } catch (error) {
-      toast({
-        message: `Failed to create check.`,
-        type: "danger",
-        duration: 5000,
+      addToast({
+        title: "Error",
+        description: `Failed to create check.`,
+        color: "danger",
       });
       setSubmitLoading(false);
 
       return;
     }
 
-    toast({
-      message: `Check created successfully.`,
-      type: "success",
-      duration: 5000,
+    addToast({
+      title: "Success",
+      description: `Check created successfully.`,
+      color: "success",
     });
     setSubmitLoading(false);
     await onCheckCreated?.();

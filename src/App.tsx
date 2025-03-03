@@ -4,7 +4,6 @@ import { useEffect } from "react";
 import { getSerwist } from "virtual:serwist";
 
 import { AuthProvider } from "./auth";
-import { ToastProvider } from "./toast";
 import PlantsPage from "./pages/plants";
 import LocationsPage from "./pages/locations";
 import { ImagePreviewProvider } from "./components/image-preview";
@@ -39,34 +38,29 @@ function App() {
 
   return (
     <QueryClientProvider client={queryClient}>
-      <ToastProvider>
-        <AuthProvider>
-          <ImagePreviewProvider>
-            <PageLoadingProvider>
-              <Routes>
-                <Route element={<IndexPage />} path="/" />
-                <Route element={<LoginPage />} path="/login" />
-                <Route element={<PlantsPage />} path="/plants" />
-                <Route element={<PlantPage />} path="/plants/:plantId" />
-                <Route
-                  element={<WateringsPage />}
-                  path="/plants/:plantId/waterings"
-                />
-                <Route
-                  element={<ChecksPage />}
-                  path="/plants/:plantId/checks"
-                />
-                <Route
-                  element={<RemindersPage />}
-                  path="/plants/:plantId/reminders"
-                />
-                <Route element={<LocationsPage />} path="/locations" />
-                <Route element={<SettingsPage />} path="/settings" />
-              </Routes>
-            </PageLoadingProvider>
-          </ImagePreviewProvider>
-        </AuthProvider>
-      </ToastProvider>
+      <AuthProvider>
+        <ImagePreviewProvider>
+          <PageLoadingProvider>
+            <Routes>
+              <Route element={<IndexPage />} path="/" />
+              <Route element={<LoginPage />} path="/login" />
+              <Route element={<PlantsPage />} path="/plants" />
+              <Route element={<PlantPage />} path="/plants/:plantId" />
+              <Route
+                element={<WateringsPage />}
+                path="/plants/:plantId/waterings"
+              />
+              <Route element={<ChecksPage />} path="/plants/:plantId/checks" />
+              <Route
+                element={<RemindersPage />}
+                path="/plants/:plantId/reminders"
+              />
+              <Route element={<LocationsPage />} path="/locations" />
+              <Route element={<SettingsPage />} path="/settings" />
+            </Routes>
+          </PageLoadingProvider>
+        </ImagePreviewProvider>
+      </AuthProvider>
     </QueryClientProvider>
   );
 }

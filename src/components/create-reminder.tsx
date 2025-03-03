@@ -1,4 +1,5 @@
 import {
+  addToast,
   Button,
   CircularProgress,
   DatePicker,
@@ -19,7 +20,6 @@ import { fromDate, getLocalTimeZone } from "@internationalized/date";
 import dayjs from "dayjs";
 
 import { fetchCreateReminderV1RemindersPost } from "../generated/api/plantsComponents";
-import { useToast } from "../toast";
 
 const strToDateValue = (date: string): DateValue => {
   return fromDate(
@@ -61,8 +61,6 @@ export const CreateReminderDrawer = (props: {
     notes: "",
   });
 
-  const toast = useToast();
-
   const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     const data = formState;
@@ -80,20 +78,20 @@ export const CreateReminderDrawer = (props: {
         body: result.data,
       });
     } catch (error) {
-      toast({
-        message: `Failed to create reminder.`,
-        type: "danger",
-        duration: 5000,
+      addToast({
+        title: "Error",
+        description: `Failed to create reminder.`,
+        color: "danger",
       });
       setSubmitLoading(false);
 
       return;
     }
 
-    toast({
-      message: `Reminder created successfully.`,
-      type: "success",
-      duration: 5000,
+    addToast({
+      title: "Success",
+      description: `Reminder created successfully.`,
+      color: "success",
     });
     setSubmitLoading(false);
     await onCreate?.();

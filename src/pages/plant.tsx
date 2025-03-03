@@ -1,6 +1,7 @@
 import { now, getLocalTimeZone } from "@internationalized/date";
 import dayjs from "dayjs";
 import {
+  addToast,
   Button,
   Card,
   CircularProgress,
@@ -61,7 +62,6 @@ import {
 import { useMediaQueries } from "../components/responsive-hooks";
 import { CreatePlantDrawer } from "../components/create-plant";
 import { removeTimeZoneBracketFromDatetime, unwrap } from "../util";
-import { useToast } from "../toast";
 import { CheckPlantDrawer } from "../components/check-plant";
 import { MyChart } from "../components/history-graph";
 
@@ -492,7 +492,6 @@ const AddPhotoDrawer = (props: {
   const [overrideDate, setOverrideDate] = useState<DateValue>(
     now(getLocalTimeZone()),
   );
-  const toast = useToast();
 
   const handleSingleUpload = async (file: File, index: number) => {
     try {
@@ -519,16 +518,16 @@ const AddPhotoDrawer = (props: {
       await fetchMarkPhotoUploadedV1PhotosPhotoIdMarkUploadedPost({
         pathParams: { photoId: unwrap(newPhotoRecord.photo.id) },
       });
-      toast({
-        message: `Photo ${file.name} uploaded successfully.`,
-        type: "success",
-        duration: 5000,
+      addToast({
+        title: "Success",
+        description: `Photo ${file.name} uploaded successfully.`,
+        color: "success",
       });
     } catch (error) {
-      toast({
-        message: `Failed to upload photo ${file.name}.`,
-        type: "danger",
-        duration: 5000,
+      addToast({
+        title: "Error",
+        description: `Failed to upload photo ${file.name}.`,
+        color: "danger",
       });
     }
   };

@@ -21,6 +21,9 @@ export default defineConfig({
           },
         ],
       },
+      workbox: {
+        maximumFileSizeToCacheInBytes: 3 * 1024 * 1024, // 3MB
+      },
     }),
     serwist({
       swSrc: "src/sw.ts",
@@ -28,6 +31,7 @@ export default defineConfig({
       globDirectory: "dist",
       injectionPoint: "self.__SW_MANIFEST",
       rollupFormat: "iife",
+      maximumFileSizeToCacheInBytes: 3 * 1024 * 1024, // 3MB
     }),
   ],
 });

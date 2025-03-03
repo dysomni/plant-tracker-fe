@@ -26,6 +26,7 @@
     "@heroui/switch": "2.2.13",
     "@heroui/system": "2.4.11",
     "@heroui/theme": "2.4.11",
+    "@internationalized/date": "^3.7.0",
     "@openapi-codegen/cli": "^2.0.2",
     "@openapi-codegen/typescript": "^8.0.2",
     "@react-aria/visually-hidden": "3.8.12",

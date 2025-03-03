@@ -1,4 +1,5 @@
 import {
+  addToast,
   Button,
   Checkbox,
   CircularProgress,
@@ -19,7 +20,6 @@ import { IconDropletFilled, IconDropletX } from "@tabler/icons-react";
 import { fromDate, getLocalTimeZone } from "@internationalized/date";
 import dayjs from "dayjs";
 
-import { useToast } from "../toast";
 import { fetchWaterPlantV1PlantsPlantIdWaterPost } from "../generated/api/plantsComponents";
 
 const strToDateValue = (date: string): DateValue => {
@@ -62,8 +62,6 @@ export const CreateWateringDrawer = (props: {
     bottom_watered: false,
   });
 
-  const toast = useToast();
-
   const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     const data = formState;
@@ -82,20 +80,20 @@ export const CreateWateringDrawer = (props: {
         body: result.data,
       });
     } catch (error) {
-      toast({
-        message: `Failed to create watering.`,
-        type: "danger",
-        duration: 5000,
+      addToast({
+        title: "Error",
+        description: `Failed to create watering.`,
+        color: "danger",
       });
       setSubmitLoading(false);
 
       return;
     }
 
-    toast({
-      message: `Watering created successfully.`,
-      type: "success",
-      duration: 5000,
+    addToast({
+      title: "Success",
+      description: `Watering created successfully.`,
+      color: "success",
     });
     setSubmitLoading(false);
     await onWateringCreated?.();

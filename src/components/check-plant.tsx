@@ -14,6 +14,7 @@ import {
   Chip,
   RadioGroup,
   Radio,
+  addToast,
 } from "@heroui/react";
 import { now, getLocalTimeZone, fromDate } from "@internationalized/date";
 import { useEffect, useMemo, useState } from "react";
@@ -29,7 +30,6 @@ import utc from "dayjs/plugin/utc";
 import timezone from "dayjs/plugin/timezone";
 
 import { pluralize, removeTimeZoneBracketFromDatetime } from "../util";
-import { useToast } from "../toast";
 import { useAuthErrorRedirect } from "../auth";
 import {
   fetchFullCheckPlantV1PlantsPlantIdFullCheckPost,
@@ -78,7 +78,6 @@ export const CheckPlantDrawer = (props: {
   } = useGetPlantV1PlantsPlantIdGet({ pathParams: { plantId: plantToCheck } });
 
   useAuthErrorRedirect(plantError);
-  const toast = useToast();
 
   const lastWatering = useMemo(
     () =>
@@ -183,19 +182,19 @@ export const CheckPlantDrawer = (props: {
           notes,
         },
       });
-      toast({
-        message: `Successfully checked plant! Next reminder is ${nextCheckDayjs.fromNow()}`,
-        type: "success",
-        duration: 5000,
+      addToast({
+        title: "Saved",
+        description: `Successfully checked plant! Next reminder is ${nextCheckDayjs.fromNow()}`,
+        color: "success",
       });
       setSubmitLoading(false);
       await onCheckDone?.();
       onClose();
     } catch (error) {
-      toast({
-        message: "Failed to save plant check info.",
-        duration: 5000,
-        type: "danger",
+      addToast({
+        title: "Error",
+        description: "Failed to save plant check info.",
+        color: "danger",
       });
       setSubmitLoading(false);
     }

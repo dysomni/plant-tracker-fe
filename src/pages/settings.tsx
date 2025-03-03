@@ -1,4 +1,4 @@
-import { Button, Card, Divider } from "@heroui/react";
+import { addToast, Button, Card, Divider } from "@heroui/react";
 import { useEffect, useMemo, useState } from "react";
 import dayjs from "dayjs";
 import { UAParser } from "ua-parser-js";
@@ -11,7 +11,6 @@ import {
   GetNotificationSubscriptionsV1SubscriptionsGetResponse,
 } from "../generated/api/plantsComponents";
 import { usePageLoading } from "../components/page-loading";
-import { useToast } from "../toast";
 
 import DefaultLayout from "@/layouts/default";
 
@@ -101,8 +100,6 @@ export default function SettingsPage() {
       });
     });
   }, []);
-
-  const toast = useToast();
 
   return (
     <DefaultLayout>
@@ -215,25 +212,25 @@ export default function SettingsPage() {
                         await fetch(subscription.endpoint);
                       } catch (error) {
                         setIsLoading(false);
-                        toast({
-                          message: `Failed to subscribe to notifications. ${error}`,
-                          type: "danger",
-                          duration: 5000,
+                        addToast({
+                          title: "Error",
+                          description: `Failed to subscribe to notifications. ${error}`,
+                          color: "danger",
                         });
                       }
                     }
                   }
-                  toast({
-                    message: "Notifications enabled.",
-                    type: "success",
-                    duration: 5000,
+                  addToast({
+                    title: "Success",
+                    description: "Notifications enabled.",
+                    color: "success",
                   });
                 } else {
                   setNotificationsAllowed(false);
-                  toast({
-                    message: "Notifications failed to enable.",
-                    type: "danger",
-                    duration: 5000,
+                  addToast({
+                    title: "Error",
+                    description: "Notifications failed to enable.",
+                    color: "danger",
                   });
                 }
               });

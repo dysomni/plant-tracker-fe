@@ -1,5 +1,6 @@
 import React, { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import { addToast } from "@heroui/react";
 
 import { User } from "./generated/api/plantsSchemas";
 import {
@@ -8,7 +9,6 @@ import {
   ReadUsersMeAuthMeGetError,
 } from "./generated/api/plantsComponents";
 import { ErrorWrapper } from "./generated/api/plantsFetcher";
-import { useToast } from "./toast";
 
 export interface AuthContextType {
   user: User | null;
@@ -26,7 +26,6 @@ export const AuthContext = React.createContext<AuthContextType>({
 
 export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const navigate = useNavigate();
-  const toast = useToast();
   const [reloadCounter, setReloadCounter] = React.useState(0);
   const [fetchedUser, setFetchedUser] = React.useState<User | null>(null);
   const [userLoading, setUserLoading] = React.useState(true);
@@ -52,10 +51,10 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
 
     if (error && error.status === 401 && !isLoginPath) {
       localStorage.setItem("currentPath", window.location.pathname);
-      toast({
-        message: "You have been logged out. Please log in again.",
-        type: "warning",
-        duration: 5000,
+      addToast({
+        title: "Logged out",
+        description: "You have been logged out. Please log in again.",
+        color: "warning",
       });
       navigate("/login");
     }
@@ -98,22 +97,21 @@ export const useAuthErrorRedirect = (
   }> | null,
 ) => {
   const authContext = React.useContext(AuthContext);
-  const toast = useToast();
 
   useEffect(() => {
     if (error && error.status === 401) {
       localStorage.setItem("currentPath", window.location.pathname);
-      toast({
-        message: "You have been logged out. Please log in again.",
-        type: "warning",
-        duration: 5000,
+      addToast({
+        title: "Logged out",
+        description: "You have been logged out. Please log in again.",
+        color: "warning",
       });
       authContext.logout();
     } else if (error) {
-      toast({
-        message: "An error occurred. Please try again later.",
-        type: "danger",
-        duration: 5000,
+      addToast({
+        title: "Error",
+        description: "An error occurred. Please try again later.",
+        color: "danger",
       });
     }
   }, [error, authContext]);

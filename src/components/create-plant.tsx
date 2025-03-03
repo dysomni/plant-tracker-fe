@@ -1,4 +1,5 @@
 import {
+  addToast,
   Autocomplete,
   AutocompleteItem,
   Button,
@@ -19,7 +20,6 @@ import { IconInfoCircle, IconPlus, IconSparkles } from "@tabler/icons-react";
 import { Link } from "@heroui/link";
 
 import { useAuthErrorRedirect } from "../auth";
-import { useToast } from "../toast";
 import { unwrap } from "../util";
 import {
   fetchCreateLocationV1LocationsPost,
@@ -107,7 +107,6 @@ export const CreatePlantDrawer = (props: {
   } = useListAllLocationsV1LocationsGet({});
 
   useAuthErrorRedirect(error);
-  const toast = useToast();
 
   useEffect(() => {
     if (!delayedName.trim()) {
@@ -163,20 +162,20 @@ export const CreatePlantDrawer = (props: {
         });
       }
     } catch (error) {
-      toast({
-        message: `Failed to ${editPlant ? "update" : "create"} plant.`,
-        type: "danger",
-        duration: 5000,
+      addToast({
+        title: "Error",
+        description: `Failed to ${editPlant ? "update" : "create"} plant.`,
+        color: "danger",
       });
       setSubmitLoading(false);
 
       return;
     }
 
-    toast({
-      message: `Plant ${editPlant ? "updated" : "created"} successfully.`,
-      type: "success",
-      duration: 5000,
+    addToast({
+      title: "Success",
+      description: `Plant ${editPlant ? "updated" : "created"} successfully.`,
+      color: "success",
     });
     setSubmitLoading(false);
     await onPlantCreated?.();
@@ -337,7 +336,6 @@ export const LocationPicker = (props: {
 
   usePageLoading(isLoading);
   useAuthErrorRedirect(error);
-  const toast = useToast();
 
   const [searchInput, setSearchInput] = useState("");
 
@@ -353,10 +351,10 @@ export const LocationPicker = (props: {
     const locationName = searchInput.trim();
 
     if (!locationName) {
-      toast({
-        message: "Location name cannot be empty.",
-        type: "warning",
-        duration: 5000,
+      addToast({
+        title: "Failed to save.",
+        description: "Location name cannot be empty.",
+        color: "warning",
       });
 
       return;
@@ -367,20 +365,20 @@ export const LocationPicker = (props: {
         body: { name: locationName },
       });
 
-      toast({
-        message: "Location created successfully.",
-        type: "success",
-        duration: 5000,
+      addToast({
+        title: "Success",
+        description: "Location created successfully.",
+        color: "success",
       });
       await refetch();
       await onLocationCreated?.();
       onChange(unwrap(location.id).toString());
       setSearchInput(locationName);
     } catch (error) {
-      toast({
-        message: "Failed to create location.",
-        type: "danger",
-        duration: 5000,
+      addToast({
+        title: "Error",
+        description: "Failed to create location.",
+        color: "danger",
       });
 
       return;
