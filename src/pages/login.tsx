@@ -1,8 +1,8 @@
-import { Button } from "@nextui-org/button";
-import { Input } from "@nextui-org/input";
-import { Card } from "@nextui-org/card";
+import { Button } from "@heroui/button";
+import { Input } from "@heroui/input";
+import { Card } from "@heroui/card";
 import { useContext, useEffect, useState } from "react";
-import { Alert } from "@nextui-org/react";
+import { Alert } from "@heroui/react";
 import { useNavigate } from "react-router-dom";
 
 import {

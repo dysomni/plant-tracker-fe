@@ -1,4 +1,4 @@
-import { Button, Card, Divider } from "@nextui-org/react";
+import { Button, Card, Divider } from "@heroui/react";
 import { useEffect, useMemo, useState } from "react";
 import dayjs from "dayjs";
 import { UAParser } from "ua-parser-js";

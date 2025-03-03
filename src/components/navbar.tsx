@@ -1,5 +1,5 @@
-import { Button } from "@nextui-org/button";
-import { Link } from "@nextui-org/link";
+import { Button } from "@heroui/button";
+import { Link } from "@heroui/link";
 import {
   Navbar as NextUINavbar,
   NavbarBrand,
@@ -8,7 +8,7 @@ import {
   NavbarMenuToggle,
   NavbarMenu,
   NavbarMenuItem,
-} from "@nextui-org/navbar";
+} from "@heroui/navbar";
 import { useContext } from "react";
 import { IconHome, IconLeaf, IconMap, IconSettings } from "@tabler/icons-react";
 

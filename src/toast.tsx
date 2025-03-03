@@ -1,5 +1,5 @@
 import React from "react";
-import { Alert } from "@nextui-org/alert";
+import { Alert } from "@heroui/alert";
 
 export type ToastMessage = {
   id?: string;

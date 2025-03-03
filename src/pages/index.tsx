@@ -1,8 +1,8 @@
 import { useContext, useMemo, useState } from "react";
 import dayjs from "dayjs";
 import relativeTime from "dayjs/plugin/relativeTime";
-import { Button } from "@nextui-org/button";
-import { Card, Divider, Image, Link, Tooltip } from "@nextui-org/react";
+import { Button } from "@heroui/button";
+import { Card, Divider, Image, Link, Tooltip } from "@heroui/react";
 import {
   IconAlertSquareRounded,
   IconCalendarWeekFilled,

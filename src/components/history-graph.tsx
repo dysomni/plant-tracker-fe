@@ -18,7 +18,7 @@ import { useCallback, useMemo, useState } from "react";
 import { Line, LinePath } from "@visx/shape";
 import { GridColumns, GridRows } from "@visx/grid";
 import { AxisBottom, AxisRight } from "@visx/axis";
-import { Slider, Tab, Tabs } from "@nextui-org/react";
+import { Slider, Tab, Tabs } from "@heroui/react";
 
 import { Check, Watering } from "../generated/api/plantsSchemas";
 

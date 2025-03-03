@@ -1,4 +1,4 @@
-import { Chip, Tooltip } from "@nextui-org/react";
+import { Chip, Tooltip } from "@heroui/react";
 import {
   IconBellFilled,
   IconDropletFilled,

@@ -11,7 +11,7 @@ import {
   Form,
   Slider,
   Textarea,
-} from "@nextui-org/react";
+} from "@heroui/react";
 import { FormEvent, useState } from "react";
 import { z } from "zod";
 import { IconDropletFilled, IconDropletX } from "@tabler/icons-react";

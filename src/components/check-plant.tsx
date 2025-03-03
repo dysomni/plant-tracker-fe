@@ -14,7 +14,7 @@ import {
   Chip,
   RadioGroup,
   Radio,
-} from "@nextui-org/react";
+} from "@heroui/react";
 import { now, getLocalTimeZone, fromDate } from "@internationalized/date";
 import { useEffect, useMemo, useState } from "react";
 import dayjs from "dayjs";

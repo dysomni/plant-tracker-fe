@@ -12,7 +12,7 @@ import {
   Select,
   SelectItem,
   Tooltip,
-} from "@nextui-org/react";
+} from "@heroui/react";
 import { useMemo, useState } from "react";
 import { IconEdit, IconSortDescending2 } from "@tabler/icons-react";
 import { useParams } from "react-router-dom";

@@ -1,5 +1,5 @@
 import dayjs from "dayjs";
-import { Button, Card, Image, Input, Link } from "@nextui-org/react";
+import { Button, Card, Image, Input, Link } from "@heroui/react";
 import { useMemo, useState } from "react";
 import { IconPlus, IconRuler2, IconSearch } from "@tabler/icons-react";
 

@@ -11,12 +11,12 @@ import {
   Form,
   Input,
   Textarea,
-} from "@nextui-org/react";
+} from "@heroui/react";
 import { debounce } from "lodash";
 import { FormEvent, useCallback, useEffect, useState } from "react";
 import { z } from "zod";
 import { IconInfoCircle, IconPlus, IconSparkles } from "@tabler/icons-react";
-import { Link } from "@nextui-org/link";
+import { Link } from "@heroui/link";
 
 import { useAuthErrorRedirect } from "../auth";
 import { useToast } from "../toast";

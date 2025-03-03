@@ -12,7 +12,7 @@ import {
   Select,
   SelectItem,
   Textarea,
-} from "@nextui-org/react";
+} from "@heroui/react";
 import { FormEvent, useState } from "react";
 import { z } from "zod";
 import { fromDate, getLocalTimeZone } from "@internationalized/date";

@@ -24,7 +24,7 @@ import {
   Tab,
   Tabs,
   Textarea,
-} from "@nextui-org/react";
+} from "@heroui/react";
 import { useMemo, useState } from "react";
 import {
   IconArchiveFilled,

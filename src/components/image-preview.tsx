@@ -4,7 +4,7 @@ import {
   ModalBody,
   ModalContent,
   ModalHeader,
-} from "@nextui-org/react";
+} from "@heroui/react";
 import { createContext, useContext, useState } from "react";
 
 export type ImagePreviewContextType = {
