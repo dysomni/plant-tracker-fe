@@ -148,11 +148,11 @@ const ReminderCard = ({
   const reminderBgColor = useMemo(() => {
     switch (true) {
       case type == "upcoming":
-        return "bg-primary-500";
+        return "bg-primary-50";
       case type == "recent":
-        return "bg-secondary-500";
+        return "bg-secondary-50";
       default:
-        return "bg-danger-500";
+        return "bg-danger-50";
     }
   }, [type]);
 
@@ -160,7 +160,7 @@ const ReminderCard = ({
 
   return (
     <Card
-      className={`flex flex-col sm:flex-row gap-6 p-4 rounded-lg items-center shadow-lg border-1 dark:border-0 bg-default-100`}
+      className={`flex flex-col sm:flex-row gap-6 p-4 rounded-lg items-center shadow-lg border-1 dark:border-0 ${reminderBgColor}`}
     >
       {plantToCheck ? (
         <CheckPlantDrawer
@@ -176,31 +176,26 @@ const ReminderCard = ({
         />
       ) : null}
       <div className="flex gap-6 items-center self-start w-full sm:3/4 md:w-2/5">
-        <div className="flex flex-row gap-0 h-full items-center">
-          {reminder.plant_info.cover_photo_thumbnail_url ? (
-            <div
-              className={`flex justify-center items-center shrink-0 w-[80px] h-[80px] rounded-lg overflow-hidden`}
-            >
-              <Image
-                alt={reminder.plant_info.plant.name}
-                className="hover:cursor-pointer object-cover"
-                height={80}
-                src={reminder.plant_info.cover_photo_thumbnail_url}
-                width={80}
-                onClick={() =>
-                  imagePreview.setPreview({
-                    src: reminder.plant_info.cover_photo_url!,
-                    plantName: reminder.plant_info.plant.name,
-                    locationName: reminder.plant_info.location.name,
-                  })
-                }
-              />
-            </div>
-          ) : null}
+        {reminder.plant_info.cover_photo_thumbnail_url ? (
           <div
-            className={`${reminderBgColor} rounded-md w-2 h-[75px] translate-x-[12px]`}
-          />
-        </div>
+            className={`flex justify-center items-center shrink-0 w-[80px] h-[80px] rounded-lg overflow-hidden`}
+          >
+            <Image
+              alt={reminder.plant_info.plant.name}
+              className="hover:cursor-pointer object-cover"
+              height={80}
+              src={reminder.plant_info.cover_photo_thumbnail_url}
+              width={80}
+              onClick={() =>
+                imagePreview.setPreview({
+                  src: reminder.plant_info.cover_photo_url!,
+                  plantName: reminder.plant_info.plant.name,
+                  locationName: reminder.plant_info.location.name,
+                })
+              }
+            />
+          </div>
+        ) : null}
         <div className="flex flex-col gap-0 items-left">
           <Tooltip content={reminderDate.format("MMMM D, YYYY h:mm A")}>
             <h3 className={`text-md font-bold text-foreground-900`}>
