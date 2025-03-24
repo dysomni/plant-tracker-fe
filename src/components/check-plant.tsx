@@ -201,7 +201,13 @@ export const CheckPlantDrawer = (props: {
   };
 
   return (
-    <Drawer isOpen={true} placement="right" size="2xl" onClose={onClose}>
+    <Drawer
+      isDismissable={false}
+      isOpen={true}
+      placement="right"
+      size="2xl"
+      onClose={onClose}
+    >
       <DrawerContent>
         {submitLoading || plantLoading ? (
           <div className="flex absolute top-0 bottom-0 left-0 right-0 justify-center items-center bg-black z-50 opacity-30">
@@ -363,7 +369,6 @@ export const CheckPlantDrawer = (props: {
               value={notes}
               onValueChange={setNotes}
             />
-
             <DatePicker
               showMonthAndYearPickers
               description="Change this if you want to backfill a check or watering you did in the past."

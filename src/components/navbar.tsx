@@ -10,7 +10,7 @@ import {
   NavbarMenuItem,
 } from "@heroui/navbar";
 import { useContext } from "react";
-import { IconHome, IconLeaf, IconMap, IconSettings } from "@tabler/icons-react";
+import { IconHome, IconLeaf, IconSettings } from "@tabler/icons-react";
 
 import { AuthContext } from "../auth";
 
@@ -58,11 +58,11 @@ export const Navbar = () => {
             Plants
           </Link>
         </NavbarItem>
-        <NavbarItem className="flex gap-2">
+        {/* <NavbarItem className="flex gap-2">
           <Link className={currentPathStyles("/locations")} href="/locations">
             Locations
           </Link>
-        </NavbarItem>
+        </NavbarItem> */}
         <NavbarItem className="flex gap-2">
           <Link className={currentPathStyles("/settings")} href="/settings">
             Settings
@@ -83,11 +83,11 @@ export const Navbar = () => {
             <IconLeaf size={20} />
           </Link>
         </NavbarItem>
-        <NavbarItem className="flex gap-2">
+        {/* <NavbarItem className="flex gap-2">
           <Link className={currentPathStyles("/locations")} href="/locations">
             <IconMap size={20} />
           </Link>
-        </NavbarItem>
+        </NavbarItem> */}
         <NavbarItem className="flex gap-2">
           <Link className={currentPathStyles("/settings")} href="/settings">
             <IconSettings size={20} />
@@ -131,7 +131,7 @@ export const Navbar = () => {
               Plants
             </Link>
           </NavbarMenuItem>
-          <NavbarMenuItem>
+          {/* <NavbarMenuItem>
             <Link
               className={currentPathStyles("/locations")}
               href="/locations"
@@ -139,7 +139,7 @@ export const Navbar = () => {
             >
               Locations
             </Link>
-          </NavbarMenuItem>
+          </NavbarMenuItem> */}
           <NavbarMenuItem>
             <Link
               className={currentPathStyles("/settings")}

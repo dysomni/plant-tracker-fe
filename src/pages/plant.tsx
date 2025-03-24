@@ -545,7 +545,7 @@ const AddPhotoDrawer = (props: {
   };
 
   return (
-    <Drawer isOpen={open} onOpenChange={setOpen}>
+    <Drawer isDismissable={false} isOpen={open} onOpenChange={setOpen}>
       <DrawerContent>
         {(onClose) => (
           <>

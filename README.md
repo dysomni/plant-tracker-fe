@@ -1,16 +1,16 @@
 # TODO
 
-- finish list pages for
-- - reminders
-- - checks
-- - waterings
-- quick water button
-- buttons for the graph
-- style the graph
-- improve the home page styling
-- - include sections
+- finish list pages for ✅
+- - reminders ✅
+- - checks ✅
+- - waterings ✅
+- quick water button ✅
+- buttons for the graph ✅
+- style the graph ✅
+- improve the home page styling ✅
+- - include sections ✅
 - reschedule button
-- get plant burndown wetness calculation (api side maybe?)
+- get plant burndown wetness calculation (api side maybe?) ✅
 
 # Vite & NextUI Template
 

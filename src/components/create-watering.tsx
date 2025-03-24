@@ -102,6 +102,7 @@ export const CreateWateringDrawer = (props: {
 
   return (
     <Drawer
+      isDismissable={false}
       isOpen={open}
       placement="right"
       size="2xl"
