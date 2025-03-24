@@ -226,6 +226,10 @@ export type Plant = {
   archived?: boolean;
   archived_at?: string | null;
   default_watering_interval_days?: number | null;
+  /**
+   * @default false
+   */
+  important?: boolean;
 };
 
 export type PlantPhotoWithPresignedUrl = {
@@ -316,6 +320,7 @@ export type UpdatePlantRequest = {
   notes?: string | null;
   archived?: boolean | null;
   default_watering_interval_days?: number | null;
+  important?: boolean | null;
 };
 
 export type User = {

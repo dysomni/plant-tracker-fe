@@ -3,6 +3,7 @@ import {
   Autocomplete,
   AutocompleteItem,
   Button,
+  Checkbox,
   CircularProgress,
   Drawer,
   DrawerBody,
@@ -41,6 +42,7 @@ export const createPlantSchema = z.object({
   location_id: z.string().min(1),
   notes: z.string(),
   default_watering_interval_days: z.number().nullable(),
+  important: z.boolean().optional(),
 });
 
 export const CreatePlantDrawer = (props: {
@@ -59,12 +61,14 @@ export const CreatePlantDrawer = (props: {
     location_id: string;
     notes: string;
     default_watering_interval_days: number | null;
+    important?: boolean;
   }>({
     name: "",
     scientific_name: "",
     location_id: "",
     notes: "",
     default_watering_interval_days: null,
+    important: false,
   });
   const [delayedName, setDelayedName] = useState("");
   const debouncedSetDelayedName = useCallback(
@@ -82,6 +86,7 @@ export const CreatePlantDrawer = (props: {
         location_id: "",
         notes: "",
         default_watering_interval_days: null,
+        important: false,
       });
       setDelayedName("");
       setAiSuggestion(null);
@@ -94,6 +99,7 @@ export const CreatePlantDrawer = (props: {
         notes: editPlant?.notes || "",
         default_watering_interval_days:
           editPlant?.default_watering_interval_days || null,
+        important: editPlant?.important || false,
       });
       setDelayedName(editPlant?.name || "");
     }
@@ -310,6 +316,15 @@ export const CreatePlantDrawer = (props: {
                 }))
               }
             />
+            <Checkbox
+              isSelected={formState.important}
+              name="important"
+              onValueChange={(important) =>
+                setFormState((prev) => ({ ...prev, important }))
+              }
+            >
+              Important
+            </Checkbox>
           </DrawerBody>
           <DrawerFooter>
             <Button size="lg" onPress={() => setOpen(false)}>

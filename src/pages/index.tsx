@@ -146,6 +146,10 @@ const ReminderCard = ({
   const [quickWater, setQuickWater] = useState(false);
 
   const reminderBgColor = useMemo(() => {
+    if (!reminder.plant_info.plant.important) {
+      return "bg-foreground-100";
+    }
+
     switch (true) {
       case type == "upcoming":
         return "bg-primary-50";
@@ -153,6 +157,21 @@ const ReminderCard = ({
         return "bg-secondary-50";
       default:
         return "bg-danger-50";
+    }
+  }, [type]);
+
+  const reminderTimeTextColor = useMemo(() => {
+    if (reminder.plant_info.plant.important) {
+      return "text-primary-900";
+    }
+
+    switch (true) {
+      case type == "upcoming":
+        return "text-primary-800";
+      case type == "recent":
+        return "text-secondary-800";
+      default:
+        return "text-danger-800";
     }
   }, [type]);
 
@@ -198,7 +217,7 @@ const ReminderCard = ({
         ) : null}
         <div className="flex flex-col gap-0 items-left">
           <Tooltip content={reminderDate.format("MMMM D, YYYY h:mm A")}>
-            <h3 className={`text-md font-bold text-foreground-900`}>
+            <h3 className={`text-md font-bold ${reminderTimeTextColor}`}>
               {reminderDate.fromNow()}
             </h3>
           </Tooltip>
