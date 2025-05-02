@@ -51,10 +51,7 @@ export type CreateFullCheckRequest = {
    */
   check_date?: string;
   wetness_scale: number | string;
-  /**
-   * @format date-time
-   */
-  next_reminder_date: string;
+  next_reminder_date?: string | null;
   watered: boolean;
   bottom_watered: boolean;
   notes?: string | null;
@@ -67,7 +64,9 @@ export type CreateLocationRequest = {
 
 export type CreateNotitificationSubscriptionSchema = {
   device_name: string;
-  subscription: Record<string, any>;
+  subscription: {
+    [key: string]: any;
+  };
 };
 
 export type CreatePhotoRequest = {

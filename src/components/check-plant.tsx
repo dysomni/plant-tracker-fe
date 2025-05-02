@@ -187,9 +187,7 @@ export const CheckPlantDrawer = (props: {
               historicalCheckDate.toString(),
             ),
             wetness_scale: 0, // The point at which it became dry
-            next_reminder_date: removeTimeZoneBracketFromDatetime(
-              nextCheckDate.toString(),
-            ),
+            next_reminder_date: null,
             watered: false,
             bottom_watered: false,
             notes: `Historical dryness record: Plant likely needed water on this date (added when found dry on ${dayjs(overrideDate.toDate(getLocalTimeZone())).format("MMMM D, YYYY")})`,
