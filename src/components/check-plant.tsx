@@ -70,6 +70,9 @@ export const CheckPlantDrawer = (props: {
   const [overrideTouched, setOverrideTouched] = useState(false);
   const [scheduleFromCurrentDate, setScheduleFromCurrentDate] = useState(false);
   const [submitLoading, setSubmitLoading] = useState(false);
+  const [historicalCheckDate, setHistoricalCheckDate] =
+    useState<DateValue | null>(null);
+  const [historicalCheckTouched, setHistoricalCheckTouched] = useState(false);
 
   const {
     data: plant,
@@ -119,10 +122,17 @@ export const CheckPlantDrawer = (props: {
       return;
     }
 
-    const lastWateringDaysAgo = dayjs().diff(lastWatering, "hour") / 24;
+    // Use historical date only for calculating how fast it dried out
+    const dryDate =
+      wetness === 0 && historicalCheckDate
+        ? dayjs(historicalCheckDate.toDate(getLocalTimeZone()))
+        : dayjs();
+
+    const lastWateringDaysAgo = dryDate.diff(lastWatering, "hour") / 24;
     const decayFromLastWatering = (10 - wetness) / lastWateringDaysAgo;
     const decayAverage = (decayPerDay + decayFromLastWatering) / 2;
     const targetCheckWetness = 1.5;
+
     const daysUntilTwoFromNow = Math.max(
       (wetness - targetCheckWetness) / decayAverage,
       1, // minimum of 1 day
@@ -153,6 +163,7 @@ export const CheckPlantDrawer = (props: {
     watered,
     overrideDate,
     scheduleFromCurrentDate,
+    historicalCheckDate,
   ]);
 
   useEffect(() => {
@@ -167,6 +178,26 @@ export const CheckPlantDrawer = (props: {
     setSubmitLoading(true);
 
     try {
+      // If wetness is 0 and we have a historical date, create an additional check
+      if (wetness === 0 && historicalCheckDate) {
+        await fetchFullCheckPlantV1PlantsPlantIdFullCheckPost({
+          pathParams: { plantId: plantToCheck },
+          body: {
+            check_date: removeTimeZoneBracketFromDatetime(
+              historicalCheckDate.toString(),
+            ),
+            wetness_scale: 0, // The point at which it became dry
+            next_reminder_date: removeTimeZoneBracketFromDatetime(
+              nextCheckDate.toString(),
+            ),
+            watered: false,
+            bottom_watered: false,
+            notes: `Historical dryness record: Plant likely needed water on this date (added when found dry on ${dayjs(overrideDate.toDate(getLocalTimeZone())).format("MMMM D, YYYY")})`,
+          },
+        });
+      }
+
+      // Create the current/backdated check
       await fetchFullCheckPlantV1PlantsPlantIdFullCheckPost({
         pathParams: { plantId: plantToCheck },
         body: {
@@ -182,6 +213,7 @@ export const CheckPlantDrawer = (props: {
           notes,
         },
       });
+
       addToast({
         title: "Saved",
         description: `Successfully checked plant! Next reminder is ${nextCheckDayjs.fromNow()}`,
@@ -380,6 +412,78 @@ export const CheckPlantDrawer = (props: {
                 date && setOverrideDate(date);
               }}
             />
+            {wetness === 0 && (
+              <div className="flex flex-col gap-3 border-2 border-warning-200 rounded-lg p-4">
+                <h3 className="text-lg font-bold text-warning-700">
+                  Add Historical Dry Date
+                </h3>
+                <p className="text-sm text-gray-500">
+                  Since the plant is completely dry now, you can record when you
+                  think it first reached this state (when it should have been
+                  watered).
+                </p>
+                {historicalCheckDate && (
+                  <div className="flex flex-row justify-between items-center">
+                    <p className="font-bold">Plant needed water:</p>
+                    <p className="text-warning-700">
+                      {dayjs(
+                        historicalCheckDate.toDate(getLocalTimeZone()),
+                      ).fromNow()}
+                    </p>
+                  </div>
+                )}
+                <DatePicker
+                  showMonthAndYearPickers
+                  description="When do you think this plant first became completely dry?"
+                  label="Historical Dry Date"
+                  value={historicalCheckDate}
+                  onChange={(date) => {
+                    setHistoricalCheckTouched(true);
+                    setHistoricalCheckDate(date);
+                  }}
+                />
+                <div className="flex gap-2">
+                  <Button
+                    className="w-full"
+                    color="warning"
+                    startContent={<IconMinus />}
+                    variant="flat"
+                    onPress={() => {
+                      setHistoricalCheckTouched(true);
+                      setHistoricalCheckDate(
+                        dayjsToDateValue(
+                          dayjs(
+                            historicalCheckDate?.toDate(getLocalTimeZone()) ||
+                              new Date(),
+                          ).subtract(1, "day"),
+                        ),
+                      );
+                    }}
+                  >
+                    1 day
+                  </Button>
+                  <Button
+                    className="w-full"
+                    color="warning"
+                    startContent={<IconPlus />}
+                    variant="flat"
+                    onPress={() => {
+                      setHistoricalCheckTouched(true);
+                      setHistoricalCheckDate(
+                        dayjsToDateValue(
+                          dayjs(
+                            historicalCheckDate?.toDate(getLocalTimeZone()) ||
+                              new Date(),
+                          ).add(1, "day"),
+                        ),
+                      );
+                    }}
+                  >
+                    1 day
+                  </Button>
+                </div>
+              </div>
+            )}
             {overrideTouched && !nextCheckDateTouched ? (
               <RadioGroup
                 defaultValue="no"
