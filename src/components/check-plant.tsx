@@ -72,7 +72,7 @@ export const CheckPlantDrawer = (props: {
   const [submitLoading, setSubmitLoading] = useState(false);
   const [historicalCheckDate, setHistoricalCheckDate] =
     useState<DateValue | null>(null);
-  const [historicalCheckTouched, setHistoricalCheckTouched] = useState(false);
+  const [_historicalCheckTouched, setHistoricalCheckTouched] = useState(false);
 
   const {
     data: plant,
